@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Дверь № 们 · групповые местоимения</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1052,11 +1052,142 @@
     .answer-panel { padding-left: 10px; padding-right: 10px; }
     .option strong { font-size: 28px; }
   }
-  @media (max-width: 455px) {
-    .game-body { grid-template-columns: minmax(0,1fr) 205px; }
-    .options { grid-template-columns: 1fr 1fr; }
-    .option { min-height: 46px; }
-    .option strong { font-size: 25px; }
+  @media (max-width: 600px) {
+    html, body { min-height: 100%; height: auto; }
+    body { overflow-x: hidden; overflow-y: auto; }
+    .app { height: auto; min-height: 100svh; overflow: visible; }
+    .app::before,
+    .app::after { position: fixed; }
+    .screen {
+      position: relative;
+      inset: auto;
+      min-height: 100svh;
+      padding: max(10px,env(safe-area-inset-top)) max(9px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left));
+    }
+    .start-screen,
+    .finish-screen { display: flex; align-items: center; justify-content: center; }
+    .start-card,
+    .finish-card {
+      width: calc(100% - 12px);
+      min-height: 0;
+      padding: 20px 14px;
+      box-shadow: 0 0 0 4px #121b27, 0 0 0 5px rgba(212,175,85,.45), 0 16px 35px rgba(0,0,0,.44);
+    }
+    .start-card::before,
+    .start-card::after { top: 12px; width: 40px; }
+    .start-card::before { left: 13px; }
+    .start-card::after { right: 13px; }
+    .mini-door { width: 68px; height: 75px; margin-bottom: 10px; }
+    .mini-face { top: 28px; width: 25px; height: 25px; }
+    .eyebrow { font-size: 8px; letter-spacing: .22em; }
+    h1 { margin-top: 6px; font-size: clamp(28px,9vw,37px); }
+    .intro { margin-top: 8px; font-size: 12px; line-height: 1.38; }
+    .pronoun-strip { width: 100%; justify-content: center; gap: 5px; margin: 14px 0 17px; }
+    .pronoun-strip span { width: calc((100% - 20px)/5); max-width: 58px; height: 49px; font-size: clamp(23px,7vw,28px); }
+    .pronoun-strip span::after { width: 7px; height: 7px; }
+    .primary { min-width: 164px; min-height: 44px; }
+    .game-screen { display: block; padding-bottom: max(12px,env(safe-area-inset-bottom)); }
+    .topbar {
+      position: sticky;
+      z-index: 12;
+      top: 0;
+      min-height: 40px;
+      gap: 8px;
+      padding: 0 9px;
+      backdrop-filter: blur(8px);
+    }
+    .brand { font-size: 12px; }
+    .brand b { font-size: 19px; }
+    .track { display: none; }
+    .lamps { margin-left: auto; gap: 4px; }
+    .lamp { width: 17px; height: 17px; font-size: 8px; }
+    .round-label { min-width: 52px; font-size: 7px; }
+    .game-body { display: block; margin-top: 8px; }
+    .theatre-panel { min-height: 0; padding: 13px 8px 12px; }
+    .room-sign { margin-bottom: -6px; padding: 4px 12px 5px; font-size: 8px; }
+    .door-space {
+      width: min(272px,calc(100vw - 56px));
+      height: min(245px,68vw);
+      min-height: 0;
+      border-width: 6px;
+      border-bottom-width: 8px;
+    }
+    .scene-copy { width: min(340px,97%); min-height: 42px; margin-top: 9px; padding: 6px 10px; font-size: 11.5px; }
+    .answer-panel { margin-top: 9px; padding: 15px 13px 13px; }
+    .answer-panel h3 { margin-top: 4px; font-size: 23px; }
+    .answer-note { margin-top: 4px; font-size: 10px; }
+    .answer-form { margin-top: 10px; }
+    .answer-input,
+    .check-button { height: 48px; }
+    .answer-input { font-size: 29px; }
+    .check-button { min-width: 52px; }
+    .or-label { margin: 9px 0 7px; }
+    .options { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 5px; }
+    .option,
+    .option:nth-child(5) { grid-column: auto; min-height: 51px; padding: 4px 1px; }
+    .option strong { font-size: clamp(22px,7vw,29px); }
+    .feedback { min-height: 43px; margin-top: 9px; padding: 6px 7px; font-size: 10px; }
+    .finish-card h2 { font-size: clamp(28px,9vw,38px); }
+    .final-door { width: min(270px,87vw); height: 137px; margin: 14px 0 10px; }
+    .code { gap: 5px; }
+    .code span { width: 40px; height: 54px; font-size: 30px; }
+    .finish-copy { font-size: 11px; }
+  }
+  @media (max-width: 350px) {
+    .screen { padding-left: 6px; padding-right: 6px; }
+    .start-card,
+    .finish-card { width: calc(100% - 10px); padding-left: 10px; padding-right: 10px; }
+    .pronoun-strip { gap: 3px; }
+    .pronoun-strip span { width: calc((100% - 12px)/5); height: 45px; font-size: 22px; }
+    .brand { font-size: 10px; }
+    .lamps { gap: 3px; }
+    .lamp { width: 15px; height: 15px; }
+    .round-label { display: none; }
+    .door-space { width: min(252px,calc(100vw - 48px)); height: min(227px,69vw); }
+    .answer-panel { padding-left: 9px; padding-right: 9px; }
+    .options { gap: 3px; }
+    .option { min-height: 47px; }
+    .option strong { font-size: 23px; }
+  }
+  @media (max-width: 600px) and (max-height: 620px) {
+    .mini-door { width: 58px; height: 62px; margin-bottom: 6px; }
+    .intro { line-height: 1.25; }
+    .pronoun-strip { margin: 9px 0 11px; }
+    .start-card { padding-top: 13px; padding-bottom: 13px; }
+  }
+  @media (orientation: landscape) and (max-height: 500px) and (max-width: 900px) {
+    html, body { height: 100%; overflow: hidden; }
+    .app { height: 100dvh; min-height: 0; overflow: hidden; }
+    .screen { position: absolute; inset: 0; min-height: 0; padding: 7px 10px; }
+    .start-card,
+    .finish-card { width: min(590px,91%); min-height: calc(100dvh - 18px); padding: 10px 24px; }
+    .mini-door { width: 57px; height: 61px; margin-bottom: 4px; }
+    h1 { margin-top: 3px; font-size: 29px; }
+    .intro { margin-top: 4px; font-size: 11px; line-height: 1.25; }
+    .pronoun-strip { margin: 7px 0 9px; }
+    .pronoun-strip span { width: 53px; height: 39px; font-size: 23px; }
+    .primary { min-height: 39px; padding-top: 9px; padding-bottom: 9px; }
+    .game-screen { display: grid; grid-template-rows: 34px minmax(0,1fr); gap: 5px; }
+    .topbar { position: static; min-height: 34px; }
+    .game-body { display: grid; grid-template-columns: minmax(0,1.12fr) minmax(250px,.88fr); gap: 7px; margin-top: 0; }
+    .theatre-panel { padding: 8px; }
+    .door-space { width: min(260px,calc(100% - 12px)); height: min(229px,calc(100dvh - 126px)); min-height: 176px; }
+    .scene-copy { min-height: 36px; margin-top: 6px; padding: 4px 8px; font-size: 10px; }
+    .answer-panel { margin-top: 0; padding: 8px 10px; }
+    .answer-panel h3 { font-size: 19px; }
+    .answer-note { font-size: 8px; }
+    .answer-form { margin-top: 6px; }
+    .answer-input,
+    .check-button { height: 40px; }
+    .answer-input { font-size: 26px; }
+    .or-label { margin: 4px 0; }
+    .options { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 4px; }
+    .option,
+    .option:nth-child(5) { grid-column: auto; min-height: 42px; }
+    .option strong { font-size: 24px; }
+    .feedback { min-height: 34px; margin-top: 5px; font-size: 9px; }
+    .final-door { height: 111px; margin: 6px 0 4px; }
+    .finish-card .primary { margin-top: 5px; }
   }
 </style>
 </head>
