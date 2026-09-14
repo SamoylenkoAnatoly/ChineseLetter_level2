@@ -29,9 +29,12 @@
     background: #101827;
     font-family: "Segoe UI", Arial, sans-serif;
     user-select: none;
+    -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
   }
-  button { color: inherit; font: inherit; }
+  button { color: inherit; font: inherit; touch-action: manipulation; }
   button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
   [hidden] { display: none !important; }
   .app {
@@ -157,7 +160,9 @@
     box-shadow: 5px 5px 0 var(--ink);
     transition: transform .15s, box-shadow .15s, background .15s;
   }
-  .primary:hover { background: #ff7163; transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+  @media (hover: hover) {
+    .primary:hover { background: #ff7163; transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+  }
   .primary:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--ink); }
   .postal-emblem {
     position: relative;
@@ -528,10 +533,12 @@
   }
   .recipient:nth-child(2) { transform: translateY(6px); }
   .recipient:nth-child(3) { transform: translateY(-2px); }
-  .recipient:hover,
   .recipient.drop-ready { border-color: var(--yellow); filter: brightness(1.04); }
-  .recipient:hover { transform: translateY(-3px); box-shadow: 5px 8px 0 rgba(24,35,60,.42); }
-  .recipient:nth-child(2):hover { transform: translateY(3px); }
+  @media (hover: hover) {
+    .recipient:hover { border-color: var(--yellow); filter: brightness(1.04); transform: translateY(-3px); box-shadow: 5px 8px 0 rgba(24,35,60,.42); }
+    .recipient:nth-child(2):hover { transform: translateY(3px); }
+  }
+  .recipient:active { filter: brightness(.97); }
   .recipient.drop-over { transform: translateY(-5px) scale(1.035); border-color: var(--teal); box-shadow: 0 0 0 4px rgba(53,184,173,.25), 5px 8px 0 rgba(24,35,60,.42); }
   .recipient::before {
     content: "";
@@ -892,7 +899,10 @@
     box-shadow: 2px 2px 0 rgba(37,48,68,.13);
     transition: transform .13s, border-color .13s, background .13s;
   }
-  .glyph-button:hover { transform: translateY(-2px); border-color: var(--red); }
+  @media (hover: hover) {
+    .glyph-button:hover { transform: translateY(-2px); border-color: var(--red); }
+  }
+  .glyph-button:active { transform: scale(.94); }
   .glyph-button.selected { color: var(--cream); border-color: var(--ink); background: var(--teal-dark); transform: translateY(-2px) rotate(-2deg); box-shadow: 3px 4px 0 var(--ink); }
   .glyph-button:disabled { cursor: default; }
   .dock {
@@ -916,6 +926,7 @@
       #d9a85f;
     cursor: grab;
     touch-action: none;
+    -webkit-touch-callout: none;
     box-shadow: 4px 5px 0 rgba(37,48,68,.24);
     transition: transform .15s, opacity .2s, filter .15s;
   }
@@ -938,7 +949,9 @@
     font: 700 10px/1 "SimSun", serif;
   }
   .parcel:disabled { cursor: not-allowed; filter: grayscale(.45); opacity: .62; }
-  .parcel:not(:disabled):hover { transform: translateY(-3px) rotate(1deg); }
+  @media (hover: hover) {
+    .parcel:not(:disabled):hover { transform: translateY(-3px) rotate(1deg); }
+  }
   .parcel.armed { box-shadow: 0 0 0 4px rgba(244,198,79,.38), 4px 5px 0 rgba(37,48,68,.24); animation: parcel-ready 1s ease-in-out infinite alternate; }
   @keyframes parcel-ready { to { transform: translateY(-3px); } }
   .parcel.sent { opacity: 0; transform: scale(.5); }
@@ -1069,6 +1082,14 @@
     .feedback { width: 72%; left: 60%; }
     .sorter { grid-template-columns: minmax(0,1fr) 99px; }
     .parcel { width: 78px; }
+    .feedback { font-size: 11px; }
+    .sort-label { font-size: 8.5px; }
+    .dock-note { font-size: 8.5px; }
+    .dispatch-label { font-size: 9px; }
+    .cue { font-size: 9px; }
+    .glyph-button { height: 46px; }
+    .address-number { width: 22px; height: 22px; font-size: 10px; }
+    .route-count { font-size: 10px; }
   }
   @media (max-width: 410px) {
     .game-screen { padding-left: 5px; padding-right: 5px; }
@@ -1076,7 +1097,7 @@
     .mini-brand { font-size: 10px; }
     .route-stamps { gap: 2px; }
     .route-stamp { width: 13px; height: 13px; font-size: 6px; }
-    .route-count { min-width: 42px; font-size: 7px; }
+    .route-count { min-width: 42px; font-size: 8px; }
     .dispatch { gap: 7px; padding-left: 7px; }
     .mission-text { font-size: 14px; }
     .addresses { left: 68px; }
@@ -1087,9 +1108,16 @@
     .cast.group { transform: scale(.56); }
     .sorter { grid-template-columns: minmax(0,1fr) 82px; padding: 5px; gap: 4px; }
     .glyph-bank { gap: 3px; }
-    .glyph-button { height: 40px; font-size: 17px; }
+    .glyph-button { height: 44px; font-size: 17px; }
     .parcel { width: 68px; height: 54px; }
     .parcel-glyph { width: 40px; font-size: 19px; }
+  }
+  @media (max-width: 360px) {
+    .mini-brand { display: none; }
+    .routebar { grid-template-columns: 1fr auto; gap: 8px; }
+    .addresses { left: 60px; right: 6px; }
+    .courier { left: 3px; }
+    .glyph-button { height: 42px; }
   }
   @media (max-height: 480px) {
     .game-screen { grid-template-rows: 35px 52px minmax(0,1fr) 106px; gap: 4px; padding-top: 5px; padding-bottom: 5px; }
