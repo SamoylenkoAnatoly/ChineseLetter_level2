@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>index_less1_exs5 — Усатая экспресс-почта</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #253044;
+    --ink-soft: #4e5b70;
+    --cream: #fff6dc;
+    --paper: #f4e7c3;
+    --red: #f05a4f;
+    --red-dark: #b9363b;
+    --teal: #35b8ad;
+    --teal-dark: #167b7d;
+    --yellow: #f4c64f;
+    --blue: #83cfe5;
+    --night: #18233c;
+    --green: #79bd72;
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    background: #101827;
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { color: inherit; font: inherit; }
+  button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: min(100%, 780px);
+    height: min(100dvh, 600px);
+    min-height: 360px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,.7) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 88% 31%, rgba(244,198,79,.65) 0 1px, transparent 1.5px),
+      linear-gradient(180deg, #253556 0 33%, #f1d9ad 33% 100%);
+    background-size: 33px 33px, 51px 51px, auto;
+  }
+  .app::after {
+    content: "";
+    position: absolute;
+    z-index: 50;
+    inset: 0;
+    border: 1px solid rgba(255,255,255,.2);
+    pointer-events: none;
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    animation: screen-in .42s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes screen-in {
+    from { opacity: 0; transform: scale(.98) translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  .start-screen,
+  .finish-screen {
+    display: grid;
+    place-items: center;
+    padding: clamp(12px, 3vw, 25px);
+    background:
+      linear-gradient(90deg, transparent 49.7%, rgba(37,48,68,.035) 50%, transparent 50.3%),
+      linear-gradient(0deg, transparent 49.7%, rgba(37,48,68,.035) 50%, transparent 50.3%),
+      var(--paper);
+    background-size: 24px 24px;
+  }
+  .start-card,
+  .finish-card {
+    position: relative;
+    width: min(100%, 690px);
+    min-height: min(470px, calc(100dvh - 28px));
+    display: grid;
+    grid-template-columns: minmax(170px, .72fr) minmax(280px, 1.28fr);
+    align-items: center;
+    gap: clamp(19px, 4vw, 40px);
+    padding: clamp(22px, 5vw, 48px);
+    border: 2px solid var(--ink);
+    border-radius: 8px 30px 8px 30px;
+    background: rgba(255,246,220,.92);
+    box-shadow: 9px 10px 0 var(--red), 17px 18px 0 rgba(37,48,68,.16);
+  }
+  .start-card::before,
+  .finish-card::before {
+    content: "EXPRESS · 09";
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: rgba(37,48,68,.3);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .2em;
+  }
+  .start-copy { min-width: 0; }
+  .eyebrow {
+    color: var(--red-dark);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+  h1, h2 {
+    margin-top: 7px;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: .98;
+    letter-spacing: -.035em;
+  }
+  h1 { font-size: clamp(34px, 6.5vw, 52px); }
+  h2 { font-size: clamp(31px, 6vw, 45px); }
+  .lead,
+  .finish-copy {
+    max-width: 410px;
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .pronoun-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 15px;
+  }
+  .pronoun-list span {
+    min-width: 35px;
+    padding: 5px 7px;
+    border: 1px solid rgba(37,48,68,.27);
+    border-radius: 4px 9px 4px 9px;
+    background: rgba(255,255,255,.52);
+    font: 700 15px/1 "Microsoft YaHei", "SimSun", serif;
+    text-align: center;
+    box-shadow: 2px 2px 0 rgba(53,184,173,.15);
+  }
+  .primary {
+    min-width: 166px;
+    margin-top: 20px;
+    padding: 12px 23px 13px;
+    border: 2px solid var(--ink);
+    border-radius: 5px 13px 5px 13px;
+    color: var(--cream);
+    background: var(--red);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    box-shadow: 5px 5px 0 var(--ink);
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .primary:hover { background: #ff7163; transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+  .primary:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--ink); }
+  .postal-emblem {
+    position: relative;
+    width: 190px;
+    height: 245px;
+    display: grid;
+    place-items: center;
+  }
+  .postal-emblem::before {
+    content: "";
+    position: absolute;
+    width: 174px;
+    height: 174px;
+    border: 2px dashed var(--teal-dark);
+    border-radius: 50%;
+    opacity: .55;
+    animation: orbit 24s linear infinite;
+  }
+  .postal-emblem::after {
+    content: "速 递";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    color: var(--red-dark);
+    font: 700 16px/1 "SimSun", serif;
+    letter-spacing: .8em;
+    text-align: center;
+    text-indent: .8em;
+  }
+  @keyframes orbit { to { transform: rotate(360deg); } }
+  .envelope {
+    position: absolute;
+    z-index: 1;
+    width: 150px;
+    height: 104px;
+    border: 3px solid var(--ink);
+    border-radius: 8px;
+    background: var(--cream);
+    box-shadow: 7px 8px 0 var(--teal);
+    transform: rotate(-5deg);
+  }
+  .envelope::before,
+  .envelope::after {
+    content: "";
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    height: 3px;
+    background: var(--red);
+  }
+  .envelope::before { top: 13px; }
+  .envelope::after { bottom: 13px; }
+  .envelope-fold {
+    position: absolute;
+    left: 50%;
+    top: -1px;
+    width: 74px;
+    height: 74px;
+    border-right: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    background: var(--paper);
+    transform: translateX(-50%) rotate(45deg) scale(.72);
+  }
+  .cat {
+    position: relative;
+    z-index: 4;
+    width: 94px;
+    height: 114px;
+    filter: drop-shadow(3px 5px 0 rgba(37,48,68,.15));
+  }
+  .postal-emblem .cat { transform: translateY(-10px); animation: cat-float 3s ease-in-out infinite; }
+  @keyframes cat-float { 50% { transform: translateY(-17px) rotate(2deg); } }
+  .cat-tail {
+    position: absolute;
+    right: -14px;
+    bottom: 11px;
+    width: 47px;
+    height: 50px;
+    border: 10px solid var(--ink);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    transform: rotate(19deg);
+  }
+  .cat-tail::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 5px solid #d58b55;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+  }
+  .cat-body {
+    position: absolute;
+    left: 21px;
+    bottom: 4px;
+    width: 57px;
+    height: 66px;
+    border: 3px solid var(--ink);
+    border-radius: 25px 25px 14px 14px;
+    background: #e49a5d;
+  }
+  .cat-body::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 25px;
+    height: 16px;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    background: var(--teal);
+    transform: rotate(-5deg);
+  }
+  .cat-body::after {
+    content: "";
+    position: absolute;
+    left: -7px;
+    bottom: -7px;
+    width: 22px;
+    height: 10px;
+    border: 3px solid var(--ink);
+    border-radius: 10px 3px;
+    background: #e49a5d;
+    box-shadow: 34px 0 0 -3px #e49a5d, 34px 0 0 0 var(--ink);
+  }
+  .cat-head {
+    position: absolute;
+    left: 12px;
+    top: 11px;
+    width: 72px;
+    height: 59px;
+    border: 3px solid var(--ink);
+    border-radius: 48% 52% 46% 48%;
+    background: #e49a5d;
+  }
+  .cat-ear {
+    position: absolute;
+    top: -13px;
+    width: 27px;
+    height: 29px;
+    border: 3px solid var(--ink);
+    background: #e49a5d;
+    transform: rotate(45deg);
+  }
+  .cat-ear.left { left: 5px; border-radius: 5px 16px 4px 16px; }
+  .cat-ear.right { right: 5px; border-radius: 16px 5px 16px 4px; }
+  .cat-ear::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    background: #f6b7a0;
+    border-radius: 4px;
+  }
+  .cat-face {
+    position: absolute;
+    z-index: 3;
+    left: 15px;
+    top: 24px;
+    width: 9px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 32px 0 0 var(--ink);
+  }
+  .cat-face::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 8px;
+    width: 8px;
+    height: 6px;
+    border-radius: 50% 50% 65% 65%;
+    background: var(--red-dark);
+  }
+  .cat-face::after {
+    content: "";
+    position: absolute;
+    left: -13px;
+    top: 12px;
+    width: 25px;
+    height: 1px;
+    background: var(--ink);
+    box-shadow: 42px 0 0 var(--ink), 1px 6px 0 var(--ink), 40px 6px 0 var(--ink);
+  }
+  .cat-cap {
+    position: absolute;
+    z-index: 5;
+    left: 21px;
+    top: 2px;
+    width: 53px;
+    height: 21px;
+    border: 3px solid var(--ink);
+    border-radius: 26px 26px 4px 4px;
+    background: var(--red);
+    transform: rotate(3deg);
+  }
+  .cat-cap::after {
+    content: "";
+    position: absolute;
+    right: -15px;
+    bottom: -3px;
+    width: 26px;
+    height: 7px;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .game-screen {
+    display: grid;
+    grid-template-rows: 43px 65px minmax(0,1fr) 132px;
+    gap: 7px;
+    padding: 8px 10px 10px;
+  }
+  .routebar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 0 11px;
+    color: var(--cream);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 7px 15px 7px 15px;
+    background: rgba(18,28,48,.88);
+  }
+  .mini-brand {
+    white-space: nowrap;
+    font-family: Georgia, serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .mini-brand b { color: var(--yellow); font-family: "Microsoft YaHei", serif; font-size: 16px; }
+  .route-stamps { display: flex; justify-content: center; gap: 4px; }
+  .route-stamp {
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed #75829b;
+    border-radius: 2px;
+    color: #75829b;
+    font: 700 8px/1 "SimSun", serif;
+    transition: .25s;
+  }
+  .route-stamp.current { color: var(--yellow); border-color: var(--yellow); transform: rotate(-6deg) scale(1.12); }
+  .route-stamp.done { color: var(--night); border-style: solid; border-color: var(--yellow); background: var(--yellow); transform: rotate(4deg); }
+  .route-count {
+    min-width: 58px;
+    color: #b8c2d6;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-align: right;
+    text-transform: uppercase;
+  }
+  .dispatch {
+    position: relative;
+    display: grid;
+    grid-template-columns: 47px 1fr auto;
+    align-items: center;
+    gap: 11px;
+    padding: 6px 13px;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    border-radius: 5px 17px 5px 17px;
+    background: var(--cream);
+    box-shadow: 4px 4px 0 var(--teal);
+  }
+  .dispatch::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: repeating-linear-gradient(0deg, var(--red) 0 8px, var(--cream) 8px 14px, var(--teal) 14px 22px, var(--cream) 22px 28px);
+  }
+  .dispatch-number {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--red-dark);
+    border-radius: 50%;
+    color: var(--red-dark);
+    font: 700 18px/1 Georgia, serif;
+    transform: rotate(-7deg);
+  }
+  .dispatch-label {
+    color: #8a6e62;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+  .mission-text {
+    margin-top: 2px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(16px, 2.8vw, 21px);
+    font-weight: 700;
+    line-height: 1.08;
+  }
+  .mission-clue {
+    max-width: 145px;
+    padding-left: 10px;
+    color: var(--ink-soft);
+    border-left: 1px solid rgba(37,48,68,.2);
+    font-size: 9px;
+    line-height: 1.25;
+  }
+  .street {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    border-radius: 18px 6px 18px 6px;
+    background:
+      linear-gradient(90deg, transparent 49.6%, rgba(255,255,255,.12) 50%, transparent 50.4%),
+      linear-gradient(180deg, #4f7f92 0 74%, #37465a 74% 100%);
+    box-shadow: inset 0 -24px 38px rgba(17,27,44,.18);
+  }
+  .street::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 12px;
+    height: 22px;
+    opacity: .55;
+    background:
+      radial-gradient(ellipse at 10px 100%, var(--cream) 0 8px, transparent 9px) 0 0 / 34px 22px repeat-x;
+  }
+  .street::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 17%;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--yellow) 0 24px, transparent 24px 39px);
+    opacity: .72;
+  }
+  .addresses {
+    position: absolute;
+    z-index: 3;
+    inset: 29px 17px 50px 113px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    align-items: stretch;
+    gap: clamp(7px, 1.7vw, 14px);
+  }
+  .recipient {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    border-radius: 20px 20px 5px 5px;
+    background:
+      linear-gradient(90deg, rgba(37,48,68,.06) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(37,48,68,.05) 1px, transparent 1px),
+      var(--cream);
+    background-size: 13px 13px;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(24,35,60,.5);
+    transition: transform .16s, border-color .16s, box-shadow .16s, filter .16s;
+  }
+  .recipient:nth-child(2) { transform: translateY(6px); }
+  .recipient:nth-child(3) { transform: translateY(-2px); }
+  .recipient:hover,
+  .recipient.drop-ready { border-color: var(--yellow); filter: brightness(1.04); }
+  .recipient:hover { transform: translateY(-3px); box-shadow: 5px 8px 0 rgba(24,35,60,.42); }
+  .recipient:nth-child(2):hover { transform: translateY(3px); }
+  .recipient.drop-over { transform: translateY(-5px) scale(1.035); border-color: var(--teal); box-shadow: 0 0 0 4px rgba(53,184,173,.25), 5px 8px 0 rgba(24,35,60,.42); }
+  .recipient::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 17px;
+    border-bottom: 2px solid var(--ink);
+    background: repeating-linear-gradient(90deg, var(--red) 0 14px, var(--cream) 14px 28px, var(--teal) 28px 42px, var(--cream) 42px 56px);
+  }
+  .address-number {
+    position: absolute;
+    z-index: 7;
+    right: 5px;
+    top: 21px;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--yellow);
+    font: 800 9px/1 Georgia, serif;
+  }
+  .scene-visual {
+    position: absolute;
+    inset: 21px 3px 3px;
+    display: grid;
+    place-items: center;
+  }
+  .scene-visual::after {
+    content: "";
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    bottom: 8%;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(37,48,68,.12);
+  }
+  .cast {
+    position: relative;
+    z-index: 2;
+    min-width: 72px;
+    height: 96px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .cast.group { min-width: 128px; transform: scale(.78); transform-origin: center bottom; }
+  .cast.group .person + .person { margin-left: -5px; }
+  .cast.group .pet + .pet { margin-left: -7px; }
+  .person {
+    --shirt: #63bfc2;
+    position: relative;
+    width: 47px;
+    height: 92px;
+    flex: 0 0 47px;
+  }
+  .person .head {
+    position: absolute;
+    z-index: 4;
+    left: 10px;
+    top: 5px;
+    width: 28px;
+    height: 30px;
+    border: 2px solid var(--ink);
+    border-radius: 47% 47% 45% 45%;
+    background: #f2bb8e;
+  }
+  .person .head::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: -4px;
+    height: 13px;
+    border: 2px solid var(--ink);
+    border-bottom-width: 1px;
+    border-radius: 17px 17px 5px 5px;
+    background: #49362f;
+  }
+  .person .head::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 15px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 10px 0 0 var(--ink);
+  }
+  .person .torso {
+    position: absolute;
+    z-index: 3;
+    left: 6px;
+    top: 34px;
+    width: 36px;
+    height: 37px;
+    border: 2px solid var(--ink);
+    border-radius: 11px 11px 5px 5px;
+    background: var(--shirt);
+  }
+  .person .torso::before,
+  .person .torso::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    width: 8px;
+    height: 31px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: var(--shirt);
+  }
+  .person .torso::before { left: -8px; transform: rotate(10deg); }
+  .person .torso::after { right: -8px; transform: rotate(-10deg); }
+  .person .legs {
+    position: absolute;
+    left: 12px;
+    bottom: 2px;
+    width: 8px;
+    height: 24px;
+    border: 2px solid var(--ink);
+    border-radius: 2px 2px 6px 6px;
+    background: #53637a;
+    box-shadow: 15px 0 0 -2px #53637a, 15px 0 0 0 var(--ink);
+  }
+  .person.female .head::before {
+    left: -5px;
+    right: -5px;
+    top: -5px;
+    height: 33px;
+    border-radius: 18px 18px 9px 9px;
+    background: #563a35;
+  }
+  .person.female .head { z-index: 5; }
+  .person.female .torso {
+    left: 4px;
+    width: 40px;
+    height: 40px;
+    clip-path: polygon(23% 0, 77% 0, 100% 100%, 0 100%);
+  }
+  .person.elder { transform: rotate(3deg) translateY(2px); }
+  .person.elder .head::before { background: #e9e3d5; }
+  .person.elder .torso { --shirt: #846da5; }
+  .person.elder::after {
+    content: "";
+    position: absolute;
+    z-index: 6;
+    right: 0;
+    top: 47px;
+    width: 13px;
+    height: 40px;
+    border-right: 3px solid #8b6239;
+    border-top: 3px solid #8b6239;
+    border-radius: 0 12px 0 0;
+  }
+  .person .badge {
+    position: absolute;
+    z-index: 8;
+    left: -4px;
+    top: 32px;
+    min-width: 24px;
+    padding: 3px 4px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    color: var(--ink);
+    background: var(--yellow);
+    font: 900 9px/1 "Segoe UI", sans-serif;
+    font-style: normal;
+    transform: rotate(-8deg);
+  }
+  .pet {
+    --fur: #d99059;
+    position: relative;
+    width: 55px;
+    height: 72px;
+    flex: 0 0 55px;
+  }
+  .pet-head {
+    position: absolute;
+    z-index: 4;
+    left: 9px;
+    top: 8px;
+    width: 37px;
+    height: 35px;
+    border: 2px solid var(--ink);
+    border-radius: 14px 14px 17px 17px;
+    background: var(--fur);
+  }
+  .pet-head::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    right: -7px;
+    top: -10px;
+    height: 25px;
+    border-left: 13px solid var(--ink);
+    border-right: 13px solid var(--ink);
+    border-top: 0 solid transparent;
+    clip-path: polygon(0 0, 35% 53%, 65% 53%, 100% 0, 91% 100%, 9% 100%);
+    background: var(--fur);
+  }
+  .pet-head::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 13px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ink);
+    box-shadow: 13px 0 0 var(--ink), 6px 9px 0 1px var(--red-dark);
+  }
+  .pet-body {
+    position: absolute;
+    left: 10px;
+    bottom: 1px;
+    width: 36px;
+    height: 38px;
+    border: 2px solid var(--ink);
+    border-radius: 18px 18px 10px 10px;
+    background: var(--fur);
+  }
+  .pet-body::after {
+    content: "";
+    position: absolute;
+    right: -17px;
+    top: 4px;
+    width: 22px;
+    height: 17px;
+    border-top: 5px solid var(--ink);
+    border-radius: 50%;
+    transform: rotate(-19deg);
+  }
+  .cue {
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    top: 2px;
+    min-width: 36px;
+    padding: 3px 6px;
+    border: 1px solid var(--ink);
+    border-radius: 9px 9px 9px 2px;
+    color: var(--ink);
+    background: var(--yellow);
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    transform: translateX(-50%) rotate(-3deg);
+  }
+  .cue.pointer { background: var(--blue); font-size: 13px; letter-spacing: .16em; }
+  .cue.polite { background: var(--cream); color: var(--red-dark); border-color: var(--red-dark); }
+  .received-stamp {
+    position: absolute;
+    z-index: 15;
+    left: 50%;
+    top: 50%;
+    width: 62px;
+    height: 62px;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    border: 4px double var(--red-dark);
+    border-radius: 50%;
+    color: var(--red-dark);
+    background: rgba(255,246,220,.78);
+    font: 900 17px/1 "SimSun", serif;
+    transform: translate(-50%,-50%) rotate(-15deg) scale(1.8);
+    pointer-events: none;
+  }
+  .recipient.delivered .received-stamp { animation: stamp .48s cubic-bezier(.15,.9,.25,1.2) forwards; }
+  @keyframes stamp { to { opacity: 1; transform: translate(-50%,-50%) rotate(-9deg) scale(1); } }
+  .recipient.wrong { animation: address-wrong .38s ease; border-color: var(--red); }
+  @keyframes address-wrong { 25% { transform: translateX(-6px); } 60% { transform: translateX(6px); } }
+  .courier {
+    position: absolute;
+    z-index: 6;
+    left: 12px;
+    bottom: 6px;
+    transform: scale(.72);
+    transform-origin: left bottom;
+    transition: transform .35s;
+  }
+  .courier::after {
+    content: "КУРЬЕР";
+    position: absolute;
+    left: 6px;
+    bottom: -17px;
+    padding: 3px 6px;
+    color: var(--cream);
+    border-radius: 3px;
+    background: var(--red-dark);
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: .1em;
+  }
+  .street.celebrate .courier { animation: courier-cheer .55s ease; }
+  @keyframes courier-cheer { 45% { transform: scale(.72) translateY(-13px) rotate(-5deg); } }
+  .feedback {
+    position: absolute;
+    z-index: 11;
+    left: 50%;
+    bottom: 6px;
+    width: min(62%, 360px);
+    min-height: 28px;
+    display: grid;
+    place-items: center;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 12px 4px 12px 4px;
+    color: #e7edf4;
+    background: rgba(24,35,60,.9);
+    font-size: 9.5px;
+    line-height: 1.2;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+  .feedback.good { color: #d7ffd1; border-color: var(--green); }
+  .feedback.error { color: #ffd2ca; border-color: var(--red); }
+  .sorter {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 118px;
+    gap: 8px;
+    min-height: 0;
+    padding: 7px 8px;
+    border: 2px solid var(--ink);
+    border-radius: 6px 18px 6px 18px;
+    background: var(--paper);
+    box-shadow: 4px 4px 0 rgba(24,35,60,.5);
+  }
+  .bank-wrap { min-width: 0; }
+  .sort-label {
+    margin-bottom: 4px;
+    color: #887262;
+    font-size: 7.5px;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .glyph-bank {
+    display: grid;
+    grid-template-columns: repeat(6,minmax(0,1fr));
+    gap: 4px;
+  }
+  .glyph-button {
+    min-width: 0;
+    height: 43px;
+    border: 1px solid rgba(37,48,68,.35);
+    border-radius: 4px 9px 4px 9px;
+    background: var(--cream);
+    cursor: pointer;
+    font: 800 clamp(17px,3vw,23px)/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 2px 2px 0 rgba(37,48,68,.13);
+    transition: transform .13s, border-color .13s, background .13s;
+  }
+  .glyph-button:hover { transform: translateY(-2px); border-color: var(--red); }
+  .glyph-button.selected { color: var(--cream); border-color: var(--ink); background: var(--teal-dark); transform: translateY(-2px) rotate(-2deg); box-shadow: 3px 4px 0 var(--ink); }
+  .glyph-button:disabled { cursor: default; }
+  .dock {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    border-left: 1px dashed rgba(37,48,68,.28);
+  }
+  .dock .sort-label { margin-bottom: 6px; }
+  .parcel {
+    position: relative;
+    width: 91px;
+    height: 59px;
+    border: 2px solid var(--ink);
+    border-radius: 5px 5px 12px 5px;
+    background:
+      linear-gradient(90deg, transparent 41%, var(--red) 42% 58%, transparent 59%),
+      #d9a85f;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 4px 5px 0 rgba(37,48,68,.24);
+    transition: transform .15s, opacity .2s, filter .15s;
+  }
+  .parcel::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 7px;
+    height: 2px;
+    background: rgba(37,48,68,.2);
+    box-shadow: 0 39px 0 rgba(37,48,68,.2);
+  }
+  .parcel::after {
+    content: "拖";
+    position: absolute;
+    right: 4px;
+    bottom: 3px;
+    color: rgba(37,48,68,.45);
+    font: 700 10px/1 "SimSun", serif;
+  }
+  .parcel:disabled { cursor: not-allowed; filter: grayscale(.45); opacity: .62; }
+  .parcel:not(:disabled):hover { transform: translateY(-3px) rotate(1deg); }
+  .parcel.armed { box-shadow: 0 0 0 4px rgba(244,198,79,.38), 4px 5px 0 rgba(37,48,68,.24); animation: parcel-ready 1s ease-in-out infinite alternate; }
+  @keyframes parcel-ready { to { transform: translateY(-3px); } }
+  .parcel.sent { opacity: 0; transform: scale(.5); }
+  .parcel.wrong { animation: parcel-wrong .38s ease; }
+  @keyframes parcel-wrong { 30% { transform: rotate(-7deg); } 70% { transform: rotate(7deg); } }
+  .parcel-glyph {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    width: 45px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(37,48,68,.4);
+    border-radius: 3px;
+    background: var(--cream);
+    font: 900 22px/1 "Microsoft YaHei", "SimSun", serif;
+    transform: translate(-50%,-50%) rotate(-2deg);
+  }
+  .parcel.empty .parcel-glyph { color: rgba(37,48,68,.38); font-family: Georgia, serif; }
+  .dock-note {
+    margin-top: 5px;
+    color: #806e60;
+    font-size: 7.5px;
+    line-height: 1.15;
+    text-align: center;
+  }
+  .drag-ghost,
+  .parcel-flight {
+    position: fixed;
+    z-index: 1000;
+    margin: 0;
+    pointer-events: none;
+  }
+  .drag-ghost { opacity: .9; transform: translate(-50%,-55%) rotate(-5deg) scale(1.05); }
+  .parcel-flight {
+    left: 0;
+    top: 0;
+    transition: transform .62s cubic-bezier(.2,.75,.25,1), opacity .62s;
+  }
+  .parcel-flight.go { opacity: .3; transform: translate(var(--fly-x),var(--fly-y)) rotate(18deg) scale(.63); }
+  .finish-card {
+    grid-template-columns: .8fr 1.2fr;
+    text-align: left;
+  }
+  .finish-seal {
+    position: relative;
+    width: 188px;
+    height: 188px;
+    display: grid;
+    place-items: center;
+    border: 3px double var(--red-dark);
+    border-radius: 50%;
+    color: var(--red-dark);
+    background: rgba(255,255,255,.42);
+    font: 800 55px/1 "SimSun", serif;
+    transform: rotate(-7deg);
+  }
+  .finish-seal::before {
+    content: "十一件 · 全部送达";
+    position: absolute;
+    inset: 12px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--teal-dark);
+    border-radius: 50%;
+    color: var(--teal-dark);
+    font: 700 10px/1.3 "SimSun", serif;
+    letter-spacing: .14em;
+    text-align: center;
+    padding-top: 85px;
+  }
+  .code-label {
+    margin-top: 20px;
+    color: #8a6e62;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+  .completion-code {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .completion-code span {
+    width: 43px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--ink);
+    border-radius: 4px 9px 4px 9px;
+    background: var(--yellow);
+    font: 800 30px/1 Georgia, serif;
+    box-shadow: 3px 4px 0 var(--ink);
+    animation: code-in .42s cubic-bezier(.2,.85,.3,1.25) both;
+  }
+  .completion-code span:nth-child(2) { animation-delay: .09s; background: var(--teal); }
+  .completion-code span:nth-child(3) { animation-delay: .18s; background: var(--red); color: var(--cream); }
+  .completion-code span:nth-child(4) { animation-delay: .27s; background: var(--blue); }
+  @keyframes code-in { from { opacity: 0; transform: translateY(14px) rotate(8deg) scale(.45); } }
+  .finish-card .primary { margin-top: 16px; }
+  @media (max-width: 580px) {
+    .start-card,
+    .finish-card { grid-template-columns: 1fr; gap: 12px; text-align: center; padding: 20px; }
+    .postal-emblem { width: 100%; height: 145px; }
+    .postal-emblem::before { width: 128px; height: 128px; }
+    .postal-emblem::after { display: none; }
+    .postal-emblem .envelope { width: 116px; height: 81px; }
+    .postal-emblem .cat { transform: translateY(-7px) scale(.75); }
+    @keyframes cat-float { 50% { transform: translateY(-14px) rotate(2deg) scale(.75); } }
+    .lead,
+    .finish-copy { margin-left: auto; margin-right: auto; }
+    .pronoun-list { justify-content: center; }
+    .finish-seal { width: 128px; height: 128px; margin: 0 auto; font-size: 42px; }
+    .finish-seal::before { inset: 8px; padding-top: 58px; font-size: 8px; }
+    .completion-code { justify-content: center; }
+    .mission-clue { display: none; }
+    .dispatch { grid-template-columns: 42px 1fr; }
+    .addresses { left: 84px; right: 8px; gap: 5px; }
+    .courier { left: 5px; transform: scale(.58); }
+    .street.celebrate .courier { animation-name: courier-cheer-small; }
+    @keyframes courier-cheer-small { 45% { transform: scale(.58) translateY(-13px) rotate(-5deg); } }
+    .cast.group { transform: scale(.68); }
+    .recipient { border-width: 1px; }
+    .address-number { right: 3px; }
+    .feedback { width: 72%; left: 60%; }
+    .sorter { grid-template-columns: minmax(0,1fr) 99px; }
+    .parcel { width: 78px; }
+  }
+  @media (max-width: 410px) {
+    .game-screen { padding-left: 5px; padding-right: 5px; }
+    .routebar { gap: 6px; padding: 0 7px; }
+    .mini-brand { font-size: 10px; }
+    .route-stamps { gap: 2px; }
+    .route-stamp { width: 13px; height: 13px; font-size: 6px; }
+    .route-count { min-width: 42px; font-size: 7px; }
+    .dispatch { gap: 7px; padding-left: 7px; }
+    .mission-text { font-size: 14px; }
+    .addresses { left: 68px; }
+    .courier { transform: scale(.48); }
+    .street.celebrate .courier { animation-name: courier-cheer-tiny; }
+    @keyframes courier-cheer-tiny { 45% { transform: scale(.48) translateY(-13px) rotate(-5deg); } }
+    .cast { transform: scale(.82); }
+    .cast.group { transform: scale(.56); }
+    .sorter { grid-template-columns: minmax(0,1fr) 82px; padding: 5px; gap: 4px; }
+    .glyph-bank { gap: 3px; }
+    .glyph-button { height: 40px; font-size: 17px; }
+    .parcel { width: 68px; height: 54px; }
+    .parcel-glyph { width: 40px; font-size: 19px; }
+  }
+  @media (max-height: 480px) {
+    .game-screen { grid-template-rows: 35px 52px minmax(0,1fr) 106px; gap: 4px; padding-top: 5px; padding-bottom: 5px; }
+    .dispatch-number { width: 35px; height: 35px; font-size: 15px; }
+    .dispatch { grid-template-columns: 38px 1fr auto; padding-top: 3px; padding-bottom: 3px; }
+    .mission-text { font-size: 15px; }
+    .addresses { top: 24px; bottom: 39px; }
+    .cast { transform: scale(.8); transform-origin: center bottom; }
+    .cast.group { transform: scale(.59); }
+    .feedback { bottom: 3px; min-height: 23px; font-size: 8px; }
+    .sorter { padding-top: 4px; padding-bottom: 4px; }
+    .sort-label { margin-bottom: 2px; }
+    .glyph-button { height: 33px; font-size: 17px; }
+    .parcel { height: 49px; }
+    .dock .sort-label { margin-bottom: 3px; }
+    .dock-note { margin-top: 2px; }
+    .start-card,
+    .finish-card { min-height: calc(100dvh - 20px); padding-top: 14px; padding-bottom: 14px; }
+    .postal-emblem { height: 105px; }
+    .postal-emblem::before { width: 96px; height: 96px; }
+    .postal-emblem .envelope { width: 96px; height: 67px; }
+    .postal-emblem .cat { transform: translateY(-5px) scale(.58); }
+    @keyframes cat-float { 50% { transform: translateY(-10px) rotate(2deg) scale(.58); } }
+    h1 { font-size: 29px; }
+    .lead { margin-top: 7px; font-size: 11px; }
+    .pronoun-list { margin-top: 8px; }
+    .pronoun-list span { padding: 3px 5px; font-size: 13px; }
+    .primary { margin-top: 10px; padding-top: 9px; padding-bottom: 10px; }
+    .finish-seal { width: 104px; height: 104px; }
+    .finish-seal::before { padding-top: 45px; }
+    .code-label { margin-top: 9px; }
+    .completion-code span { width: 37px; height: 42px; font-size: 25px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .received-stamp { opacity: 1; transform: translate(-50%,-50%) rotate(-9deg); }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="screen start-screen" id="startScreen">
+    <div class="start-card">
+      <div class="postal-emblem" aria-hidden="true">
+        <div class="envelope"><span class="envelope-fold"></span></div>
+        <div class="cat">
+          <span class="cat-tail"></span><span class="cat-body"></span>
+          <span class="cat-head"><i class="cat-ear left"></i><i class="cat-ear right"></i><i class="cat-face"></i></span>
+          <span class="cat-cap"></span>
+        </div>
+      </div>
+      <div class="start-copy">
+        <p class="eyebrow">index_less1_exs5</p>
+        <h1>Усатая<br>экспресс-почта</h1>
+        <p class="lead">Кот-курьер получил 11 заявок. Узнайте адресата по сцене, положите нужное местоимение в посылку и доставьте её.</p>
+        <div class="pronoun-list" aria-label="Местоимения в игре">
+          <span>我</span><span>你</span><span>您</span><span>他</span><span>她</span><span>它</span><span>我们</span><span>你们</span><span>他们</span><span>她们</span><span>它们</span>
+        </div>
+        <button class="primary" id="startButton" type="button">Начать маршрут</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen game-screen" id="gameScreen" hidden>
+    <header class="routebar">
+      <p class="mini-brand">Почта <b>猫</b>·09</p>
+      <div class="route-stamps" id="routeStamps" role="img" aria-label="Доставлено 0 из 11"></div>
+      <p class="route-count" id="routeCount">1 / 11</p>
+    </header>
+    <section class="dispatch" aria-live="polite">
+      <span class="dispatch-number" id="dispatchNumber">01</span>
+      <div>
+        <p class="dispatch-label">заявка диспетчера</p>
+        <p class="mission-text" id="missionText"></p>
+      </div>
+      <p class="mission-clue" id="missionClue"></p>
+    </section>
+    <section class="street" id="street" aria-label="Улица с тремя адресатами">
+      <div class="addresses" id="addresses"></div>
+      <div class="courier" aria-label="Кот-курьер">
+        <div class="cat">
+          <span class="cat-tail"></span><span class="cat-body"></span>
+          <span class="cat-head"><i class="cat-ear left"></i><i class="cat-ear right"></i><i class="cat-face"></i></span>
+          <span class="cat-cap"></span>
+        </div>
+      </div>
+      <p class="feedback" id="feedback" aria-live="polite">Сначала выберите иероглиф для посылки.</p>
+    </section>
+    <section class="sorter" aria-label="Сортировочный стол">
+      <div class="bank-wrap">
+        <p class="sort-label">лента иероглифов</p>
+        <div class="glyph-bank" id="glyphBank"></div>
+      </div>
+      <div class="dock">
+        <p class="sort-label">ваша посылка</p>
+        <button class="parcel empty" id="parcel" type="button" disabled aria-label="Пустая посылка">
+          <strong class="parcel-glyph" id="parcelGlyph">?</strong>
+        </button>
+        <p class="dock-note">Перетащите к окну<br>или нажмите адресата</p>
+      </div>
+    </section>
+  </section>
+
+  <section class="screen finish-screen" id="finishScreen" hidden>
+    <div class="finish-card">
+      <div class="finish-seal" aria-hidden="true">达</div>
+      <div>
+        <p class="eyebrow">маршрут завершён</p>
+        <h2>Все посылки<br>нашли адресатов</h2>
+        <p class="finish-copy">Вы различили одиночные, вежливые и групповые местоимения. Кот возвращается на почту с кодом.</p>
+        <p class="code-label">код успешного выполнения</p>
+        <div class="completion-code" aria-label="Код успешного выполнения 9004"><span>9</span><span>0</span><span>0</span><span>4</span></div>
+        <button class="primary" id="restartButton" type="button">Новый маршрут</button>
+      </div>
+    </div>
+  </section>
+</main>
+<noscript><p style="padding:20px;color:#fff;text-align:center">Для игры необходимо включить JavaScript.</p></noscript>
+<script>
+(function () {
+  'use strict';
+
+  var GLYPHS = ['我', '你', '他', '她', '它', '您', '我们', '你们', '他们', '她们', '它们'];
+  var TARGETS = [
+    { kind: 'self', answer: '我', task: 'Доставьте тому, кто говорит: «Это я».', clue: 'Один говорящий', decoys: ['man', 'animals'] },
+    { kind: 'you', answer: '你', task: 'Доставьте одному человеку, к которому обращаются на «ты».', clue: 'Один обычный адресат', decoys: ['respect', 'women'] },
+    { kind: 'man', answer: '他', task: 'Передайте посылку одному мужчине.', clue: 'Один человек', decoys: ['woman', 'animal'] },
+    { kind: 'woman', answer: '她', task: 'Передайте посылку одной женщине.', clue: 'Одна женщина', decoys: ['man', 'men'] },
+    { kind: 'animal', answer: '它', task: 'Отнесите посылку одному животному.', clue: 'Не человек, одно', decoys: ['man', 'animals'] },
+    { kind: 'respect', answer: '您', task: 'Вежливо доставьте посылку старшему адресату.', clue: 'Уважительное «Вы»', decoys: ['you', 'women'] },
+    { kind: 'we', answer: '我们', task: 'Доставьте группе, где говорящий — один из участников.', clue: '«Я» внутри группы', decoys: ['youAll', 'men'] },
+    { kind: 'youAll', answer: '你们', task: 'Доставьте группе людей, к которым обращаются.', clue: 'Несколько адресатов', decoys: ['we', 'women'] },
+    { kind: 'men', answer: '他们', task: 'Передайте посылку группе мужчин.', clue: 'Несколько мужчин', decoys: ['women', 'animals'] },
+    { kind: 'women', answer: '她们', task: 'Передайте посылку группе женщин.', clue: 'Несколько женщин', decoys: ['men', 'animals'] },
+    { kind: 'animals', answer: '它们', task: 'Передайте посылку группе животных.', clue: 'Не люди, несколько', decoys: ['men', 'women'] }
+  ];
+  var VISUAL_NAMES = {
+    self: 'человек со значком «Я»',
+    you: 'один адресат, на которого указывает стрелка',
+    man: 'один мужчина',
+    woman: 'одна женщина',
+    animal: 'одно животное',
+    respect: 'старший адресат',
+    we: 'смешанная группа со значком «Я»',
+    youAll: 'группа адресатов со стрелками',
+    men: 'группа мужчин',
+    women: 'группа женщин',
+    animals: 'группа животных'
+  };
+
+  var startScreen = document.getElementById('startScreen');
+  var gameScreen = document.getElementById('gameScreen');
+  var finishScreen = document.getElementById('finishScreen');
+  var startButton = document.getElementById('startButton');
+  var restartButton = document.getElementById('restartButton');
+  var routeStamps = document.getElementById('routeStamps');
+  var routeCount = document.getElementById('routeCount');
+  var dispatchNumber = document.getElementById('dispatchNumber');
+  var missionText = document.getElementById('missionText');
+  var missionClue = document.getElementById('missionClue');
+  var addresses = document.getElementById('addresses');
+  var street = document.getElementById('street');
+  var feedback = document.getElementById('feedback');
+  var glyphBank = document.getElementById('glyphBank');
+  var parcel = document.getElementById('parcel');
+  var parcelGlyph = document.getElementById('parcelGlyph');
+
+  var order = [];
+  var stamps = [];
+  var round = 0;
+  var selectedGlyph = '';
+  var locked = false;
+  var transitionTimer = 0;
+  var drag = null;
+  var suppressParcelClick = 0;
+
+  function shuffled(items) {
+    var copy = items.slice();
+    for (var i = copy.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var hold = copy[i];
+      copy[i] = copy[j];
+      copy[j] = hold;
+    }
+    return copy;
+  }
+
+  function show(screen) {
+    startScreen.hidden = screen !== startScreen;
+    gameScreen.hidden = screen !== gameScreen;
+    finishScreen.hidden = screen !== finishScreen;
+  }
+
+  function setFeedback(text, kind) {
+    feedback.textContent = text;
+    feedback.className = 'feedback' + (kind ? ' ' + kind : '');
+  }
+
+  function person(type, shirt, badge) {
+    return '<span class="person ' + type + '" style="--shirt:' + shirt + '">' +
+      '<i class="head"></i><i class="torso"></i><i class="legs"></i>' +
+      (badge ? '<em class="badge">Я</em>' : '') + '</span>';
+  }
+
+  function pet(color) {
+    return '<span class="pet" style="--fur:' + color + '"><i class="pet-body"></i><i class="pet-head"></i></span>';
+  }
+
+  function renderVisual(kind) {
+    if (kind === 'self') return '<span class="cue">ЭТО Я</span><span class="cast">' + person('female', '#ef7768', true) + '</span>';
+    if (kind === 'you') return '<span class="cue pointer">→</span><span class="cast">' + person('male', '#58b9c1', false) + '</span>';
+    if (kind === 'man') return '<span class="cast">' + person('male', '#4ca8b4', false) + '</span>';
+    if (kind === 'woman') return '<span class="cast">' + person('female', '#ec7180', false) + '</span>';
+    if (kind === 'animal') return '<span class="cast">' + pet('#dda05f') + '</span>';
+    if (kind === 'respect') return '<span class="cue polite">УВАЖЕНИЕ</span><span class="cast">' + person('elder', '#846da5', false) + '</span>';
+    if (kind === 'we') return '<span class="cue">Я + КОМАНДА</span><span class="cast group">' + person('female', '#ef7768', true) + person('male', '#54b8b7', false) + person('female', '#e4ad4d', false) + '</span>';
+    if (kind === 'youAll') return '<span class="cue pointer">→ → →</span><span class="cast group">' + person('male', '#54b8b7', false) + person('female', '#e97a8a', false) + person('male', '#e4ad4d', false) + '</span>';
+    if (kind === 'men') return '<span class="cast group">' + person('male', '#54b8b7', false) + person('male', '#e4ad4d', false) + person('male', '#7d81bd', false) + '</span>';
+    if (kind === 'women') return '<span class="cast group">' + person('female', '#e97a8a', false) + person('female', '#e4ad4d', false) + person('female', '#75b6ae', false) + '</span>';
+    return '<span class="cast group">' + pet('#dda05f') + pet('#8da9b8') + pet('#c87965') + '</span>';
+  }
+
+  function buildStamps() {
+    routeStamps.innerHTML = '';
+    stamps = [];
+    for (var i = 0; i < TARGETS.length; i++) {
+      var stamp = document.createElement('span');
+      stamp.className = 'route-stamp';
+      stamp.textContent = '·';
+      routeStamps.appendChild(stamp);
+      stamps.push(stamp);
+    }
+  }
+
+  function updateStamps() {
+    for (var i = 0; i < stamps.length; i++) {
+      stamps[i].className = 'route-stamp' + (i < round ? ' done' : i === round ? ' current' : '');
+      stamps[i].textContent = i < round ? '收' : '·';
+    }
+    routeStamps.setAttribute('aria-label', 'Доставлено ' + round + ' из ' + TARGETS.length);
+  }
+
+  function renderBank() {
+    glyphBank.innerHTML = '';
+    var glyphs = shuffled(GLYPHS);
+    for (var i = 0; i < glyphs.length; i++) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'glyph-button';
+      button.textContent = glyphs[i];
+      button.dataset.glyph = glyphs[i];
+      button.setAttribute('aria-label', 'Положить ' + glyphs[i] + ' в посылку');
+      button.addEventListener('click', selectGlyph);
+      glyphBank.appendChild(button);
+    }
+  }
+
+  function selectGlyph(event) {
+    if (locked) return;
+    selectedGlyph = event.currentTarget.dataset.glyph;
+    var buttons = glyphBank.querySelectorAll('.glyph-button');
+    for (var i = 0; i < buttons.length; i++) buttons[i].classList.toggle('selected', buttons[i] === event.currentTarget);
+    parcelGlyph.textContent = selectedGlyph;
+    parcel.classList.remove('empty', 'sent', 'wrong');
+    parcel.classList.add('armed');
+    parcel.disabled = false;
+    parcel.setAttribute('aria-label', 'Посылка со знаком ' + selectedGlyph + '. Перетащите к адресату');
+    setFeedback('Знак ' + selectedGlyph + ' упакован. Перетащите посылку к нужному окну или нажмите адресата.', '');
+  }
+
+  function clearParcel() {
+    selectedGlyph = '';
+    parcelGlyph.textContent = '?';
+    parcel.className = 'parcel empty';
+    parcel.disabled = true;
+    parcel.setAttribute('aria-label', 'Пустая посылка');
+    var buttons = glyphBank.querySelectorAll('.glyph-button');
+    for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('selected');
+  }
+
+  function renderAddresses() {
+    addresses.innerHTML = '';
+    var current = order[round];
+    var kinds = shuffled([current.kind, current.decoys[0], current.decoys[1]]);
+    for (var i = 0; i < kinds.length; i++) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'recipient';
+      button.dataset.kind = kinds[i];
+      button.dataset.address = String(i + 1);
+      button.setAttribute('aria-label', 'Адрес ' + (i + 1) + ': ' + VISUAL_NAMES[kinds[i]]);
+      button.innerHTML = '<span class="address-number">' + (i + 1) + '</span><span class="scene-visual">' + renderVisual(kinds[i]) + '</span><span class="received-stamp">签收</span>';
+      button.addEventListener('click', onRecipientClick);
+      addresses.appendChild(button);
+    }
+  }
+
+  function renderRound() {
+    locked = false;
+    street.classList.remove('celebrate');
+    clearParcel();
+    var current = order[round];
+    routeCount.textContent = (round + 1) + ' / ' + order.length;
+    dispatchNumber.textContent = String(round + 1).padStart(2, '0');
+    missionText.textContent = current.task;
+    missionClue.textContent = current.clue;
+    updateStamps();
+    renderAddresses();
+    renderBank();
+    setFeedback('Сначала выберите иероглиф для посылки.', '');
+  }
+
+  function onRecipientClick(event) {
+    if (locked) return;
+    if (!selectedGlyph) {
+      setFeedback('Посылка пуста. Сначала выберите иероглиф на ленте.', 'error');
+      parcel.classList.remove('wrong');
+      void parcel.offsetWidth;
+      parcel.classList.add('wrong');
+      return;
+    }
+    deliver(event.currentTarget);
+  }
+
+  function animateFlight(target) {
+    var start = parcel.getBoundingClientRect();
+    var end = target.getBoundingClientRect();
+    var flight = parcel.cloneNode(true);
+    flight.disabled = true;
+    flight.className = 'parcel parcel-flight';
+    flight.style.left = start.left + 'px';
+    flight.style.top = start.top + 'px';
+    flight.style.setProperty('--fly-x', (end.left + end.width / 2 - start.left - start.width / 2) + 'px');
+    flight.style.setProperty('--fly-y', (end.top + end.height / 2 - start.top - start.height / 2) + 'px');
+    document.body.appendChild(flight);
+    window.requestAnimationFrame(function () { flight.classList.add('go'); });
+    window.setTimeout(function () { if (flight.parentNode) flight.parentNode.removeChild(flight); }, 680);
+  }
+
+  function reject(target, glyphCorrect, addressCorrect) {
+    target.classList.remove('wrong');
+    parcel.classList.remove('wrong');
+    void target.offsetWidth;
+    target.classList.add('wrong');
+    parcel.classList.add('wrong');
+    window.setTimeout(function () {
+      target.classList.remove('wrong');
+      parcel.classList.remove('wrong');
+    }, 430);
+    var current = order[round];
+    if (addressCorrect) {
+      setFeedback('Адрес выбран верно, но нужен знак ' + current.answer + '. Соберите посылку заново.', 'error');
+      clearParcel();
+    } else if (glyphCorrect) {
+      setFeedback('Знак верный, но получатель другой. Посылка вернулась к коту.', 'error');
+    } else {
+      setFeedback('Не совпали знак и адрес. Подсказка: ' + current.clue + '.', 'error');
+      clearParcel();
+    }
+  }
+
+  function deliver(target) {
+    if (locked || !selectedGlyph) return;
+    var current = order[round];
+    var glyphCorrect = selectedGlyph === current.answer;
+    var addressCorrect = target.dataset.kind === current.kind;
+    if (!glyphCorrect || !addressCorrect) {
+      reject(target, glyphCorrect, addressCorrect);
+      return;
+    }
+    locked = true;
+    var buttons = glyphBank.querySelectorAll('.glyph-button');
+    for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
+    var recipients = addresses.querySelectorAll('.recipient');
+    for (var j = 0; j < recipients.length; j++) recipients[j].disabled = true;
+    target.classList.add('delivered');
+    parcel.classList.add('sent');
+    street.classList.add('celebrate');
+    animateFlight(target);
+    setFeedback('Доставлено: ' + current.answer + '. Кот ставит печать приёма.', 'good');
+    stamps[round].className = 'route-stamp done';
+    stamps[round].textContent = '收';
+    routeStamps.setAttribute('aria-label', 'Доставлено ' + (round + 1) + ' из ' + TARGETS.length);
+    transitionTimer = window.setTimeout(function () {
+      round++;
+      if (round >= order.length) {
+        show(finishScreen);
+        restartButton.focus();
+      } else {
+        renderRound();
+      }
+    }, 1050);
+  }
+
+  function clearDropState() {
+    var recipients = addresses.querySelectorAll('.recipient');
+    for (var i = 0; i < recipients.length; i++) recipients[i].classList.remove('drop-ready', 'drop-over');
+  }
+
+  function recipientAt(x, y) {
+    var element = document.elementFromPoint(x, y);
+    return element && element.closest ? element.closest('.recipient') : null;
+  }
+
+  function onParcelPointerDown(event) {
+    if (locked || !selectedGlyph || parcel.disabled) return;
+    drag = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      active: false,
+      ghost: null,
+      over: null
+    };
+    parcel.setPointerCapture(event.pointerId);
+  }
+
+  function onParcelPointerMove(event) {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    var dx = event.clientX - drag.startX;
+    var dy = event.clientY - drag.startY;
+    if (!drag.active && Math.sqrt(dx * dx + dy * dy) > 6) {
+      drag.active = true;
+      drag.ghost = parcel.cloneNode(true);
+      drag.ghost.disabled = true;
+      drag.ghost.className = 'parcel drag-ghost';
+      document.body.appendChild(drag.ghost);
+      var recipients = addresses.querySelectorAll('.recipient');
+      for (var i = 0; i < recipients.length; i++) recipients[i].classList.add('drop-ready');
+    }
+    if (!drag.active) return;
+    event.preventDefault();
+    drag.ghost.style.left = event.clientX + 'px';
+    drag.ghost.style.top = event.clientY + 'px';
+    var over = recipientAt(event.clientX, event.clientY);
+    if (drag.over && drag.over !== over) drag.over.classList.remove('drop-over');
+    drag.over = over;
+    if (drag.over) drag.over.classList.add('drop-over');
+  }
+
+  function finishParcelDrag(event, cancelled) {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    var currentDrag = drag;
+    drag = null;
+    if (parcel.hasPointerCapture(event.pointerId)) parcel.releasePointerCapture(event.pointerId);
+    if (!currentDrag.active) return;
+    event.preventDefault();
+    suppressParcelClick = Date.now() + 350;
+    clearDropState();
+    if (currentDrag.ghost && currentDrag.ghost.parentNode) currentDrag.ghost.parentNode.removeChild(currentDrag.ghost);
+    if (!cancelled && currentDrag.over) deliver(currentDrag.over);
+    else if (!cancelled) setFeedback('Посылка вернулась на стол. Опустите её прямо на окно адресата.', '');
+  }
+
+  function startGame() {
+    window.clearTimeout(transitionTimer);
+    order = shuffled(TARGETS);
+    round = 0;
+    selectedGlyph = '';
+    locked = false;
+    buildStamps();
+    show(gameScreen);
+    renderRound();
+  }
+
+  parcel.addEventListener('pointerdown', onParcelPointerDown);
+  parcel.addEventListener('pointermove', onParcelPointerMove);
+  parcel.addEventListener('pointerup', function (event) { finishParcelDrag(event, false); });
+  parcel.addEventListener('pointercancel', function (event) { finishParcelDrag(event, true); });
+  parcel.addEventListener('click', function () {
+    if (Date.now() < suppressParcelClick || parcel.disabled || locked) return;
+    parcel.classList.toggle('armed');
+    setFeedback('Теперь нажмите на нужного получателя или перетащите посылку.', '');
+  });
+  startButton.addEventListener('click', startGame);
+  restartButton.addEventListener('click', startGame);
+}());
+</script>
+</body>
+</html>

@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>index_less1_exs3 — Бумажная обсерватория</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --paper: #efe6d1;
+    --paper-light: #faf4e6;
+    --paper-dark: #d7c9ab;
+    --ink: #272c2e;
+    --muted: #76746c;
+    --red: #b6402d;
+    --red-dark: #81291f;
+    --blue: #456b73;
+    --gold: #b38b46;
+    --line: rgba(39, 44, 46, .19);
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    color: var(--ink);
+    background: #282a28;
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { color: inherit; font: inherit; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: min(100%, 620px);
+    height: 100vh;
+    height: 100dvh;
+    min-height: 480px;
+    margin: 0 auto;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 17% 9%, rgba(179, 139, 70, .12) 0 1px, transparent 2px),
+      radial-gradient(circle at 78% 66%, rgba(39, 44, 46, .08) 0 1px, transparent 2px),
+      linear-gradient(104deg, rgba(255,255,255,.18), transparent 24% 76%, rgba(126,92,47,.08)),
+      var(--paper);
+    background-size: 31px 29px, 37px 41px, auto, auto;
+  }
+  .app::before,
+  .app::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .app::before {
+    inset: 8px;
+    border: 1px solid rgba(39, 44, 46, .16);
+    clip-path: polygon(0 0, 47% 0, 49% 4px, 74% 0, 100% 0, 100% 42%, calc(100% - 3px) 44%, 100% 75%, 100% 100%, 57% 100%, 55% calc(100% - 3px), 21% 100%, 0 100%, 0 65%, 3px 62%, 0 30%);
+  }
+  .app::after {
+    inset: 0;
+    opacity: .28;
+    background: repeating-linear-gradient(91deg, transparent 0 7px, rgba(78,57,28,.025) 7px 8px);
+    mix-blend-mode: multiply;
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    padding: 13px 16px;
+    animation: page-in .45s cubic-bezier(.2,.75,.25,1) both;
+  }
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: none; }
+  }
+  .start,
+  .finish {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .observatory-mark {
+    position: relative;
+    width: 118px;
+    height: 118px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(69, 107, 115, .55);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--red) 0 5px, transparent 6px),
+      linear-gradient(90deg, transparent 49.4%, rgba(69,107,115,.38) 49.5% 50.5%, transparent 50.6%),
+      linear-gradient(0deg, transparent 49.4%, rgba(69,107,115,.38) 49.5% 50.5%, transparent 50.6%);
+    box-shadow: inset 0 0 0 8px rgba(255,255,255,.17), 0 9px 20px rgba(85,62,31,.13);
+  }
+  .observatory-mark::before {
+    content: "";
+    position: absolute;
+    inset: 17px;
+    border: 1px dashed var(--gold);
+    border-radius: 50%;
+    transform: rotate(-14deg) scaleY(.47);
+    animation: orbit 9s linear infinite;
+  }
+  .observatory-mark::after {
+    content: "字";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    transform: translate(-50%, -50%) rotate(3deg);
+    color: var(--ink);
+    border: 1px solid rgba(39,44,46,.32);
+    background: var(--paper-light);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 30px;
+    box-shadow: 3px 4px 0 rgba(179,139,70,.18);
+  }
+  .star-dot {
+    position: absolute;
+    left: 7px;
+    top: 48px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+    animation: orbit-dot 9s linear infinite;
+  }
+  @keyframes orbit { to { transform: rotate(346deg) scaleY(.47); } }
+  @keyframes orbit-dot { 50% { left: 103px; transform: scale(.7); } }
+  .index-name,
+  .kicker {
+    color: var(--red);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+  }
+  h1,
+  h2 {
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.04;
+  }
+  h1 {
+    width: min(100%, 390px);
+    margin-top: 8px;
+    font-size: clamp(27px, 7.5vw, 40px);
+    overflow-wrap: break-word;
+  }
+  .subtitle {
+    width: min(100%, 365px);
+    margin-top: 10px;
+    color: #5f605c;
+    font-size: 13px;
+    line-height: 1.46;
+  }
+  .mini-formula {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 15px 0 16px;
+  }
+  .mini-paper {
+    width: 45px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(39,44,46,.25);
+    background: rgba(250,244,230,.72);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 25px;
+    box-shadow: 3px 4px 0 rgba(179,139,70,.16);
+  }
+  .mini-paper:nth-child(3) { transform: rotate(2deg); }
+  .mini-paper.final { color: var(--red); border-color: rgba(182,64,45,.42); transform: rotate(-2deg); }
+  .mini-op { color: var(--gold); font: 700 18px Georgia, serif; }
+  .primary {
+    min-width: 174px;
+    padding: 12px 27px 13px;
+    border: 1px solid var(--red-dark);
+    border-radius: 2px;
+    color: #fff8e9;
+    background: var(--red);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(129,41,31,.2);
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .primary:hover { background: #c84a34; transform: translateY(-2px); box-shadow: 5px 7px 0 rgba(129,41,31,.18); }
+  .primary:active { transform: translateY(2px); box-shadow: 2px 2px 0 rgba(129,41,31,.2); }
+  .primary:focus-visible,
+  .piece:focus-visible,
+  .slot:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .start-note {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .07em;
+  }
+  .game {
+    display: grid;
+    grid-template-rows: auto auto minmax(215px, 1fr) auto auto;
+    gap: 6px;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 28px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+  }
+  .brand-mini {
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12px;
+  }
+  .round-count {
+    color: var(--red);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .mission {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    min-height: 52px;
+    padding: 5px 10px 6px;
+    border-left: 3px solid var(--red);
+    background: rgba(250,244,230,.5);
+  }
+  .mission-label {
+    color: var(--muted);
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+  .mission-word {
+    margin-top: 1px;
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 7vw, 32px);
+    line-height: 1;
+  }
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .marker {
+    width: 23px;
+    height: 23px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(69,107,115,.37);
+    border-radius: 50%;
+    color: rgba(69,107,115,.5);
+    background: rgba(255,255,255,.2);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 12px;
+    transition: .35s;
+  }
+  .marker.done {
+    color: #fff7e8;
+    border-color: var(--red-dark);
+    border-radius: 3px;
+    background: var(--red);
+    transform: rotate(-4deg);
+    animation: stamp-in .42s ease both;
+  }
+  @keyframes stamp-in { 45% { transform: rotate(-4deg) scale(1.35); } }
+  .chart {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(39,44,46,.2);
+    background:
+      radial-gradient(circle at center, transparent 0 34px, rgba(69,107,115,.14) 35px 36px, transparent 37px 66px, rgba(69,107,115,.1) 67px 68px, transparent 69px),
+      linear-gradient(90deg, transparent 49.8%, rgba(69,107,115,.12) 50%, transparent 50.2%),
+      linear-gradient(0deg, transparent 49.8%, rgba(69,107,115,.12) 50%, transparent 50.2%),
+      rgba(250,244,230,.42);
+    clip-path: polygon(0 0, 80% 0, 82% 3px, 100% 0, 100% 100%, 23% 100%, 21% calc(100% - 3px), 0 100%);
+  }
+  .chart::before,
+  .chart::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+  .chart::before {
+    left: 50%;
+    top: 50%;
+    width: min(63vw, 264px);
+    height: min(26vw, 98px);
+    border: 1px dashed rgba(179,139,70,.48);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-9deg);
+  }
+  .chart::after {
+    left: 12px;
+    top: 11px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 37px 16px 0 -1px var(--gold), 81px 5px 0 -1px var(--blue), 126px 22px 0 -1px var(--gold), 184px 3px 0 -1px var(--red), 234px 18px 0 -1px var(--blue), 285px 6px 0 -1px var(--gold), 327px 21px 0 -1px var(--red);
+    opacity: .7;
+  }
+  .target-watermark {
+    position: absolute;
+    left: 50%;
+    top: 49%;
+    transform: translate(-50%, -50%);
+    color: rgba(39,44,46,.055);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: clamp(114px, 35vw, 156px);
+    line-height: 1;
+    pointer-events: none;
+    transition: opacity .3s;
+  }
+  .slot-zone {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 50%;
+    width: min(78%, 320px);
+    display: grid;
+    align-items: stretch;
+    justify-content: center;
+    gap: 12px;
+    transform: translate(-50%, -50%);
+  }
+  .slot-zone.horizontal { grid-template-columns: 1fr 1fr; }
+  .slot-zone.vertical {
+    width: min(49%, 190px);
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+  }
+  .slot {
+    position: relative;
+    min-width: 0;
+    height: clamp(85px, 20vh, 112px);
+    padding: 19px 7px 5px;
+    border: 1px dashed rgba(69,107,115,.65);
+    border-radius: 3px;
+    color: var(--blue);
+    background: rgba(250,244,230,.62);
+    cursor: pointer;
+    transition: border-color .18s, background .18s, transform .18s, opacity .3s;
+  }
+  .vertical .slot { height: clamp(64px, 13vh, 79px); }
+  .slot:hover,
+  .slot.ready,
+  .slot.drag-over { border-color: var(--red); background: rgba(255,248,231,.92); }
+  .slot.drag-over { transform: scale(1.035); }
+  .slot.filled {
+    border-style: solid;
+    border-color: rgba(39,44,46,.35);
+    background: var(--paper-light);
+    cursor: default;
+  }
+  .slot.wrong { animation: slot-shake .35s ease; border-color: var(--red); }
+  @keyframes slot-shake {
+    25% { transform: translateX(-5px); }
+    70% { transform: translateX(5px); }
+  }
+  .slot-label {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 5px;
+    color: var(--muted);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .slot-glyph {
+    display: block;
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: clamp(35px, 11vw, 49px);
+    line-height: 1;
+  }
+  .vertical .slot-glyph { font-size: clamp(28px, 9vw, 38px); }
+  .slot-meaning {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 9px;
+  }
+  .slot:not(.filled) .slot-glyph::before { content: "·"; opacity: .45; }
+  .assembled {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -50%) scale(.4) rotate(7deg);
+    opacity: 0;
+    text-align: center;
+    pointer-events: none;
+  }
+  .assembled-glyph {
+    display: block;
+    color: var(--ink);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: clamp(94px, 29vw, 130px);
+    line-height: .9;
+  }
+  .assembled-stamp {
+    position: absolute;
+    right: -30px;
+    bottom: -10px;
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 3px double var(--red);
+    color: var(--red);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 18px;
+    transform: rotate(-11deg);
+  }
+  .formula-note {
+    position: absolute;
+    z-index: 5;
+    left: 10px;
+    right: 10px;
+    bottom: 8px;
+    opacity: 0;
+    color: #5b5c57;
+    font-size: 10.5px;
+    line-height: 1.25;
+    text-align: center;
+    transition: opacity .3s .25s;
+  }
+  .chart.resolved .slot { opacity: 0; transform: scale(.72); }
+  .chart.resolved .target-watermark { opacity: 0; }
+  .chart.resolved .assembled { animation: assemble .55s cubic-bezier(.17,.86,.25,1.25) forwards; }
+  .chart.resolved .formula-note { opacity: 1; }
+  @keyframes assemble { to { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); } }
+  .bank-wrap { min-height: 77px; }
+  .bank-label {
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .bank {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 7px;
+  }
+  .piece {
+    position: relative;
+    width: min(21vw, 83px);
+    min-height: 59px;
+    padding: 4px 4px 5px;
+    border: 1px solid rgba(39,44,46,.28);
+    border-radius: 2px;
+    color: var(--ink);
+    background: var(--paper-light);
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 3px 3px 0 rgba(179,139,70,.15);
+    transition: transform .16s, border-color .16s, box-shadow .16s, opacity .2s;
+  }
+  .piece:nth-child(2n) { transform: rotate(1.3deg); }
+  .piece:nth-child(3n) { transform: rotate(-1deg); }
+  .piece:hover,
+  .piece.selected {
+    z-index: 2;
+    border-color: var(--red);
+    transform: translateY(-3px) rotate(0);
+    box-shadow: 4px 6px 0 rgba(182,64,45,.13);
+  }
+  .piece.selected::after {
+    content: "";
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .piece.used { opacity: 0; pointer-events: none; }
+  .piece.drag-source { opacity: .25; }
+  .piece-glyph {
+    display: block;
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: clamp(25px, 8vw, 34px);
+    line-height: 1;
+  }
+  .piece-name {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 8.5px;
+    line-height: 1.05;
+  }
+  .piece-ghost {
+    position: fixed;
+    z-index: 100;
+    width: 76px;
+    min-height: 62px;
+    margin: 0;
+    pointer-events: none;
+    opacity: .93;
+    transform: translate(-50%, -58%) rotate(-3deg) scale(1.08) !important;
+    box-shadow: 8px 10px 22px rgba(39,44,46,.2);
+  }
+  .feedback {
+    min-height: 35px;
+    display: grid;
+    place-items: center;
+    padding: 3px 8px;
+    color: #5d5e59;
+    font-size: 10.5px;
+    line-height: 1.25;
+    text-align: center;
+    border-top: 1px solid var(--line);
+  }
+  .feedback.good { color: #316963; }
+  .feedback.error { color: var(--red); }
+  .finish .kicker { margin-bottom: 7px; }
+  .finish h2 { max-width: 390px; font-size: clamp(28px, 8vw, 39px); }
+  .finish-copy {
+    max-width: 340px;
+    margin-top: 9px;
+    color: #61615c;
+    font-size: 12.5px;
+    line-height: 1.42;
+  }
+  .sky-seal {
+    position: relative;
+    width: 138px;
+    height: 138px;
+    margin: 17px 0 12px;
+    border: 1px solid var(--blue);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center, var(--red) 0 4px, transparent 5px),
+      radial-gradient(circle at center, transparent 0 42px, rgba(69,107,115,.36) 43px 44px, transparent 45px),
+      rgba(250,244,230,.52);
+    animation: sky-turn 18s linear infinite;
+  }
+  .sky-seal::before {
+    content: "我 · 你 · 他 · 她 · 它 · 您";
+    position: absolute;
+    inset: 13px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--gold);
+    border-radius: 50%;
+    color: var(--ink);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 15px;
+    line-height: 1.8;
+    padding: 18px;
+    animation: sky-counter 18s linear infinite;
+  }
+  .sky-seal::after {
+    content: "六";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    transform: translate(-50%, -50%);
+    color: #fff7e8;
+    background: var(--red);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 23px;
+  }
+  @keyframes sky-turn { to { transform: rotate(360deg); } }
+  @keyframes sky-counter { to { transform: rotate(-360deg); } }
+  .code-label {
+    color: var(--red);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+  }
+  .code {
+    display: flex;
+    gap: 7px;
+    margin: 7px 0 18px;
+  }
+  .code span {
+    width: 47px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(39,44,46,.34);
+    color: var(--ink);
+    background: var(--paper-light);
+    font: 700 31px/1 Georgia, serif;
+    box-shadow: 3px 4px 0 rgba(179,139,70,.22);
+    animation: digit-in .42s cubic-bezier(.2,.9,.3,1.28) both;
+  }
+  .code span:nth-child(2) { animation-delay: .1s; color: var(--red); }
+  .code span:nth-child(3) { animation-delay: .2s; }
+  .code span:nth-child(4) { animation-delay: .3s; color: var(--red); }
+  @keyframes digit-in { from { opacity: 0; transform: translateY(12px) rotate(5deg) scale(.5); } }
+  @media (max-width: 380px) {
+    .screen { padding-left: 11px; padding-right: 11px; }
+    h1 { font-size: clamp(25px, 10vw, 34px); }
+    .progress { gap: 3px; }
+    .marker { width: 21px; height: 21px; font-size: 11px; }
+    .slot-zone { width: 84%; gap: 8px; }
+    .bank { gap: 5px; }
+    .piece { width: 22vw; }
+  }
+  @media (max-height: 600px) {
+    .screen { padding-top: 8px; padding-bottom: 8px; }
+    .game { grid-template-rows: auto auto minmax(194px, 1fr) auto auto; gap: 4px; }
+    .mission { min-height: 46px; padding-top: 3px; padding-bottom: 4px; }
+    .mission-word { font-size: 25px; }
+    .slot { height: 82px; }
+    .vertical .slot { height: 61px; }
+    .bank-wrap { min-height: 69px; }
+    .piece { min-height: 54px; }
+    .piece-glyph { font-size: 27px; }
+    .feedback { min-height: 30px; }
+    .observatory-mark { width: 88px; height: 88px; margin-bottom: 6px; }
+    .observatory-mark::after { width: 42px; height: 42px; font-size: 25px; }
+    .star-dot { top: 37px; }
+    @keyframes orbit-dot { 50% { left: 74px; transform: scale(.7); } }
+    h1 { font-size: clamp(25px, 9vw, 34px); }
+    .subtitle { margin-top: 7px; line-height: 1.35; }
+    .mini-formula { margin: 10px 0 12px; }
+    .mini-paper { width: 40px; height: 42px; font-size: 22px; }
+    .start-note { margin-top: 10px; }
+    .sky-seal { width: 102px; height: 102px; margin: 8px 0; }
+    .sky-seal::before { inset: 8px; font-size: 11px; padding: 12px; }
+    .sky-seal::after { width: 34px; height: 34px; font-size: 19px; }
+    .finish-copy { margin-top: 6px; }
+    .code { margin-bottom: 12px; }
+    .code span { width: 42px; height: 47px; font-size: 27px; }
+  }
+  @media (max-height: 510px) {
+    .brand-mini { font-size: 10px; }
+    .start { justify-content: flex-start; padding-top: 18px; }
+    .start .observatory-mark { width: 68px; height: 68px; }
+    .start .observatory-mark::before { inset: 11px; }
+    .start .observatory-mark::after { width: 34px; height: 34px; font-size: 21px; }
+    .start .star-dot { top: 27px; }
+    .start h1 { font-size: 28px; }
+    .start .subtitle { font-size: 11px; }
+    .start .mini-formula { margin: 6px 0 8px; }
+    .start .mini-paper { width: 35px; height: 36px; font-size: 20px; }
+    .game { grid-template-rows: auto auto minmax(172px, 1fr) auto auto; }
+    .chart::after { display: none; }
+    .slot { height: 72px; padding-top: 16px; }
+    .vertical .slot { height: 54px; }
+    .slot-glyph { font-size: 31px; }
+    .slot-meaning { display: none; }
+    .bank-label { margin-bottom: 2px; }
+    .piece { min-height: 49px; }
+    .piece-name { display: none; }
+    .feedback { min-height: 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .chart.resolved .assembled { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="start-screen" class="screen start">
+    <div class="observatory-mark" aria-hidden="true"><span class="star-dot"></span></div>
+    <p class="index-name">index_less1_exs3</p>
+    <h1>Бумажная обсерватория</h1>
+    <p class="subtitle">Найдите смысловые части на звёздной карте и сложите из них шесть китайских местоимений.</p>
+    <div class="mini-formula" aria-label="Пример: человек плюс правая часть образуют иероглиф он">
+      <span class="mini-paper">亻</span><span class="mini-op">+</span><span class="mini-paper">也</span><span class="mini-op">=</span><span class="mini-paper final">他</span>
+    </div>
+    <button id="start-button" class="primary" type="button">Начать</button>
+    <p class="start-note">Перетащите фрагмент или выберите его касанием</p>
+  </section>
+
+  <section id="game-screen" class="screen game" hidden>
+    <header class="topbar">
+      <span class="brand-mini">Бумажная обсерватория</span>
+      <span id="round-count" class="round-count">карта 1 / 6</span>
+    </header>
+    <div class="mission">
+      <div>
+        <p class="mission-label">соберите перевод</p>
+        <p id="mission-word" class="mission-word">Я</p>
+      </div>
+      <div id="progress" class="progress" role="img" aria-label="Прогресс: 0 из 6"></div>
+    </div>
+    <div id="chart" class="chart">
+      <span id="target-watermark" class="target-watermark" aria-hidden="true">我</span>
+      <div id="slot-zone" class="slot-zone horizontal"></div>
+      <div class="assembled" aria-hidden="true">
+        <span id="assembled-glyph" class="assembled-glyph">我</span>
+        <span class="assembled-stamp">成</span>
+      </div>
+      <p id="formula-note" class="formula-note"></p>
+    </div>
+    <div class="bank-wrap">
+      <p class="bank-label">фрагменты звёздной карты</p>
+      <div id="bank" class="bank"></div>
+    </div>
+    <p id="feedback" class="feedback" aria-live="polite">Выберите фрагмент, затем его место</p>
+  </section>
+
+  <section id="finish-screen" class="screen finish" hidden>
+    <p class="kicker">небесная карта завершена</p>
+    <h2>Шесть знаков собраны</h2>
+    <p class="finish-copy">Все местоимения восстановлены из смысловых частей. Обсерватория открывает код:</p>
+    <div class="sky-seal" aria-hidden="true"></div>
+    <p class="code-label">код завершения</p>
+    <div class="code" aria-label="Код 3777"><span>3</span><span>7</span><span>7</span><span>7</span></div>
+    <button id="restart-button" class="primary" type="button">Сыграть ещё</button>
+  </section>
+</main>
+<noscript><p style="padding:24px;text-align:center;color:#fff">Для игры необходимо включить JavaScript.</p></noscript>
+<script>
+(function () {
+  'use strict';
+
+  var LESSONS = [
+    {
+      han: '我', ru: 'Я', layout: 'horizontal', labels: ['левая часть', 'правая часть'],
+      parts: [{ glyph: '扌', name: 'рука' }, { glyph: '戈', name: 'алебарда' }],
+      decoys: [{ glyph: '亻', name: 'человек' }, { glyph: '也', name: 'змеевидная форма' }],
+      note: '我 = 扌 «рука» + 戈 «алебарда»'
+    },
+    {
+      han: '你', ru: 'Ты', layout: 'horizontal', labels: ['левая часть', 'правая часть'],
+      parts: [{ glyph: '亻', name: 'человек' }, { glyph: '尔', name: '⺈ + маленький' }],
+      decoys: [{ glyph: '女', name: 'женщина' }, { glyph: '心', name: 'сердце' }],
+      note: '你 = 亻 «человек» + 尔, условно ⺈ + 小'
+    },
+    {
+      han: '他', ru: 'Он', layout: 'horizontal', labels: ['левая часть', 'правая часть'],
+      parts: [{ glyph: '亻', name: 'человек' }, { glyph: '也', name: 'змеевидная форма' }],
+      decoys: [{ glyph: '女', name: 'женщина' }, { glyph: '戈', name: 'алебарда' }],
+      note: '他 = 亻 «человек» + 也 «змеевидная форма»'
+    },
+    {
+      han: '她', ru: 'Она', layout: 'horizontal', labels: ['левая часть', 'правая часть'],
+      parts: [{ glyph: '女', name: 'женщина' }, { glyph: '也', name: 'змеевидная форма' }],
+      decoys: [{ glyph: '亻', name: 'человек' }, { glyph: '匕', name: 'ложка' }],
+      note: '她 = 女 «женщина» + 也 «змеевидная форма»'
+    },
+    {
+      han: '它', ru: 'Оно', layout: 'vertical', labels: ['верхняя часть', 'нижняя часть'],
+      parts: [{ glyph: '宀', name: 'крыша' }, { glyph: '匕', name: 'ложка' }],
+      decoys: [{ glyph: '心', name: 'сердце' }, { glyph: '尔', name: 'правая часть' }],
+      note: '它 = 宀 «крыша» + 匕 «ложка / предмет»'
+    },
+    {
+      han: '您', ru: 'Вы', detail: 'вежливое обращение', layout: 'vertical', labels: ['верхняя часть', 'нижняя часть'],
+      parts: [{ glyph: '你', name: 'ты' }, { glyph: '心', name: 'сердце' }],
+      decoys: [{ glyph: '宀', name: 'крыша' }, { glyph: '也', name: 'змеевидная форма' }],
+      note: '您 = 你 «ты» + 心 «сердце» — уважение от сердца'
+    }
+  ];
+
+  var startScreen = document.getElementById('start-screen');
+  var gameScreen = document.getElementById('game-screen');
+  var finishScreen = document.getElementById('finish-screen');
+  var startButton = document.getElementById('start-button');
+  var restartButton = document.getElementById('restart-button');
+  var roundCount = document.getElementById('round-count');
+  var missionWord = document.getElementById('mission-word');
+  var progress = document.getElementById('progress');
+  var chart = document.getElementById('chart');
+  var targetWatermark = document.getElementById('target-watermark');
+  var slotZone = document.getElementById('slot-zone');
+  var assembledGlyph = document.getElementById('assembled-glyph');
+  var formulaNote = document.getElementById('formula-note');
+  var bank = document.getElementById('bank');
+  var feedback = document.getElementById('feedback');
+  var markers = [];
+  var order = [];
+  var pieces = [];
+  var slots = [];
+  var round = 0;
+  var selectedId = '';
+  var locked = false;
+  var transitionTimer = 0;
+  var drag = null;
+
+  for (var markerIndex = 0; markerIndex < LESSONS.length; markerIndex++) {
+    var marker = document.createElement('span');
+    marker.className = 'marker';
+    marker.textContent = '·';
+    progress.appendChild(marker);
+    markers.push(marker);
+  }
+
+  function shuffled(items) {
+    var copy = items.slice();
+    for (var i = copy.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var hold = copy[i];
+      copy[i] = copy[j];
+      copy[j] = hold;
+    }
+    return copy;
+  }
+
+  function show(screen) {
+    startScreen.hidden = screen !== startScreen;
+    gameScreen.hidden = screen !== gameScreen;
+    finishScreen.hidden = screen !== finishScreen;
+  }
+
+  function lesson() {
+    return order[round];
+  }
+
+  function setFeedback(text, kind) {
+    feedback.textContent = text;
+    feedback.className = 'feedback' + (kind ? ' ' + kind : '');
+  }
+
+  function makePiece(data, correctSlot, index) {
+    return {
+      id: 'piece-' + round + '-' + index,
+      glyph: data.glyph,
+      name: data.name,
+      correctSlot: correctSlot,
+      used: false
+    };
+  }
+
+  function clearSelection() {
+    selectedId = '';
+    var buttons = bank.querySelectorAll('.piece');
+    for (var i = 0; i < buttons.length; i++) buttons[i].classList.remove('selected');
+    for (var j = 0; j < slots.length; j++) slots[j].element.classList.remove('ready');
+  }
+
+  function selectPiece(id) {
+    if (locked) return;
+    var piece = findPiece(id);
+    if (!piece || piece.used) return;
+    if (selectedId === id) {
+      clearSelection();
+      setFeedback('Фрагмент отложен. Выберите другой', '');
+      return;
+    }
+    clearSelection();
+    selectedId = id;
+    var button = bank.querySelector('[data-piece-id="' + id + '"]');
+    if (button) button.classList.add('selected');
+    for (var i = 0; i < slots.length; i++) {
+      if (!slots[i].piece) slots[i].element.classList.add('ready');
+    }
+    setFeedback('Теперь выберите место для фрагмента «' + piece.glyph + '»', '');
+  }
+
+  function findPiece(id) {
+    for (var i = 0; i < pieces.length; i++) {
+      if (pieces[i].id === id) return pieces[i];
+    }
+    return null;
+  }
+
+  function renderSlots() {
+    slotZone.innerHTML = '';
+    slotZone.className = 'slot-zone ' + lesson().layout;
+    slots = [];
+    for (var i = 0; i < 2; i++) {
+      var button = document.createElement('button');
+      var label = document.createElement('span');
+      var glyph = document.createElement('span');
+      var meaning = document.createElement('span');
+      button.type = 'button';
+      button.className = 'slot';
+      button.dataset.slotIndex = String(i);
+      button.setAttribute('aria-label', lesson().labels[i] + ', пусто');
+      label.className = 'slot-label';
+      label.textContent = lesson().labels[i];
+      glyph.className = 'slot-glyph';
+      meaning.className = 'slot-meaning';
+      meaning.textContent = 'поместите фрагмент';
+      button.appendChild(label);
+      button.appendChild(glyph);
+      button.appendChild(meaning);
+      button.addEventListener('click', onSlotClick);
+      slotZone.appendChild(button);
+      slots.push({ element: button, glyph: glyph, meaning: meaning, piece: null });
+    }
+  }
+
+  function renderPieces() {
+    bank.innerHTML = '';
+    var current = lesson();
+    var raw = [
+      { data: current.parts[0], slot: 0 },
+      { data: current.parts[1], slot: 1 },
+      { data: current.decoys[0], slot: -1 },
+      { data: current.decoys[1], slot: -1 }
+    ];
+    raw = shuffled(raw);
+    pieces = [];
+    for (var i = 0; i < raw.length; i++) {
+      var piece = makePiece(raw[i].data, raw[i].slot, i);
+      pieces.push(piece);
+      var button = document.createElement('button');
+      var glyph = document.createElement('span');
+      var name = document.createElement('span');
+      button.type = 'button';
+      button.className = 'piece';
+      button.dataset.pieceId = piece.id;
+      button.setAttribute('aria-label', 'Фрагмент ' + piece.glyph + ': ' + piece.name);
+      glyph.className = 'piece-glyph';
+      glyph.textContent = piece.glyph;
+      name.className = 'piece-name';
+      name.textContent = piece.name;
+      button.appendChild(glyph);
+      button.appendChild(name);
+      button.addEventListener('click', onPieceClick);
+      button.addEventListener('pointerdown', onPointerDown);
+      button.addEventListener('pointermove', onPointerMove);
+      button.addEventListener('pointerup', onPointerUp);
+      button.addEventListener('pointercancel', onPointerCancel);
+      bank.appendChild(button);
+    }
+  }
+
+  function renderRound() {
+    var current = lesson();
+    locked = false;
+    selectedId = '';
+    chart.classList.remove('resolved');
+    targetWatermark.textContent = current.han;
+    assembledGlyph.textContent = current.han;
+    formulaNote.textContent = current.note;
+    roundCount.textContent = 'карта ' + (round + 1) + ' / ' + order.length;
+    missionWord.textContent = current.ru + (current.detail ? ' · ' + current.detail : '');
+    renderSlots();
+    renderPieces();
+    setFeedback('Перетащите фрагмент в ячейку или выберите его касанием', '');
+  }
+
+  function onPieceClick(event) {
+    if (Date.now() < Number(event.currentTarget.dataset.suppressUntil || 0)) return;
+    selectPiece(event.currentTarget.dataset.pieceId);
+  }
+
+  function onSlotClick(event) {
+    if (locked) return;
+    var index = Number(event.currentTarget.dataset.slotIndex);
+    if (slots[index].piece) {
+      setFeedback('Эта часть карты уже заполнена', '');
+      return;
+    }
+    if (!selectedId) {
+      setFeedback('Сначала выберите один из фрагментов внизу', '');
+      return;
+    }
+    placePiece(selectedId, index);
+  }
+
+  function rejectSlot(index, piece) {
+    var slot = slots[index].element;
+    slot.classList.remove('wrong');
+    void slot.offsetWidth;
+    slot.classList.add('wrong');
+    window.setTimeout(function () { slot.classList.remove('wrong'); }, 380);
+    clearSelection();
+    setFeedback('«' + piece.glyph + '» не подходит сюда. Сверьтесь с положением части', 'error');
+  }
+
+  function placePiece(id, index) {
+    if (locked || index < 0 || index >= slots.length) return;
+    var piece = findPiece(id);
+    if (!piece || piece.used) return;
+    if (slots[index].piece) {
+      setFeedback('Эта часть карты уже заполнена', '');
+      return;
+    }
+    if (piece.correctSlot !== index) {
+      rejectSlot(index, piece);
+      return;
+    }
+    piece.used = true;
+    slots[index].piece = piece;
+    slots[index].glyph.textContent = piece.glyph;
+    slots[index].meaning.textContent = piece.name;
+    slots[index].element.classList.add('filled');
+    slots[index].element.classList.remove('ready');
+    slots[index].element.setAttribute('aria-label', lesson().labels[index] + ': ' + piece.glyph + ', ' + piece.name);
+    var button = bank.querySelector('[data-piece-id="' + id + '"]');
+    if (button) {
+      button.classList.add('used');
+      button.disabled = true;
+    }
+    clearSelection();
+    if (slots[0].piece && slots[1].piece) completeRound();
+    else setFeedback('Верно. Осталось найти вторую часть', 'good');
+  }
+
+  function completeRound() {
+    locked = true;
+    var buttons = bank.querySelectorAll('.piece');
+    for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
+    chart.classList.add('resolved');
+    markers[round].textContent = lesson().han;
+    markers[round].classList.add('done');
+    progress.setAttribute('aria-label', 'Прогресс: ' + (round + 1) + ' из ' + order.length);
+    setFeedback('Знак ' + lesson().han + ' собран. ' + lesson().note, 'good');
+    transitionTimer = window.setTimeout(function () {
+      round++;
+      if (round >= order.length) {
+        show(finishScreen);
+        restartButton.focus();
+      } else {
+        renderRound();
+      }
+    }, 1550);
+  }
+
+  function onPointerDown(event) {
+    if (locked || event.currentTarget.disabled) return;
+    drag = {
+      pointerId: event.pointerId,
+      source: event.currentTarget,
+      id: event.currentTarget.dataset.pieceId,
+      startX: event.clientX,
+      startY: event.clientY,
+      active: false,
+      ghost: null,
+      over: null
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function moveGhost(x, y) {
+    if (!drag || !drag.ghost) return;
+    drag.ghost.style.left = x + 'px';
+    drag.ghost.style.top = y + 'px';
+    var element = document.elementFromPoint(x, y);
+    var slot = element && element.closest ? element.closest('.slot') : null;
+    if (drag.over && drag.over !== slot) drag.over.classList.remove('drag-over');
+    drag.over = slot;
+    if (slot && !slot.classList.contains('filled')) slot.classList.add('drag-over');
+  }
+
+  function onPointerMove(event) {
+    if (!drag || drag.pointerId !== event.pointerId || drag.source !== event.currentTarget) return;
+    var dx = event.clientX - drag.startX;
+    var dy = event.clientY - drag.startY;
+    if (!drag.active && Math.sqrt(dx * dx + dy * dy) > 7) {
+      drag.active = true;
+      drag.source.classList.add('drag-source');
+      drag.ghost = drag.source.cloneNode(true);
+      drag.ghost.classList.remove('selected', 'drag-source');
+      drag.ghost.classList.add('piece-ghost');
+      drag.ghost.removeAttribute('data-piece-id');
+      drag.ghost.disabled = true;
+      document.body.appendChild(drag.ghost);
+    }
+    if (drag.active) {
+      event.preventDefault();
+      moveGhost(event.clientX, event.clientY);
+    }
+  }
+
+  function finishDrag(event, cancelled) {
+    if (!drag || drag.pointerId !== event.pointerId || drag.source !== event.currentTarget) return;
+    var activeDrag = drag;
+    drag = null;
+    if (activeDrag.source.hasPointerCapture(event.pointerId)) activeDrag.source.releasePointerCapture(event.pointerId);
+    if (!activeDrag.active) return;
+    event.preventDefault();
+    activeDrag.source.dataset.suppressUntil = String(Date.now() + 350);
+    activeDrag.source.classList.remove('drag-source');
+    if (activeDrag.over) activeDrag.over.classList.remove('drag-over');
+    if (activeDrag.ghost && activeDrag.ghost.parentNode) activeDrag.ghost.parentNode.removeChild(activeDrag.ghost);
+    if (!cancelled && activeDrag.over && !activeDrag.over.classList.contains('filled')) {
+      placePiece(activeDrag.id, Number(activeDrag.over.dataset.slotIndex));
+    } else if (!cancelled) {
+      setFeedback('Фрагмент вернулся на карту — перенесите его в пунктирную ячейку', '');
+    }
+  }
+
+  function onPointerUp(event) {
+    finishDrag(event, false);
+  }
+
+  function onPointerCancel(event) {
+    finishDrag(event, true);
+  }
+
+  function startGame() {
+    window.clearTimeout(transitionTimer);
+    order = shuffled(LESSONS);
+    round = 0;
+    locked = false;
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].className = 'marker';
+      markers[i].textContent = '·';
+    }
+    progress.setAttribute('aria-label', 'Прогресс: 0 из ' + LESSONS.length);
+    show(gameScreen);
+    renderRound();
+    window.setTimeout(function () {
+      var firstPiece = bank.querySelector('.piece');
+      if (firstPiece) firstPiece.focus();
+    }, 0);
+  }
+
+  startButton.addEventListener('click', startGame);
+  restartButton.addEventListener('click', startGame);
+}());
+</script>
+</body>
+</html>

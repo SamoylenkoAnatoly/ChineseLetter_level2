@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>index_less1_exs6 — Дух местоимений</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --night: #090d20;
+    --sky: #151b3d;
+    --violet: #7667ff;
+    --cyan: #5ff1e6;
+    --hot: #ff5678;
+    --gold: #ffd274;
+    --paper: #fff4ce;
+    --ink: #2e2143;
+    --mist: #cbd2ff;
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #f7f5ff;
+    background: #050714;
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { color: inherit; font: inherit; }
+  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: min(100%, 800px);
+    height: min(100dvh, 600px);
+    min-height: 360px;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 13%, rgba(95,241,230,.13) 0 1px, transparent 2px),
+      radial-gradient(circle at 82% 26%, rgba(255,210,116,.14) 0 1px, transparent 2px),
+      radial-gradient(ellipse at 50% 115%, #30245f 0%, transparent 54%),
+      linear-gradient(180deg, #0b1027 0%, #151a3b 48%, #0b0d20 100%);
+    background-size: 43px 43px, 61px 61px, auto, auto;
+  }
+  .app::before {
+    content: "";
+    position: absolute;
+    z-index: 20;
+    inset: 0;
+    border: 1px solid rgba(157,165,255,.24);
+    pointer-events: none;
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    animation: appear .45s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes appear {
+    from { opacity: 0; transform: scale(.98); }
+    to { opacity: 1; transform: none; }
+  }
+  .start-screen,
+  .result-screen {
+    display: grid;
+    place-items: center;
+    padding: clamp(14px, 4vw, 30px);
+  }
+  .sky-ribbons,
+  .sky-ribbons::before,
+  .sky-ribbons::after {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+  }
+  .sky-ribbons {
+    overflow: hidden;
+  }
+  .sky-ribbons::before,
+  .sky-ribbons::after {
+    content: "";
+    background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 32px, rgba(118,103,255,.08) 34px 35px, transparent 37px 64px);
+    animation: drift 18s linear infinite;
+  }
+  .sky-ribbons::after {
+    opacity: .5;
+    transform: rotate(180deg) scale(.8);
+    animation-duration: 27s;
+    animation-direction: reverse;
+  }
+  @keyframes drift { to { transform: translate3d(7%, -5%, 0) rotate(4deg); } }
+  .start-panel {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 676px);
+    display: grid;
+    grid-template-columns: 226px 1fr;
+    align-items: center;
+    gap: clamp(22px, 5vw, 44px);
+    padding: clamp(22px, 5vw, 42px);
+    border: 1px solid rgba(150,158,255,.32);
+    border-radius: 30px 8px 30px 8px;
+    background: linear-gradient(135deg, rgba(27,31,72,.95), rgba(10,13,34,.94));
+    box-shadow: 0 28px 80px rgba(0,0,0,.38), inset 0 0 45px rgba(118,103,255,.06);
+  }
+  .start-panel::before,
+  .result-card::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed rgba(95,241,230,.18);
+    border-radius: 23px 6px 23px 6px;
+    pointer-events: none;
+  }
+  .spirit-orbit {
+    position: relative;
+    width: 210px;
+    height: 230px;
+    display: grid;
+    place-items: center;
+  }
+  .orbit-ring {
+    position: absolute;
+    width: 177px;
+    height: 177px;
+    border: 1px solid rgba(95,241,230,.4);
+    border-radius: 50%;
+    box-shadow: 0 0 34px rgba(95,241,230,.1), inset 0 0 24px rgba(95,241,230,.08);
+    animation: orbit 12s linear infinite;
+  }
+  .orbit-ring::before,
+  .orbit-ring::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 18px var(--cyan);
+  }
+  .orbit-ring::before { left: 12px; top: 28px; }
+  .orbit-ring::after { right: 4px; bottom: 50px; background: var(--gold); box-shadow: 0 0 18px var(--gold); }
+  .orbit-ring.second {
+    width: 137px;
+    height: 204px;
+    border-color: rgba(255,210,116,.3);
+    animation-direction: reverse;
+    animation-duration: 16s;
+  }
+  @keyframes orbit { to { transform: rotate(360deg); } }
+  .start-spirit {
+    position: relative;
+    z-index: 2;
+    width: 92px;
+    height: 116px;
+    filter: drop-shadow(0 0 20px rgba(118,103,255,.7));
+    animation: hover 3.2s ease-in-out infinite;
+  }
+  .start-spirit .crown,
+  .spirit .crown {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 78%;
+    height: 45%;
+    transform: translateX(-50%);
+    border-radius: 48% 52% 42% 44%;
+    background: linear-gradient(145deg, #9287ff, #4f40b3);
+    clip-path: polygon(8% 25%, 27% 35%, 39% 0, 53% 35%, 78% 9%, 91% 43%, 100% 100%, 0 100%);
+  }
+  .start-spirit .face,
+  .spirit .face {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 86%;
+    height: 56%;
+    transform: translateX(-50%);
+    border: 2px solid rgba(203,210,255,.38);
+    border-radius: 48% 52% 56% 44%;
+    background: linear-gradient(160deg, #4d438f, #201d4c);
+  }
+  .eyes {
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    top: 42%;
+    display: flex;
+    justify-content: space-between;
+  }
+  .eyes i {
+    width: 13px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    transform: rotate(8deg);
+  }
+  .eyes i:last-child { transform: rotate(-8deg); }
+  .start-spirit .tail,
+  .spirit .tail {
+    position: absolute;
+    left: 20%;
+    right: 18%;
+    bottom: 0;
+    height: 38%;
+    border-radius: 15% 20% 75% 30%;
+    background: linear-gradient(145deg, rgba(79,64,179,.96), rgba(118,103,255,0));
+    transform: rotate(-7deg);
+  }
+  @keyframes hover {
+    50% { transform: translateY(-9px) rotate(2deg); }
+  }
+  .orbit-glyph {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 49px;
+    color: var(--ink);
+    border-radius: 5px 5px 12px 5px;
+    background: var(--paper);
+    font: 800 17px/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 0 5px 17px rgba(0,0,0,.3);
+  }
+  .orbit-glyph:nth-of-type(1) { left: 0; top: 38px; transform: rotate(-12deg); }
+  .orbit-glyph:nth-of-type(2) { right: 0; top: 48px; transform: rotate(10deg); }
+  .orbit-glyph:nth-of-type(3) { left: 17px; bottom: 16px; transform: rotate(8deg); }
+  .orbit-glyph:nth-of-type(4) { right: 16px; bottom: 10px; transform: rotate(-7deg); }
+  .orbit-glyph:nth-of-type(5) { left: 85px; bottom: -2px; transform: rotate(3deg); }
+  .eyebrow {
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin-top: 7px;
+    font: 700 clamp(34px, 6vw, 52px)/.98 Georgia, "Times New Roman", serif;
+    letter-spacing: -.035em;
+  }
+  .lead {
+    max-width: 345px;
+    margin-top: 13px;
+    color: #b9c0e6;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .lesson-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .lesson-strip span {
+    padding: 5px 8px;
+    color: #e6e8ff;
+    border: 1px solid rgba(150,158,255,.24);
+    border-radius: 7px;
+    background: rgba(118,103,255,.08);
+    font: 700 13px/1 "Microsoft YaHei", "SimSun", serif;
+  }
+  .primary-button {
+    position: relative;
+    min-width: 166px;
+    margin-top: 21px;
+    padding: 13px 22px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px 15px 4px 15px;
+    color: #12142c;
+    background: linear-gradient(135deg, #8bfff2, #5fd5e6);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    box-shadow: 0 9px 27px rgba(95,241,230,.2);
+    transition: transform .16s ease, box-shadow .16s ease;
+  }
+  .primary-button::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(18,20,44,.24);
+    border-radius: 2px 11px 2px 11px;
+  }
+  .primary-button:hover { transform: translateY(-2px); box-shadow: 0 13px 34px rgba(95,241,230,.3); }
+  .primary-button:active { transform: translateY(1px); }
+  .game-screen {
+    display: grid;
+    grid-template-rows: 58px 70px minmax(0, 1fr);
+    padding: 10px 12px 12px;
+  }
+  .hud {
+    position: relative;
+    z-index: 12;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 0 12px;
+    border: 1px solid rgba(150,158,255,.22);
+    border-radius: 13px 4px 13px 4px;
+    background: rgba(9,12,31,.8);
+    backdrop-filter: blur(7px);
+  }
+  .hud-block:last-child { text-align: right; }
+  .hud-label {
+    color: #8992c1;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+  .health-track {
+    width: min(28vw, 190px);
+    height: 8px;
+    margin-top: 5px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.17);
+    border-radius: 999px;
+    background: #171832;
+  }
+  .health-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--hot), #ff9d79);
+    box-shadow: 0 0 11px rgba(255,86,120,.5);
+    transition: width .4s ease;
+  }
+  .hud-center { text-align: center; }
+  .level-value { color: var(--gold); font-size: 16px; font-weight: 900; }
+  .wards {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    margin-top: 4px;
+  }
+  .ward {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(95,241,230,.65);
+    background: rgba(95,241,230,.16);
+    clip-path: polygon(50% 0, 94% 26%, 80% 85%, 50% 100%, 20% 85%, 6% 26%);
+    box-shadow: inset 0 0 8px rgba(95,241,230,.3);
+    transition: opacity .25s, transform .25s;
+  }
+  .ward.lost { opacity: .18; transform: scale(.72); }
+  .mission {
+    position: relative;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    text-align: center;
+  }
+  .mission::before,
+  .mission::after {
+    content: "";
+    width: min(14vw, 94px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(95,241,230,.5));
+  }
+  .mission::after { transform: rotate(180deg); }
+  .mode-badge {
+    display: inline-block;
+    margin-right: 7px;
+    padding: 3px 6px;
+    color: var(--cyan);
+    border: 1px solid rgba(95,241,230,.26);
+    border-radius: 4px;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .11em;
+    vertical-align: middle;
+  }
+  .prompt {
+    display: inline;
+    font-size: clamp(15px, 2.5vw, 20px);
+    font-weight: 800;
+    vertical-align: middle;
+  }
+  .arena {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(150,158,255,.18);
+    border-radius: 17px 5px 20px 5px;
+    background:
+      linear-gradient(90deg, transparent 49.8%, rgba(95,241,230,.045) 50%, transparent 50.2%),
+      linear-gradient(180deg, rgba(118,103,255,.07), transparent 44%),
+      radial-gradient(ellipse at 50% 108%, rgba(118,103,255,.25), transparent 55%);
+  }
+  .arena::before {
+    content: "";
+    position: absolute;
+    left: -5%;
+    right: -5%;
+    bottom: 17px;
+    height: 33px;
+    border-top: 1px solid rgba(203,210,255,.18);
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 0, rgba(118,103,255,.18), transparent 70%);
+  }
+  .storm-line {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 7px;
+    background: linear-gradient(90deg, transparent, var(--violet), var(--cyan), var(--violet), transparent);
+    opacity: .42;
+    filter: blur(2px);
+  }
+  .spirit-zone {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 45%;
+    width: 190px;
+    height: 190px;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  .spirit-halo {
+    position: absolute;
+    width: 172px;
+    height: 172px;
+    border: 1px solid rgba(118,103,255,.17);
+    border-radius: 50%;
+    animation: pulse-halo 4s ease-in-out infinite;
+  }
+  .spirit-halo::before,
+  .spirit-halo::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px dashed rgba(95,241,230,.13);
+    border-radius: 44% 56%;
+    animation: orbit 15s linear infinite;
+  }
+  .spirit-halo::after { inset: 35px; animation-direction: reverse; }
+  @keyframes pulse-halo {
+    50% { transform: scale(1.08); opacity: .55; }
+  }
+  .spirit {
+    position: relative;
+    width: 95px;
+    height: 125px;
+    opacity: .72;
+    filter: drop-shadow(0 0 22px rgba(118,103,255,.45));
+    animation: hover 3s ease-in-out infinite;
+  }
+  .spirit.struck { animation: spirit-hit .42s ease; }
+  @keyframes spirit-hit {
+    20% { transform: translateX(-16px) rotate(-8deg) scale(.92); filter: brightness(2) drop-shadow(0 0 26px var(--hot)); }
+    48% { transform: translateX(13px) rotate(6deg) scale(1.04); }
+  }
+  .spirit.enraged .eyes i { background: var(--hot); box-shadow: 0 0 10px var(--hot); }
+  .falling-token {
+    --y: -90px;
+    --tilt: 0deg;
+    position: absolute;
+    z-index: 7;
+    top: 0;
+    width: clamp(58px, 10vw, 75px);
+    height: clamp(76px, 13vw, 96px);
+    transform: translate3d(-50%, var(--y), 0);
+    will-change: transform;
+  }
+  .talisman {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    color: var(--ink);
+    border: 0;
+    border-radius: 6px 6px 18px 6px;
+    background:
+      linear-gradient(90deg, rgba(110,73,50,.09) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(110,73,50,.07) 1px, transparent 1px),
+      linear-gradient(145deg, #fff8d9, #eacb85);
+    background-size: 9px 9px, 9px 9px, auto;
+    box-shadow: 0 8px 23px rgba(0,0,0,.36), inset 0 0 0 2px rgba(126,76,44,.23);
+    transform: rotate(var(--tilt));
+    transition: filter .16s, transform .16s;
+    animation: token-sway 1.8s ease-in-out infinite alternate;
+  }
+  .talisman::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(145,47,53,.38);
+    border-radius: 2px 2px 12px 2px;
+  }
+  .talisman::after {
+    content: "云";
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    transform: translateX(-50%);
+    color: rgba(132,41,52,.36);
+    font: 700 11px/1 "SimSun", serif;
+  }
+  .glyph {
+    position: absolute;
+    inset: 0 0 10px;
+    display: grid;
+    place-items: center;
+    font: 800 clamp(19px, 3.6vw, 29px)/1 "Microsoft YaHei", "SimSun", serif;
+  }
+  @keyframes token-sway {
+    to { transform: rotate(calc(var(--tilt) + 4deg)) translateX(3px); }
+  }
+  .talisman:hover { filter: brightness(1.08); transform: rotate(var(--tilt)) scale(1.06); }
+  .falling-token.picked .talisman {
+    pointer-events: none;
+    animation: seal-burst .52s ease forwards;
+  }
+  .falling-token.false .talisman {
+    pointer-events: none;
+    animation: false-seal .48s ease forwards;
+  }
+  @keyframes seal-burst {
+    35% { transform: rotate(var(--tilt)) scale(1.35); filter: brightness(2.2) drop-shadow(0 0 16px var(--cyan)); }
+    to { transform: rotate(90deg) scale(.15); opacity: 0; }
+  }
+  @keyframes false-seal {
+    25% { transform: translateX(-8px) rotate(-9deg); filter: sepia(1) saturate(3); }
+    55% { transform: translateX(8px) rotate(9deg); }
+    to { transform: translateY(16px) scale(.4); opacity: 0; }
+  }
+  .strike-ray {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: 18%;
+    width: 3px;
+    height: 54%;
+    opacity: 0;
+    transform: rotate(-23deg) scaleY(0);
+    transform-origin: top;
+    background: linear-gradient(var(--cyan), #fff, transparent);
+    box-shadow: 0 0 17px var(--cyan);
+    pointer-events: none;
+  }
+  .arena.strike .strike-ray { animation: ray .46s ease; }
+  @keyframes ray {
+    15% { opacity: 1; transform: rotate(-23deg) scaleY(1); }
+    to { opacity: 0; transform: rotate(-23deg) scaleY(1); }
+  }
+  .damage-pop {
+    position: absolute;
+    z-index: 10;
+    left: 52%;
+    top: 33%;
+    color: var(--gold);
+    font-size: 22px;
+    font-weight: 1000;
+    text-shadow: 0 0 12px rgba(255,210,116,.8);
+    pointer-events: none;
+    animation: damage-rise .72s ease forwards;
+  }
+  @keyframes damage-rise {
+    to { opacity: 0; transform: translateY(-48px) scale(1.25); }
+  }
+  .arena.warning { animation: warning .38s ease; }
+  @keyframes warning {
+    25%, 75% { box-shadow: inset 0 0 38px rgba(255,86,120,.3); }
+    50% { transform: translateX(4px); }
+  }
+  .combo {
+    position: absolute;
+    z-index: 6;
+    right: 14px;
+    bottom: 12px;
+    color: #7f87b5;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .combo strong { color: var(--cyan); font-size: 17px; }
+  .result-screen { background: rgba(5,7,20,.66); backdrop-filter: blur(12px); }
+  .result-card {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 480px);
+    padding: clamp(30px, 7vw, 52px);
+    text-align: center;
+    border: 1px solid rgba(150,158,255,.34);
+    border-radius: 32px 7px 32px 7px;
+    background: linear-gradient(145deg, rgba(31,35,81,.98), rgba(10,13,34,.98));
+    box-shadow: 0 28px 80px rgba(0,0,0,.55);
+  }
+  .result-sigil {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(95,241,230,.43);
+    border-radius: 50%;
+    color: var(--cyan);
+    font: 700 39px/1 "SimSun", serif;
+    box-shadow: 0 0 30px rgba(95,241,230,.13), inset 0 0 22px rgba(95,241,230,.08);
+  }
+  .result-sigil::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px dashed rgba(255,210,116,.35);
+    border-radius: 50%;
+    animation: orbit 9s linear infinite;
+  }
+  .result-card h2 {
+    font: 700 clamp(27px, 6vw, 40px)/1 Georgia, serif;
+  }
+  .result-text {
+    margin: 11px auto 0;
+    max-width: 330px;
+    color: #b9c0e6;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .code-wrap {
+    margin: 22px auto 2px;
+    color: #8f98c6;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+  .victory-code {
+    display: block;
+    margin-top: 6px;
+    color: var(--gold);
+    font: 800 clamp(38px, 9vw, 58px)/1 "Consolas", monospace;
+    letter-spacing: .18em;
+    text-indent: .18em;
+    text-shadow: 0 0 25px rgba(255,210,116,.3);
+  }
+  @media (max-width: 600px) {
+    .start-panel { grid-template-columns: 1fr; gap: 12px; text-align: center; }
+    .spirit-orbit { width: 100%; height: 134px; }
+    .orbit-ring { width: 122px; height: 122px; }
+    .orbit-ring.second { width: 98px; height: 139px; }
+    .start-spirit { width: 65px; height: 85px; }
+    .orbit-glyph { width: 33px; height: 39px; font-size: 14px; }
+    .orbit-glyph:nth-of-type(1) { left: calc(50% - 92px); top: 8px; }
+    .orbit-glyph:nth-of-type(2) { right: calc(50% - 92px); top: 12px; }
+    .orbit-glyph:nth-of-type(3) { left: calc(50% - 82px); bottom: 2px; }
+    .orbit-glyph:nth-of-type(4) { right: calc(50% - 82px); bottom: 2px; }
+    .orbit-glyph:nth-of-type(5) { left: calc(50% - 16px); bottom: -5px; }
+    .lead { margin-left: auto; margin-right: auto; }
+    .lesson-strip { justify-content: center; }
+    .game-screen { grid-template-rows: 52px 64px minmax(0, 1fr); padding: 7px; }
+    .hud { gap: 6px; padding: 0 7px; }
+    .health-track { width: 27vw; }
+    .hud-label { font-size: 7px; letter-spacing: .08em; }
+    .mission { gap: 6px; }
+    .mode-badge { display: block; width: max-content; margin: 0 auto 3px; }
+    .prompt { font-size: 14px; }
+    .spirit-zone { transform: translate(-50%, -50%) scale(.8); }
+  }
+  @media (max-height: 480px) {
+    .start-panel { padding: 15px 22px; }
+    .spirit-orbit { height: 105px; }
+    .orbit-glyph { display: none; }
+    .orbit-ring { width: 96px; height: 96px; }
+    .orbit-ring.second { width: 75px; height: 110px; }
+    .start-spirit { width: 55px; height: 74px; }
+    .lead { margin-top: 8px; line-height: 1.35; }
+    .lesson-strip { margin-top: 8px; }
+    .primary-button { margin-top: 10px; padding: 10px 18px; }
+    .game-screen { grid-template-rows: 48px 53px minmax(0, 1fr); padding: 6px; }
+    .spirit-zone { transform: translate(-50%, -50%) scale(.7); }
+    .result-card { padding: 22px 30px; }
+    .result-sigil { width: 68px; height: 68px; margin-bottom: 10px; font-size: 29px; }
+    .code-wrap { margin-top: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <section class="screen start-screen" id="startScreen">
+    <div class="sky-ribbons"></div>
+    <div class="start-panel">
+      <div class="spirit-orbit" aria-hidden="true">
+        <div class="orbit-ring"></div>
+        <div class="orbit-ring second"></div>
+        <div class="start-spirit">
+          <div class="crown"></div>
+          <div class="tail"></div>
+          <div class="face"><div class="eyes"><i></i><i></i></div></div>
+        </div>
+        <span class="orbit-glyph">我们</span>
+        <span class="orbit-glyph">你们</span>
+        <span class="orbit-glyph">他们</span>
+        <span class="orbit-glyph">她们</span>
+        <span class="orbit-glyph">它们</span>
+      </div>
+      <div class="start-copy">
+        <div class="eyebrow">index_less1_exs6</div>
+        <h1>Дух<br>местоимений</h1>
+        <p class="lead">Небо роняет печати. Найди иероглиф по переводу или пиньиню и направь его силу против духа.</p>
+        <div class="lesson-strip" aria-label="Иероглифы урока">
+          <span>我</span><span>你</span><span>您</span><span>他</span><span>她</span><span>它</span><span>我们</span><span>你们</span><span>他们</span><span>她们</span><span>它们</span>
+        </div>
+        <button class="primary-button" id="startButton" type="button">Начать</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen game-screen" id="gameScreen" hidden>
+    <header class="hud">
+      <div class="hud-block">
+        <div class="hud-label">Сила духа</div>
+        <div class="health-track" aria-label="Здоровье духа"><div class="health-fill" id="healthFill"></div></div>
+      </div>
+      <div class="hud-center">
+        <div class="hud-label">Уровень бури</div>
+        <div class="level-value" id="levelValue">I</div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">Защитные печати</div>
+        <div class="wards" id="wards" aria-label="Три защитные печати">
+          <i class="ward"></i><i class="ward"></i><i class="ward"></i>
+        </div>
+      </div>
+    </header>
+
+    <div class="mission" aria-live="polite">
+      <div class="mission-text">
+        <span class="mode-badge" id="modeBadge">ПЕРЕВОД</span>
+        <span class="prompt" id="prompt">мы</span>
+      </div>
+    </div>
+
+    <div class="arena" id="arena">
+      <div class="storm-line"></div>
+      <div class="strike-ray"></div>
+      <div class="spirit-zone" aria-hidden="true">
+        <div class="spirit-halo"></div>
+        <div class="spirit" id="spirit">
+          <div class="crown"></div>
+          <div class="tail"></div>
+          <div class="face"><div class="eyes"><i></i><i></i></div></div>
+        </div>
+      </div>
+      <div class="combo">Серия <strong id="comboValue">0</strong></div>
+    </div>
+  </section>
+
+  <section class="screen result-screen" id="resultScreen" hidden>
+    <div class="sky-ribbons"></div>
+    <div class="result-card">
+      <div class="result-sigil" id="resultSigil">灵</div>
+      <h2 id="resultTitle">Дух рассеян</h2>
+      <p class="result-text" id="resultText">Ты собрал все верные печати и усмирил небесную бурю.</p>
+      <div class="code-wrap" id="codeWrap">Код завершения <strong class="victory-code">9911</strong></div>
+      <button class="primary-button" id="retryButton" type="button">Сыграть ещё</button>
+    </div>
+  </section>
+</main>
+<script>
+  const glyphs = [
+    { hanzi: "我", pinyin: "wǒ", translation: "я", category: "" },
+    { hanzi: "你", pinyin: "nǐ", translation: "ты", category: "" },
+    { hanzi: "您", pinyin: "nín", translation: "Вы", category: "вежливое обращение" },
+    { hanzi: "他", pinyin: "tā", translation: "он", category: "мужчина" },
+    { hanzi: "她", pinyin: "tā", translation: "она", category: "женщина" },
+    { hanzi: "它", pinyin: "tā", translation: "оно", category: "предмет / животное" },
+    { hanzi: "我们", pinyin: "wǒmen", translation: "мы", category: "" },
+    { hanzi: "你们", pinyin: "nǐmen", translation: "вы", category: "несколько человек" },
+    { hanzi: "他们", pinyin: "tāmen", translation: "они", category: "мужчины / смешанная группа" },
+    { hanzi: "她们", pinyin: "tāmen", translation: "они", category: "женщины" },
+    { hanzi: "它们", pinyin: "tāmen", translation: "они", category: "предметы / животные" }
+  ];
+
+  const maxHits = 12;
+  const maxWards = 3;
+  const romanLevels = ["I", "II", "III", "IV"];
+  const startScreen = document.getElementById("startScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const resultScreen = document.getElementById("resultScreen");
+  const startButton = document.getElementById("startButton");
+  const retryButton = document.getElementById("retryButton");
+  const arena = document.getElementById("arena");
+  const spirit = document.getElementById("spirit");
+  const healthFill = document.getElementById("healthFill");
+  const levelValue = document.getElementById("levelValue");
+  const wardsElement = document.getElementById("wards");
+  const comboValue = document.getElementById("comboValue");
+  const modeBadge = document.getElementById("modeBadge");
+  const prompt = document.getElementById("prompt");
+  const resultSigil = document.getElementById("resultSigil");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
+  const codeWrap = document.getElementById("codeWrap");
+
+  const state = {
+    running: false,
+    locked: false,
+    hits: 0,
+    wards: maxWards,
+    combo: 0,
+    level: 1,
+    target: null,
+    lastTarget: -1,
+    tokens: [],
+    animationFrame: 0,
+    roundTimer: 0,
+    lastFrame: 0
+  };
+
+  function shuffle(items) {
+    const copy = [...items];
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  function showScreen(screen) {
+    startScreen.hidden = screen !== startScreen;
+    gameScreen.hidden = screen !== gameScreen;
+    resultScreen.hidden = screen !== resultScreen;
+  }
+
+  function clearTokens() {
+    state.tokens.forEach(token => token.element.remove());
+    state.tokens = [];
+  }
+
+  function stopGame() {
+    state.running = false;
+    state.locked = true;
+    window.clearTimeout(state.roundTimer);
+    cancelAnimationFrame(state.animationFrame);
+    clearTokens();
+  }
+
+  function updateHud() {
+    const health = Math.max(0, ((maxHits - state.hits) / maxHits) * 100);
+    healthFill.style.width = `${health}%`;
+    levelValue.textContent = romanLevels[state.level - 1];
+    comboValue.textContent = state.combo;
+    [...wardsElement.children].forEach((ward, index) => {
+      ward.classList.toggle("lost", index >= state.wards);
+    });
+    spirit.classList.toggle("enraged", state.level >= 3);
+  }
+
+  function chooseTarget() {
+    let index = Math.floor(Math.random() * glyphs.length);
+    if (index === state.lastTarget) index = (index + 1 + Math.floor(Math.random() * (glyphs.length - 1))) % glyphs.length;
+    state.lastTarget = index;
+    return glyphs[index];
+  }
+
+  function setMission(target) {
+    const usePinyin = Math.random() < .5;
+    modeBadge.textContent = usePinyin ? "ПИНЬИНЬ" : "ПЕРЕВОД";
+    const main = usePinyin ? target.pinyin : target.translation;
+    prompt.textContent = target.category ? `${main} · ${target.category}` : main;
+  }
+
+  function createToken(item, lane, order, laneCount) {
+    const wrapper = document.createElement("div");
+    const button = document.createElement("button");
+    wrapper.className = "falling-token";
+    button.className = "talisman";
+    button.type = "button";
+    button.setAttribute("aria-label", `Выбрать ${item.hanzi}`);
+    button.innerHTML = `<span class="glyph">${item.hanzi}</span>`;
+    wrapper.style.left = `${((lane + .5) / laneCount) * 100}%`;
+    wrapper.style.setProperty("--tilt", `${-7 + Math.random() * 14}deg`);
+    wrapper.appendChild(button);
+    arena.appendChild(wrapper);
+
+    const gap = Math.max(31, 61 - state.hits * 2.4);
+    const token = {
+      element: wrapper,
+      item,
+      y: -82 - order * gap,
+      speed: 72 + state.hits * 4.8 + Math.random() * 8,
+      target: item === state.target
+    };
+    wrapper.style.setProperty("--y", `${token.y}px`);
+    button.addEventListener("click", () => selectToken(token));
+    state.tokens.push(token);
+  }
+
+  function beginRound() {
+    if (!state.running) return;
+    clearTokens();
+    state.locked = false;
+    state.level = Math.min(4, 1 + Math.floor(state.hits / 3));
+    state.target = chooseTarget();
+    setMission(state.target);
+    updateHud();
+
+    const count = Math.min(5, 2 + state.level);
+    let choices = shuffle(glyphs).slice(0, count);
+    if (!choices.includes(state.target)) choices[Math.floor(Math.random() * choices.length)] = state.target;
+    choices = shuffle(choices);
+    const targetPosition = choices.indexOf(state.target);
+    if (targetPosition > 2) {
+      const earlyPosition = Math.floor(Math.random() * 3);
+      [choices[targetPosition], choices[earlyPosition]] = [choices[earlyPosition], choices[targetPosition]];
+    }
+    const lanes = shuffle([...Array(count).keys()]);
+    choices.forEach((item, order) => createToken(item, lanes[order], order, count));
+  }
+
+  function animateImpact() {
+    arena.classList.remove("strike");
+    spirit.classList.remove("struck");
+    void arena.offsetWidth;
+    arena.classList.add("strike");
+    spirit.classList.add("struck");
+    const damage = document.createElement("span");
+    damage.className = "damage-pop";
+    damage.textContent = `−${8 + state.level * 2}`;
+    arena.appendChild(damage);
+    window.setTimeout(() => damage.remove(), 750);
+  }
+
+  function animateWarning() {
+    arena.classList.remove("warning");
+    void arena.offsetWidth;
+    arena.classList.add("warning");
+  }
+
+  function selectToken(token) {
+    if (!state.running || state.locked) return;
+    state.locked = true;
+    if (token.target) {
+      token.element.classList.add("picked");
+      state.hits += 1;
+      state.combo += 1;
+      animateImpact();
+      updateHud();
+      if (state.hits >= maxHits) {
+        state.roundTimer = window.setTimeout(() => finishGame(true), 720);
+      } else {
+        state.roundTimer = window.setTimeout(beginRound, 620);
+      }
+    } else {
+      token.element.classList.add("false");
+      loseWard("Ложная печать");
+    }
+  }
+
+  function loseWard(message) {
+    if (!state.running) return;
+    state.locked = true;
+    state.wards -= 1;
+    state.combo = 0;
+    modeBadge.textContent = "ОШИБКА";
+    prompt.textContent = message;
+    animateWarning();
+    updateHud();
+    if (state.wards <= 0) {
+      state.roundTimer = window.setTimeout(() => finishGame(false), 720);
+    } else {
+      state.roundTimer = window.setTimeout(beginRound, 760);
+    }
+  }
+
+  function finishGame(won) {
+    stopGame();
+    if (won) {
+      resultSigil.textContent = "胜";
+      resultTitle.textContent = "Дух рассеян";
+      resultText.textContent = "Ты собрал верные печати и усмирил небесную бурю.";
+      codeWrap.hidden = false;
+    } else {
+      resultSigil.textContent = "再";
+      resultTitle.textContent = "Святилище погасло";
+      resultText.textContent = "Дух оказался сильнее. Вернись в бурю и собери печати внимательнее.";
+      codeWrap.hidden = true;
+    }
+    retryButton.textContent = won ? "Сыграть ещё" : "Повторить";
+    showScreen(resultScreen);
+    retryButton.focus();
+  }
+
+  function gameLoop(time) {
+    if (!state.running) return;
+    const delta = state.lastFrame ? Math.min((time - state.lastFrame) / 1000, .04) : 0;
+    state.lastFrame = time;
+    const floor = arena.clientHeight + 10;
+
+    for (let index = state.tokens.length - 1; index >= 0; index -= 1) {
+      const token = state.tokens[index];
+      if (state.locked) continue;
+      token.y += token.speed * delta;
+      token.element.style.setProperty("--y", `${token.y}px`);
+      if (token.y > floor) {
+        token.element.remove();
+        state.tokens.splice(index, 1);
+        if (token.target) loseWard("Печать ускользнула");
+      }
+    }
+    state.animationFrame = requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    stopGame();
+    state.running = true;
+    state.locked = false;
+    state.hits = 0;
+    state.wards = maxWards;
+    state.combo = 0;
+    state.level = 1;
+    state.lastTarget = -1;
+    state.lastFrame = 0;
+    healthFill.style.width = "100%";
+    showScreen(gameScreen);
+    updateHud();
+    beginRound();
+    state.animationFrame = requestAnimationFrame(gameLoop);
+  }
+
+  startButton.addEventListener("click", startGame);
+  retryButton.addEventListener("click", startGame);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) state.lastFrame = 0;
+  });
+</script>
+</body>
+</html>

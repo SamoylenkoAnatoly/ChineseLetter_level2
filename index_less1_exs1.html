@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Нефритовый сканер · местоимения</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  :root {
+    --ring: clamp(236px, min(86vw, 60vh), 372px);
+    --seal: clamp(72px, min(21vw, 13vh), 102px);
+    --jade: #6fd0aa;
+    --jade-deep: #2f8f72;
+    --coral: #e57a5d;
+    --paper: #f3e9d2;
+    --gold: #d8b571;
+    --ink: #0a1712;
+  }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: #cfe4d8;
+    background: radial-gradient(130% 100% at 50% -10%, #16352a 0%, #0b1a14 48%, #050c09 100%);
+    overflow: hidden;
+    user-select: none;
+  }
+  .stage {
+    position: relative;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 480px;
+    padding: 12px 14px;
+  }
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-radial-gradient(circle at 50% 44%, transparent 0 33px, rgba(111, 208, 170, .045) 33px 34px);
+    pointer-events: none;
+  }
+  .screen {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    animation: fade-in .4s ease both;
+  }
+  [hidden] { display: none !important; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .brand-mark {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    border: 1px solid rgba(111, 208, 170, .5);
+    box-shadow: 0 0 30px rgba(111, 208, 170, .15), inset 0 0 14px rgba(111, 208, 170, .1);
+  }
+  .brand-mark::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px dashed rgba(216, 181, 113, .45);
+  }
+  .brand-mark::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: conic-gradient(rgba(111, 208, 170, .35), transparent 70deg);
+    animation: sweep 7s linear infinite;
+  }
+  .brand-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: var(--paper);
+    box-shadow: 0 0 12px rgba(243, 233, 210, .55);
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 7.2vw, 34px);
+    font-weight: 700;
+    color: #eef7ef;
+    text-align: center;
+    letter-spacing: .02em;
+  }
+  .tagline {
+    font-size: 10.5px;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+  }
+  .glyph-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 8px;
+    max-width: 330px;
+    list-style: none;
+  }
+  .glyph-strip li {
+    font-family: "Noto Serif SC", "SimSun", serif;
+    font-size: 16px;
+    color: rgba(111, 208, 170, .8);
+    border: 1px solid rgba(111, 208, 170, .25);
+    background: rgba(111, 208, 170, .05);
+    border-radius: 8px;
+    padding: 3px 8px;
+  }
+  .rules {
+    max-width: 340px;
+    text-align: center;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #a9c3b5;
+  }
+  .btn-main {
+    margin-top: 4px;
+    padding: 13px 46px;
+    border-radius: 999px;
+    border: 1px solid #9fe7c6;
+    background: linear-gradient(180deg, #7fd8b0, #2f8f72);
+    color: #07130d;
+    font: 700 15px/1 "Segoe UI", system-ui, sans-serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(111, 208, 170, .25), inset 0 1px 0 rgba(255, 255, 255, .5);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(111, 208, 170, .38), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  .btn-main:active { transform: translateY(0); }
+  .btn-main:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  #screen-game {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-content: stretch;
+    gap: 6px;
+    width: 100%;
+  }
+  .hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding-top: 2px;
+  }
+  .hud-title {
+    font-size: 10.5px;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: #7fa294;
+  }
+  .constellation { display: flex; align-items: center; gap: 9px; }
+  .gem {
+    width: 11px;
+    height: 11px;
+    transform: rotate(45deg);
+    border: 1px solid rgba(111, 208, 170, .4);
+    background: rgba(111, 208, 170, .08);
+    transition: background .3s, box-shadow .3s, border-color .3s;
+  }
+  .gem.lit {
+    background: var(--jade);
+    border-color: #bdf3da;
+    box-shadow: 0 0 10px rgba(111, 208, 170, .9);
+    animation: pop .45s ease;
+  }
+  @keyframes pop { 40% { transform: rotate(45deg) scale(1.6); } }
+  .hud-count {
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: #c9dccf;
+  }
+
+  .scan-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    width: 100%;
+  }
+  .scanner { position: relative; width: var(--ring); height: var(--ring); }
+  .ring { position: absolute; border-radius: 50%; pointer-events: none; }
+  .ring-outer {
+    inset: -6px;
+    border: 1px solid rgba(111, 208, 170, .4);
+    box-shadow: 0 0 24px rgba(111, 208, 170, .12), inset 0 0 18px rgba(111, 208, 170, .07);
+  }
+  .ring-outer::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px dashed rgba(216, 181, 113, .35);
+  }
+  .ring-ticks {
+    inset: 0;
+    background: repeating-conic-gradient(rgba(111, 208, 170, .4) 0 1.1deg, transparent 1.1deg 6deg);
+    -webkit-mask: radial-gradient(closest-side, transparent 95.6%, #000 96%);
+    mask: radial-gradient(closest-side, transparent 95.6%, #000 96%);
+  }
+  .beam {
+    position: absolute;
+    inset: 4%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(111, 208, 170, .3), rgba(111, 208, 170, .06) 60deg, transparent 82deg);
+    -webkit-mask: radial-gradient(closest-side, transparent 52%, #000 53%);
+    mask: radial-gradient(closest-side, transparent 52%, #000 53%);
+    animation: sweep 9s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes sweep { to { transform: rotate(1turn); } }
+  .ring-inner {
+    inset: 18%;
+    border: 1px solid rgba(111, 208, 170, .28);
+    border-top-color: rgba(216, 181, 113, .6);
+    animation: spin 26s linear infinite reverse;
+  }
+  @keyframes spin { to { transform: rotate(1turn); } }
+
+  .disc {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 56%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 32%, #fbf4e2, var(--paper) 55%, #e2d3ae 100%);
+    color: #14261e;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .45), inset 0 0 0 2px rgba(216, 181, 113, .5), inset 0 0 0 8px rgba(216, 181, 113, .12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 9%;
+    text-align: center;
+  }
+  .disc-caption {
+    font-size: 9.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #7c6a43;
+  }
+  .disc-signal {
+    font-weight: 700;
+    line-height: 1.05;
+    color: #12241c;
+  }
+  .disc-signal.han {
+    font-family: "Noto Serif SC", "SimSun", serif;
+    font-size: calc(var(--ring) * .155);
+  }
+  .disc-signal.ru {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: calc(var(--ring) * .115);
+  }
+  .disc-note {
+    font-size: 11px;
+    color: #6f5f3f;
+    line-height: 1.25;
+  }
+
+  .seal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--seal);
+    min-height: var(--seal);
+    transform: translate(calc(-50% + var(--ox)), calc(-50% + var(--oy)));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 8px 6px;
+    border-radius: 16px;
+    border: 1px solid rgba(111, 208, 170, .35);
+    background: linear-gradient(160deg, #142a22, #0c1a15 70%);
+    color: #d9ecdf;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .06);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .seal:nth-of-type(1) { --ox: calc(var(--ring) * -.255); --oy: calc(var(--ring) * -.255); }
+  .seal:nth-of-type(2) { --ox: calc(var(--ring) * .255); --oy: calc(var(--ring) * -.255); }
+  .seal:nth-of-type(3) { --ox: calc(var(--ring) * .255); --oy: calc(var(--ring) * .255); }
+  .seal:nth-of-type(4) { --ox: calc(var(--ring) * -.255); --oy: calc(var(--ring) * .255); }
+  .seal:hover:not(:disabled) {
+    transform: translate(calc(-50% + var(--ox)), calc(-50% + var(--oy))) scale(1.05);
+    border-color: rgba(111, 208, 170, .85);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .5), 0 0 14px rgba(111, 208, 170, .18);
+  }
+  .seal:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .seal:disabled { cursor: default; }
+  .seal-key {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    font-size: 9px;
+    letter-spacing: .05em;
+    color: rgba(216, 181, 113, .8);
+  }
+  .seal-main.han {
+    font-family: "Noto Serif SC", "SimSun", serif;
+    font-size: clamp(22px, calc(var(--seal) * .3), 36px);
+    letter-spacing: .05em;
+  }
+  .seal-main.ru {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(15px, calc(var(--seal) * .21), 23px);
+  }
+  .seal-note {
+    font-size: clamp(8.5px, calc(var(--seal) * .105), 10.5px);
+    line-height: 1.2;
+    color: #8fae9d;
+  }
+  .seal.good {
+    background: linear-gradient(160deg, #2f8f72, #1d5c48);
+    border-color: #8fe2bd;
+    color: #eafff4;
+    box-shadow: 0 0 22px rgba(111, 208, 170, .55);
+  }
+  .seal.bad {
+    background: linear-gradient(160deg, #5c2b21, #3c1c15);
+    border-color: rgba(229, 122, 93, .7);
+    color: #f0c9ba;
+    opacity: .75;
+    animation: shake .4s ease;
+  }
+  @keyframes shake {
+    20% { transform: translate(calc(-50% + var(--ox) - 5px), calc(-50% + var(--oy))); }
+    40% { transform: translate(calc(-50% + var(--ox) + 5px), calc(-50% + var(--oy))); }
+    60% { transform: translate(calc(-50% + var(--ox) - 3px), calc(-50% + var(--oy))); }
+    80% { transform: translate(calc(-50% + var(--ox) + 3px), calc(-50% + var(--oy))); }
+  }
+
+  .feedback {
+    min-height: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+  }
+  .feedback-text {
+    font-size: 13.5px;
+    color: #d9ecdf;
+    transition: color .2s;
+  }
+  .feedback-text.ok { color: #8fe2bd; }
+  .feedback-text.err { color: #f0a48d; }
+  .feedback-hint {
+    font-size: 9.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #6f8d80;
+  }
+
+  .win-eyebrow {
+    font-size: 10.5px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  #screen-win h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(22px, 6.4vw, 30px);
+    color: #eef7ef;
+    text-align: center;
+  }
+  .win-sub {
+    font-size: 13px;
+    color: #a9c3b5;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+  .code {
+    display: flex;
+    gap: 10px;
+    margin: 8px 0 2px;
+  }
+  .code span {
+    width: clamp(46px, 13vw, 58px);
+    aspect-ratio: .82;
+    display: grid;
+    place-items: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(30px, 9vw, 40px);
+    font-weight: 700;
+    color: #9fe7c6;
+    background: rgba(111, 208, 170, .07);
+    border: 1px solid rgba(157, 231, 198, .55);
+    border-radius: 12px;
+    box-shadow: 0 0 18px rgba(111, 208, 170, .22), inset 0 0 12px rgba(111, 208, 170, .12);
+    text-shadow: 0 0 14px rgba(111, 208, 170, .65);
+    animation: pop-in .5s ease both;
+  }
+  .code span:nth-child(2) { animation-delay: .12s; }
+  .code span:nth-child(3) { animation-delay: .24s; }
+  .code span:nth-child(4) { animation-delay: .36s; }
+  @keyframes pop-in {
+    from { transform: scale(.3); opacity: 0; }
+    70% { transform: scale(1.12); opacity: 1; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .code-caption {
+    font-size: 10px;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: #8fae9d;
+  }
+
+  @media (max-height: 560px) {
+    .stage { padding: 8px 10px; }
+    .hud-title { display: none; }
+    .feedback { min-height: 44px; }
+    .brand-mark { width: 68px; height: 68px; }
+    .rules { font-size: 11.5px; }
+    .screen { gap: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+  <section id="screen-start" class="screen">
+    <div class="brand-mark" aria-hidden="true"><span class="brand-dot"></span></div>
+    <h1>Нефритовый сканер</h1>
+    <p class="tagline">личные местоимения · 汉字 ⇄ русский</p>
+    <ul class="glyph-strip" aria-hidden="true">
+      <li>我</li><li>你</li><li>您</li><li>他</li><li>她</li><li>它</li><li>我们</li><li>你们</li><li>他们</li><li>她们</li><li>它们</li>
+    </ul>
+    <p class="rules">На кольце сканера — четыре печати. Одна из них верно переводит сигнал в центре. Выберите её — и сегмент нефритового созвездия загорится. Соберите все одиннадцать сегментов, чтобы получить секретный код.</p>
+    <button id="btn-start" class="btn-main" type="button">Начать</button>
+  </section>
+
+  <section id="screen-game" class="screen" hidden>
+    <header class="hud">
+      <p class="hud-title">нефритовый сканер</p>
+      <div class="constellation" id="constellation" role="img" aria-label="Прогресс: 0 из 11"></div>
+      <p class="hud-count" id="hud-count">сигнал 1 из 11</p>
+    </header>
+    <div class="scan-wrap">
+      <div class="scanner">
+        <div class="ring ring-outer" aria-hidden="true"></div>
+        <div class="ring ring-ticks" aria-hidden="true"></div>
+        <div class="beam" aria-hidden="true"></div>
+        <div class="ring ring-inner" aria-hidden="true"></div>
+        <div class="disc">
+          <p class="disc-caption" id="disc-caption">выберите иероглиф</p>
+          <p class="disc-signal han" id="disc-signal">我</p>
+          <p class="disc-note" id="disc-note" hidden></p>
+        </div>
+        <button class="seal" type="button"><span class="seal-key">1</span></button>
+        <button class="seal" type="button"><span class="seal-key">2</span></button>
+        <button class="seal" type="button"><span class="seal-key">3</span></button>
+        <button class="seal" type="button"><span class="seal-key">4</span></button>
+      </div>
+    </div>
+    <footer class="feedback">
+      <p class="feedback-text" id="feedback-text" aria-live="polite">Сканируйте сигнал и выберите печать</p>
+      <p class="feedback-hint">мышь · касание · клавиши 1–4</p>
+    </footer>
+  </section>
+
+  <section id="screen-win" class="screen" hidden>
+    <p class="win-eyebrow">созвездие собрано</p>
+    <h2>Сигналы расшифрованы</h2>
+    <p class="win-sub">Все одиннадцать местоимений переведены верно. Сканер выдаёт секретный код:</p>
+    <div class="code"><span>5</span><span>6</span><span>5</span><span>6</span></div>
+    <p class="code-caption">секретный код</p>
+    <button id="btn-restart" class="btn-main" type="button">Сыграть ещё</button>
+  </section>
+</main>
+<noscript><p style="text-align:center;padding:20px;">Для игры включите JavaScript.</p></noscript>
+<script>
+(function () {
+  var DATA = [
+    { han: '我', ru: 'я', note: '' },
+    { han: '你', ru: 'ты', note: '' },
+    { han: '您', ru: 'вы', note: 'вежливое' },
+    { han: '他', ru: 'он', note: '' },
+    { han: '她', ru: 'она', note: '' },
+    { han: '它', ru: 'оно', note: '' },
+    { han: '我们', ru: 'мы', note: '' },
+    { han: '你们', ru: 'вы', note: 'множественное' },
+    { han: '他们', ru: 'они', note: 'люди' },
+    { han: '她们', ru: 'они', note: 'женщины' },
+    { han: '它们', ru: 'они', note: 'животные / предметы' }
+  ];
+
+  var startScreen = document.getElementById('screen-start');
+  var gameScreen = document.getElementById('screen-game');
+  var winScreen = document.getElementById('screen-win');
+  var seals = Array.prototype.slice.call(document.querySelectorAll('.seal'));
+  var constellation = document.getElementById('constellation');
+  var gems = DATA.map(function () {
+    var g = document.createElement('span');
+    g.className = 'gem';
+    constellation.appendChild(g);
+    return g;
+  });
+  var discCaption = document.getElementById('disc-caption');
+  var discSignal = document.getElementById('disc-signal');
+  var discNote = document.getElementById('disc-note');
+  var feedbackText = document.getElementById('feedback-text');
+  var hudCount = document.getElementById('hud-count');
+
+  var order = [];
+  var round = 0;
+  var solved = 0;
+  var firstRuToHan = true;
+  var locked = false;
+  var viaKey = false;
+
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+    }
+    return arr;
+  }
+
+  function isRuToHan() {
+    return (round % 2 === 0) ? firstRuToHan : !firstRuToHan;
+  }
+
+  function show(screen) {
+    [startScreen, gameScreen, winScreen].forEach(function (s) { s.hidden = s !== screen; });
+  }
+
+  function setFeedback(text, kind) {
+    feedbackText.textContent = text;
+    feedbackText.className = 'feedback-text' + (kind ? ' ' + kind : '');
+  }
+
+  function updateProgress() {
+    constellation.setAttribute('aria-label', 'Прогресс: ' + solved + ' из ' + DATA.length);
+    hudCount.textContent = 'сигнал ' + Math.min(round + 1, DATA.length) + ' из ' + DATA.length;
+  }
+
+  function renderRound() {
+    var item = order[round];
+    var ruToHan = isRuToHan();
+    discCaption.textContent = ruToHan ? 'выберите иероглиф' : 'выберите перевод';
+    discSignal.textContent = ruToHan ? item.ru : item.han;
+    discSignal.className = 'disc-signal ' + (ruToHan ? 'ru' : 'han');
+    discNote.textContent = item.note;
+    discNote.hidden = !(ruToHan && item.note);
+    var pool = shuffle(DATA.filter(function (d) { return d !== item; }));
+    var opts = shuffle([item, pool[0], pool[1], pool[2]]);
+    seals.forEach(function (btn, i) {
+      var o = opts[i];
+      btn.dataset.correct = o === item ? '1' : '0';
+      btn.disabled = false;
+      btn.classList.remove('good', 'bad');
+      var key = btn.querySelector('.seal-key');
+      var main = document.createElement('span');
+      main.className = 'seal-main ' + (ruToHan ? 'han' : 'ru');
+      main.textContent = ruToHan ? o.han : o.ru;
+      var note = (!ruToHan && o.note) ? '<span class="seal-note">' + o.note + '</span>' : '';
+      btn.innerHTML = '';
+      btn.appendChild(key);
+      btn.appendChild(main);
+      if (note) btn.insertAdjacentHTML('beforeend', note);
+    });
+    setFeedback('Сканируйте сигнал и выберите печать', '');
+    updateProgress();
+    if (viaKey) seals[0].focus();
+  }
+
+  function startGame() {
+    order = shuffle(DATA.slice());
+    round = 0;
+    solved = 0;
+    locked = false;
+    firstRuToHan = Math.random() < 0.5;
+    gems.forEach(function (g) { g.classList.remove('lit'); });
+    show(gameScreen);
+    renderRound();
+  }
+
+  function showWin() {
+    show(winScreen);
+    document.getElementById('btn-restart').focus();
+  }
+
+  function answer(btn) {
+    if (locked || btn.disabled || gameScreen.hidden) return;
+    if (btn.dataset.correct === '1') {
+      locked = true;
+      seals.forEach(function (s) { s.disabled = true; });
+      btn.classList.add('good');
+      gems[solved].classList.add('lit');
+      solved++;
+      updateProgress();
+      setFeedback('Верно — сегмент ' + solved + ' из ' + DATA.length + ' открыт', 'ok');
+      setTimeout(function () {
+        round++;
+        if (round >= DATA.length) {
+          showWin();
+        } else {
+          locked = false;
+          renderRound();
+        }
+      }, 950);
+    } else {
+      locked = true;
+      btn.classList.add('bad');
+      btn.disabled = true;
+      setFeedback('Неверно — печать треснула, попробуйте ещё', 'err');
+      setTimeout(function () {
+        locked = false;
+        if (viaKey) {
+          var next = seals.filter(function (s) { return !s.disabled; })[0];
+          if (next) next.focus();
+        }
+      }, 550);
+    }
+  }
+
+  seals.forEach(function (btn) {
+    btn.addEventListener('click', function () { answer(btn); });
+  });
+  document.getElementById('btn-start').addEventListener('click', startGame);
+  document.getElementById('btn-restart').addEventListener('click', startGame);
+  document.addEventListener('keydown', function (e) {
+    viaKey = true;
+    if (gameScreen.hidden) return;
+    var i = ['1', '2', '3', '4'].indexOf(e.key);
+    if (i > -1) {
+      e.preventDefault();
+      answer(seals[i]);
+    }
+  });
+  document.addEventListener('pointerdown', function () { viaKey = false; });
+})();
+</script>
+</body>
+</html>

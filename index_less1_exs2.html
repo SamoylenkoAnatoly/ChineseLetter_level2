@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Мастерская шести нитей · личные местоимения</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #fff4d8;
+    --paper: #f7e8c4;
+    --ink: #252035;
+    --muted: #746b79;
+    --plum: #2d1739;
+    --plum-soft: #47204e;
+    --rose: #ff5d77;
+    --gold: #ffc85b;
+    --mint: #5fe1bd;
+    --blue: #63b9ff;
+    --violet: #b982ff;
+    --board: min(74vw, 294px, 46vh);
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    color: var(--cream);
+    background:
+      radial-gradient(circle at 18% 4%, rgba(255, 93, 119, .19), transparent 28%),
+      radial-gradient(circle at 90% 94%, rgba(99, 185, 255, .14), transparent 32%),
+      linear-gradient(145deg, #24122f, #130d24 62%, #181028);
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    opacity: .22;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.025) 3px 4px),
+      repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,.07) 5px 6px);
+  }
+  button { font: inherit; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 440px;
+    max-width: 560px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    padding: 14px 18px;
+    animation: appear .42s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(10px) scale(.985); }
+    to { opacity: 1; transform: none; }
+  }
+  .start, .finish {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .loom-mark {
+    position: relative;
+    width: 116px;
+    height: 88px;
+    margin-bottom: 13px;
+  }
+  .loom-frame {
+    position: absolute;
+    inset: 0;
+    border: 5px solid var(--gold);
+    border-radius: 24px 24px 16px 16px;
+    box-shadow: 0 0 0 2px rgba(45,23,57,.8) inset, 0 12px 34px rgba(0,0,0,.28);
+  }
+  .loom-frame::before,
+  .loom-frame::after {
+    content: "";
+    position: absolute;
+    top: 7px;
+    bottom: 7px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--rose);
+    box-shadow: 19px 0 var(--mint), 38px 0 var(--blue), 57px 0 var(--violet), 76px 0 var(--cream);
+  }
+  .loom-frame::before { left: 10px; }
+  .loom-frame::after { display: none; }
+  .needle {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 38px;
+    height: 7px;
+    border-radius: 7px;
+    background: var(--cream);
+    box-shadow: 0 2px 0 rgba(45,23,57,.4);
+    transform: rotate(-8deg);
+    animation: weave 2.4s ease-in-out infinite;
+  }
+  .needle::after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    top: -2px;
+    border-left: 11px solid var(--cream);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+  @keyframes weave { 50% { transform: translateY(8px) rotate(8deg); } }
+  .kicker {
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .27em;
+    text-transform: uppercase;
+  }
+  h1, h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    color: #fff9e8;
+    line-height: 1.04;
+  }
+  h1 {
+    margin-top: 8px;
+    max-width: 330px;
+    font-size: clamp(29px, 8vw, 39px);
+  }
+  .subtitle {
+    margin-top: 10px;
+    max-width: 330px;
+    color: #cbbcd2;
+    font-size: 13px;
+    line-height: 1.48;
+  }
+  .glyphs {
+    display: flex;
+    gap: 6px;
+    margin: 17px 0 16px;
+  }
+  .glyphs span {
+    width: 42px;
+    height: 45px;
+    display: grid;
+    place-items: center;
+    color: var(--cream);
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,244,216,.17);
+    border-radius: 12px 12px 15px 8px;
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 23px;
+    transform: rotate(var(--tilt));
+  }
+  .glyphs span:nth-child(1) { --tilt: -5deg; color: var(--rose); }
+  .glyphs span:nth-child(2) { --tilt: 3deg; color: var(--gold); }
+  .glyphs span:nth-child(3) { --tilt: -2deg; color: #ff9f68; }
+  .glyphs span:nth-child(4) { --tilt: 5deg; color: var(--mint); }
+  .glyphs span:nth-child(5) { --tilt: -4deg; color: var(--blue); }
+  .glyphs span:nth-child(6) { --tilt: 3deg; color: var(--violet); }
+  .primary {
+    position: relative;
+    min-width: 174px;
+    padding: 13px 26px 14px;
+    border: 0;
+    border-radius: 12px 19px 12px 19px;
+    color: #28172f;
+    background: var(--gold);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #a96045, 0 12px 24px rgba(0,0,0,.27);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .primary:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #a96045, 0 15px 28px rgba(0,0,0,.3); }
+  .primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #a96045, 0 6px 14px rgba(0,0,0,.25); }
+  .primary:focus-visible, .tool:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  .start-note {
+    margin-top: 16px;
+    color: #8f8199;
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+  .game {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    gap: 7px;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 28px;
+  }
+  .brand-mini {
+    color: #b9a9c4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12px;
+  }
+  .round-count {
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .spools {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    height: 36px;
+  }
+  .spool {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    border: 4px solid #7d6b83;
+    border-radius: 50%;
+    background: #271a34;
+    transition: .35s ease;
+  }
+  .spool::before,
+  .spool::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 33px;
+    height: 4px;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    background: #7d6b83;
+    transition: .35s ease;
+  }
+  .spool::before { top: -6px; }
+  .spool::after { bottom: -6px; }
+  .spool.done {
+    border-color: var(--thread);
+    background: repeating-linear-gradient(0deg, var(--thread) 0 2px, rgba(255,255,255,.25) 2px 3px);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--thread) 60%, transparent);
+    animation: spool-pop .48s ease;
+  }
+  .spool.done::before, .spool.done::after { background: var(--thread); }
+  @keyframes spool-pop { 50% { transform: rotate(16deg) scale(1.28); } }
+  .mission {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+  }
+  .mission-label {
+    color: #9e90a9;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .19em;
+    text-transform: uppercase;
+  }
+  .mission-word {
+    margin-top: 1px;
+    color: #fff9e8;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 7vw, 31px);
+    line-height: 1;
+  }
+  .mission-meta {
+    margin-top: 5px;
+    color: #c7b7ce;
+    font-size: 11px;
+  }
+  .workarea {
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .paper-wrap {
+    position: relative;
+    width: var(--board);
+    height: var(--board);
+    filter: drop-shadow(0 12px 16px rgba(0,0,0,.28));
+  }
+  .paper-wrap::before,
+  .paper-wrap::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 5px -7px -5px 7px;
+    border-radius: 16px 10px 19px 12px;
+    background: #9a5f6b;
+    transform: rotate(2deg);
+  }
+  .paper-wrap::after {
+    inset: -5px 7px 5px -7px;
+    background: #d29b58;
+    transform: rotate(-2deg);
+  }
+  #ink-board {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 13px 18px 14px 19px;
+    background: var(--paper);
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .board-badge {
+    position: absolute;
+    right: -7px;
+    top: 14px;
+    min-width: 42px;
+    padding: 5px 7px;
+    color: #fff7e3;
+    background: var(--rose);
+    border-radius: 5px 9px 4px 8px;
+    font-size: 9px;
+    font-weight: 900;
+    text-align: center;
+    letter-spacing: .08em;
+    transform: rotate(4deg);
+    box-shadow: 0 4px 9px rgba(0,0,0,.2);
+  }
+  .board-badge.ok { background: #238f78; }
+  .board-badge.bad { animation: badge-shake .36s ease; }
+  @keyframes badge-shake { 25% { transform: translateX(-4px) rotate(2deg); } 70% { transform: translateX(4px) rotate(6deg); } }
+  .controls {
+    display: grid;
+    grid-template-columns: 38px 1fr 38px;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+  }
+  .feedback {
+    min-width: 0;
+    text-align: center;
+    color: #d5c8da;
+    font-size: 11px;
+    line-height: 1.28;
+  }
+  .feedback strong { color: var(--gold); }
+  .feedback.good { color: var(--mint); }
+  .feedback.error { color: #ff8da0; }
+  .tool {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,244,216,.2);
+    border-radius: 12px;
+    color: var(--cream);
+    background: rgba(255,255,255,.07);
+    cursor: pointer;
+    font-size: 18px;
+    transition: .15s;
+  }
+  .tool:hover { background: rgba(255,255,255,.14); transform: translateY(-1px); }
+  .tool:disabled { opacity: .3; cursor: default; transform: none; }
+  .finish .kicker { margin-bottom: 7px; }
+  .finish h2 { font-size: clamp(29px, 8vw, 38px); }
+  .woven-seal {
+    position: relative;
+    width: 148px;
+    height: 148px;
+    margin: 18px 0 12px;
+    display: grid;
+    place-items: center;
+    border: 9px solid var(--gold);
+    border-radius: 43% 57% 47% 53% / 55% 43% 57% 45%;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.05) 0 5px, transparent 5px 10px),
+      var(--plum-soft);
+    box-shadow: 0 0 0 3px var(--rose), 0 0 0 8px var(--plum), 0 20px 45px rgba(0,0,0,.34);
+    animation: seal-turn 8s linear infinite;
+  }
+  .woven-seal::before {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border: 2px dashed rgba(255,244,216,.42);
+    border-radius: inherit;
+  }
+  .win-han {
+    position: relative;
+    z-index: 1;
+    color: var(--cream);
+    font-family: "Microsoft YaHei", "SimSun", serif;
+    font-size: 38px;
+    letter-spacing: -.13em;
+    padding-right: .13em;
+    animation: seal-counter 8s linear infinite;
+  }
+  @keyframes seal-turn { to { transform: rotate(360deg); } }
+  @keyframes seal-counter { to { transform: rotate(-360deg); } }
+  .win-copy {
+    max-width: 300px;
+    color: #c8bad0;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .code-label {
+    margin-top: 17px;
+    color: #a996b5;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+  }
+  .code {
+    display: flex;
+    gap: 7px;
+    margin: 6px 0 19px;
+  }
+  .code span {
+    width: 48px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    color: #27162e;
+    background: var(--thread);
+    border-radius: 8px 13px 8px 13px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 32px;
+    font-weight: 900;
+    box-shadow: 0 5px 0 color-mix(in srgb, var(--thread) 55%, #3d2945);
+    animation: digit-in .45s cubic-bezier(.2,.9,.3,1.3) both;
+  }
+  .code span:nth-child(2) { animation-delay: .12s; }
+  .code span:nth-child(3) { animation-delay: .24s; }
+  .code span:nth-child(4) { animation-delay: .36s; }
+  @keyframes digit-in { from { opacity: 0; transform: translateY(14px) rotate(9deg) scale(.5); } }
+  @media (max-height: 530px) {
+    :root { --board: min(65vw, 236px, 43vh); }
+    .screen { padding: 8px 15px; }
+    .game { gap: 3px; }
+    .spools { height: 29px; transform: scale(.86); }
+    .mission { min-height: 43px; }
+    .mission-word { font-size: 23px; }
+    .mission-meta { margin-top: 2px; }
+    .controls { min-height: 42px; }
+    .loom-mark { width: 88px; height: 67px; margin-bottom: 7px; }
+    .subtitle { margin-top: 6px; line-height: 1.35; }
+    .glyphs { margin: 10px 0; }
+    .start-note { margin-top: 10px; }
+    .woven-seal { width: 105px; height: 105px; margin: 9px 0; }
+    .win-han { font-size: 29px; }
+    .code-label { margin-top: 8px; }
+    .code { margin-bottom: 12px; }
+    .code span { width: 42px; height: 47px; font-size: 27px; }
+  }
+  @media (max-width: 350px) {
+    :root { --board: min(78vw, 268px, 45vh); }
+    .screen { padding-left: 12px; padding-right: 12px; }
+    .spools { gap: 9px; }
+    .glyphs { gap: 4px; }
+    .glyphs span { width: 34px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="start-screen" class="screen start">
+    <div class="loom-mark" aria-hidden="true"><div class="loom-frame"></div><div class="needle"></div></div>
+    <p class="kicker">шесть знаков · одна нить</p>
+    <h1>Мастерская шести нитей</h1>
+    <p class="subtitle">Переведите слово и вышейте местоимение по памяти. Каждая черта начинается с мерцающей точки.</p>
+    <div class="glyphs" aria-label="Иероглифы в игре"><span>我</span><span>你</span><span>您</span><span>他</span><span>她</span><span>它</span></div>
+    <button id="start-button" class="primary" type="button">Начать</button>
+    <p class="start-note">порядок · направление · форма черт</p>
+  </section>
+
+  <section id="game-screen" class="screen game" hidden>
+    <header class="topbar">
+      <span class="brand-mini">Мастерская шести нитей</span>
+      <span id="round-count" class="round-count">нить 1 / 6</span>
+    </header>
+    <div id="spools" class="spools" aria-label="Прогресс: 0 из 6"></div>
+    <div class="mission">
+      <p class="mission-label">вышейте перевод</p>
+      <p id="mission-word" class="mission-word">Я</p>
+      <p id="mission-meta" class="mission-meta">черта 1 из 7</p>
+    </div>
+    <div class="workarea">
+      <div class="paper-wrap">
+        <canvas id="ink-board" width="600" height="600" tabindex="0" role="img" aria-label="Поле для написания иероглифа"></canvas>
+        <span id="board-badge" class="board-badge">1 / 7</span>
+      </div>
+    </div>
+    <footer class="controls">
+      <button id="reset-button" class="tool" type="button" aria-label="Начать иероглиф заново" title="Начать знак заново">↺</button>
+      <p id="feedback" class="feedback" aria-live="polite">Начните у точки и ведите по стрелке</p>
+      <button id="hint-button" class="tool" type="button" aria-label="Показать текущую черту" title="Подсказка">?</button>
+    </footer>
+  </section>
+
+  <section id="finish-screen" class="screen finish" hidden>
+    <p class="kicker">узор завершён</p>
+    <h2>Шесть нитей сплетены</h2>
+    <div class="woven-seal" aria-hidden="true"><span class="win-han">我你您他她它</span></div>
+    <p class="win-copy">Все личные местоимения написаны верно. Мастерская открывает секретный код:</p>
+    <p class="code-label">код завершения</p>
+    <div class="code" aria-label="Код 3454">
+      <span style="--thread:#ff6b82">3</span><span style="--thread:#ffc85b">4</span><span style="--thread:#5fe1bd">5</span><span style="--thread:#7ebdff">4</span>
+    </div>
+    <button id="restart-button" class="primary" type="button">Сыграть ещё</button>
+  </section>
+</main>
+<noscript><p style="padding:24px;text-align:center;color:#fff">Для игры необходимо включить JavaScript.</p></noscript>
+<script>
+(function () {
+  'use strict';
+
+  var GLYPHS = [
+    {
+      han: '我', ru: 'Я', strokes: [
+        [[55,17],[43,20],[31,22],[20,25]],
+        [[17,38],[34,36],[51,34],[67,32]],
+        [[40,22],[40,39],[40,57],[40,72],[36,77],[32,76]],
+        [[17,59],[29,56],[42,52],[53,48]],
+        [[57,15],[58,30],[61,46],[66,62],[73,75],[79,80],[83,76]],
+        [[72,39],[67,47],[61,56],[54,63],[47,69]],
+        [[72,24],[77,27],[82,32]]
+      ]
+    },
+    {
+      han: '你', ru: 'ТЫ', strokes: [
+        [[36,15],[32,25],[27,35],[20,44]],
+        [[29,31],[29,47],[29,65],[29,83]],
+        [[57,15],[53,23],[48,31],[42,38]],
+        [[54,31],[66,30],[78,30],[80,33],[76,40]],
+        [[62,40],[62,55],[62,70],[62,79],[58,83],[55,82]],
+        [[51,56],[47,64],[42,72]],
+        [[72,55],[76,62],[81,70]]
+      ]
+    },
+    {
+      han: '您', ru: 'ВЫ (ВЕЖЛ.)', strokes: [
+        [[36,12],[32,20],[28,28],[22,35]],
+        [[29,25],[29,37],[29,49],[29,60]],
+        [[57,12],[53,18],[49,25],[43,31]],
+        [[54,25],[65,24],[76,24],[79,27],[75,33]],
+        [[62,32],[62,43],[62,53],[59,58],[55,57]],
+        [[51,43],[47,49],[43,55]],
+        [[72,43],[76,48],[81,54]],
+        [[31,68],[28,75],[27,82]],
+        [[40,68],[41,75],[45,81],[52,84],[59,82],[63,76],[61,79]],
+        [[53,67],[55,71],[57,75]],
+        [[69,66],[74,71],[79,78]]
+      ]
+    },
+    {
+      han: '他', ru: 'ОН', strokes: [
+        [[29,15],[26,25],[22,35],[18,43]],
+        [[25,32],[25,49],[25,67],[25,85]],
+        [[39,43],[53,39],[68,35],[81,32],[82,36],[80,51],[79,61],[75,66]],
+        [[61,22],[60,38],[60,54],[59,70]],
+        [[43,29],[43,45],[42,61],[42,72],[47,79],[59,81],[73,80],[82,75]]
+      ]
+    },
+    {
+      han: '她', ru: 'ОНА', strokes: [
+        [[23,20],[20,34],[17,48],[16,58],[25,64],[36,72]],
+        [[37,34],[34,44],[30,56],[26,66],[21,75]],
+        [[10,55],[21,55],[32,55],[42,55]],
+        [[49,43],[62,39],[75,35],[88,32],[89,36],[87,51],[86,60],[82,65]],
+        [[68,22],[67,38],[66,54],[65,69]],
+        [[53,30],[52,45],[51,60],[51,71],[56,79],[68,81],[81,80],[89,75]]
+      ]
+    },
+    {
+      han: '它', ru: 'ОНО', strokes: [
+        [[49,10],[52,15],[54,21]],
+        [[27,25],[24,30],[21,36]],
+        [[30,31],[45,30],[61,30],[76,31],[79,34],[75,41]],
+        [[52,43],[49,51],[45,60],[41,68]],
+        [[37,43],[37,57],[36,70],[38,77],[45,80],[59,80],[73,79],[81,73]]
+      ]
+    }
+  ];
+
+  var COLORS = ['#ff647d', '#ffc85b', '#ff9f68', '#5fe1bd', '#63b9ff', '#b982ff'];
+  var startScreen = document.getElementById('start-screen');
+  var gameScreen = document.getElementById('game-screen');
+  var finishScreen = document.getElementById('finish-screen');
+  var canvas = document.getElementById('ink-board');
+  var ctx = canvas.getContext('2d');
+  var missionWord = document.getElementById('mission-word');
+  var missionMeta = document.getElementById('mission-meta');
+  var roundCount = document.getElementById('round-count');
+  var boardBadge = document.getElementById('board-badge');
+  var feedback = document.getElementById('feedback');
+  var resetButton = document.getElementById('reset-button');
+  var hintButton = document.getElementById('hint-button');
+  var spoolsBox = document.getElementById('spools');
+  var spools = [];
+  var order = [];
+  var round = 0;
+  var strokeIndex = 0;
+  var accepted = [];
+  var currentPath = [];
+  var drawing = false;
+  var locked = false;
+  var mistakes = 0;
+  var hintVisible = false;
+  var hintTimer = 0;
+  var transitionTimer = 0;
+  var cssWidth = 0;
+  var cssHeight = 0;
+  var dpr = 1;
+
+  COLORS.forEach(function (color) {
+    var spool = document.createElement('span');
+    spool.className = 'spool';
+    spool.style.setProperty('--thread', color);
+    spoolsBox.appendChild(spool);
+    spools.push(spool);
+  });
+
+  function shuffle(items) {
+    var copy = items.slice();
+    for (var i = copy.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var hold = copy[i];
+      copy[i] = copy[j];
+      copy[j] = hold;
+    }
+    return copy;
+  }
+
+  function show(screen) {
+    startScreen.hidden = screen !== startScreen;
+    gameScreen.hidden = screen !== gameScreen;
+    finishScreen.hidden = screen !== finishScreen;
+  }
+
+  function setFeedback(text, kind) {
+    feedback.textContent = text;
+    feedback.className = 'feedback' + (kind ? ' ' + kind : '');
+  }
+
+  function item() {
+    return order[round];
+  }
+
+  function normPoint(event) {
+    var rect = canvas.getBoundingClientRect();
+    return [
+      Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100)),
+      Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100))
+    ];
+  }
+
+  function distance(a, b) {
+    var x = a[0] - b[0];
+    var y = a[1] - b[1];
+    return Math.sqrt(x * x + y * y);
+  }
+
+  function pathLength(points) {
+    var total = 0;
+    for (var i = 1; i < points.length; i++) total += distance(points[i - 1], points[i]);
+    return total;
+  }
+
+  function resample(points, count) {
+    if (points.length < 2) return Array(count).fill(points[0] || [0, 0]);
+    var lengths = [0];
+    for (var i = 1; i < points.length; i++) lengths.push(lengths[i - 1] + distance(points[i - 1], points[i]));
+    var total = lengths[lengths.length - 1];
+    if (!total) return Array(count).fill(points[0]);
+    var result = [];
+    var segment = 1;
+    for (var n = 0; n < count; n++) {
+      var target = total * n / (count - 1);
+      while (segment < lengths.length - 1 && lengths[segment] < target) segment++;
+      var before = lengths[segment - 1];
+      var span = lengths[segment] - before || 1;
+      var t = (target - before) / span;
+      result.push([
+        points[segment - 1][0] + (points[segment][0] - points[segment - 1][0]) * t,
+        points[segment - 1][1] + (points[segment][1] - points[segment - 1][1]) * t
+      ]);
+    }
+    return result;
+  }
+
+  function smooth(points) {
+    if (points.length < 4) return points.slice();
+    var result = [points[0]];
+    for (var i = 1; i < points.length - 1; i++) {
+      result.push([
+        (points[i - 1][0] + points[i][0] * 2 + points[i + 1][0]) / 4,
+        (points[i - 1][1] + points[i][1] * 2 + points[i + 1][1]) / 4
+      ]);
+    }
+    result.push(points[points.length - 1]);
+    return result;
+  }
+
+  function validate(user, expected) {
+    if (user.length < 2) return false;
+    var userLength = pathLength(user);
+    var expectedLength = pathLength(expected);
+    if (userLength < Math.max(5, expectedLength * .38) || userLength > expectedLength * 2.35) return false;
+    var startLimit = expectedLength < 16 ? 17 : 15;
+    var endLimit = expectedLength < 16 ? 20 : 22;
+    if (distance(user[0], expected[0]) > startLimit) return false;
+    if (distance(user[user.length - 1], expected[expected.length - 1]) > endLimit) return false;
+    var userDx = user[user.length - 1][0] - user[0][0];
+    var userDy = user[user.length - 1][1] - user[0][1];
+    var expectedDx = expected[expected.length - 1][0] - expected[0][0];
+    var expectedDy = expected[expected.length - 1][1] - expected[0][1];
+    var direction = (userDx * expectedDx + userDy * expectedDy) / ((Math.sqrt(userDx * userDx + userDy * userDy) || 1) * (Math.sqrt(expectedDx * expectedDx + expectedDy * expectedDy) || 1));
+    if (direction < .2) return false;
+    var a = resample(smooth(user), 24);
+    var b = resample(expected, 24);
+    var total = 0;
+    var worst = 0;
+    for (var i = 0; i < a.length; i++) {
+      var d = distance(a[i], b[i]);
+      total += d;
+      if (d > worst) worst = d;
+    }
+    return total / a.length < 12.8 && worst < 27;
+  }
+
+  function canvasPoint(point) {
+    return [point[0] / 100 * cssWidth, point[1] / 100 * cssHeight];
+  }
+
+  function roundedPath(points) {
+    if (!points.length) return;
+    var first = canvasPoint(points[0]);
+    ctx.beginPath();
+    ctx.moveTo(first[0], first[1]);
+    if (points.length === 2) {
+      var last = canvasPoint(points[1]);
+      ctx.lineTo(last[0], last[1]);
+      return;
+    }
+    for (var i = 1; i < points.length - 1; i++) {
+      var here = canvasPoint(points[i]);
+      var next = canvasPoint(points[i + 1]);
+      ctx.quadraticCurveTo(here[0], here[1], (here[0] + next[0]) / 2, (here[1] + next[1]) / 2);
+    }
+    var end = canvasPoint(points[points.length - 1]);
+    ctx.lineTo(end[0], end[1]);
+  }
+
+  function drawGrid() {
+    ctx.fillStyle = '#f7e8c4';
+    ctx.fillRect(0, 0, cssWidth, cssHeight);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(124,87,90,.16)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 6]);
+    ctx.beginPath();
+    ctx.moveTo(cssWidth / 2, cssHeight * .07);
+    ctx.lineTo(cssWidth / 2, cssHeight * .93);
+    ctx.moveTo(cssWidth * .07, cssHeight / 2);
+    ctx.lineTo(cssWidth * .93, cssHeight / 2);
+    ctx.moveTo(cssWidth * .12, cssHeight * .12);
+    ctx.lineTo(cssWidth * .88, cssHeight * .88);
+    ctx.moveTo(cssWidth * .88, cssHeight * .12);
+    ctx.lineTo(cssWidth * .12, cssHeight * .88);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(124,87,90,.22)';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(cssWidth * .07, cssHeight * .07, cssWidth * .86, cssHeight * .86);
+    ctx.restore();
+  }
+
+  function drawThread(points, color, alpha, width, dashed) {
+    if (points.length < 2) return;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (dashed) ctx.setLineDash([7, 6]);
+    roundedPath(points);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = width * .85;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = alpha * .5;
+    ctx.lineWidth = Math.max(1, width * .2);
+    ctx.strokeStyle = '#fffbe8';
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawStartCue(expected) {
+    if (!expected || !expected.length || locked) return;
+    var start = canvasPoint(expected[0]);
+    var next = canvasPoint(expected[Math.min(1, expected.length - 1)]);
+    var dx = next[0] - start[0];
+    var dy = next[1] - start[1];
+    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var ux = dx / len;
+    var uy = dy / len;
+    var arrowLength = Math.min(25, Math.max(15, len * .58));
+    var ex = start[0] + ux * arrowLength;
+    var ey = start[1] + uy * arrowLength;
+    var color = COLORS[round % COLORS.length];
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 9;
+    ctx.beginPath();
+    ctx.moveTo(start[0], start[1]);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - ux * 7 - uy * 4, ey - uy * 7 + ux * 4);
+    ctx.lineTo(ex - ux * 7 + uy * 4, ey - uy * 7 - ux * 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = .22 + .12 * Math.sin(Date.now() / 180);
+    ctx.beginPath();
+    ctx.arc(start[0], start[1], 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(start[0], start[1], 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function render() {
+    if (!cssWidth || gameScreen.hidden || !order.length) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+    drawGrid();
+    for (var i = 0; i < accepted.length; i++) drawThread(accepted[i], COLORS[round % COLORS.length], 1, Math.max(7, cssWidth * .027), false);
+    if (hintVisible && strokeIndex < item().strokes.length) drawThread(item().strokes[strokeIndex], '#8d718e', .42, Math.max(5, cssWidth * .02), true);
+    if (currentPath.length > 1) drawThread(currentPath, COLORS[round % COLORS.length], .86, Math.max(6, cssWidth * .024), false);
+    if (!drawing && strokeIndex < item().strokes.length) drawStartCue(item().strokes[strokeIndex]);
+  }
+
+  function animateCue() {
+    render();
+    window.requestAnimationFrame(animateCue);
+  }
+
+  function resizeCanvas() {
+    var rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    cssWidth = rect.width;
+    cssHeight = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
+    render();
+  }
+
+  function updateMission() {
+    var current = item();
+    missionWord.textContent = current.ru;
+    roundCount.textContent = 'нить ' + (round + 1) + ' / ' + order.length;
+    missionMeta.textContent = 'черта ' + (strokeIndex + 1) + ' из ' + current.strokes.length;
+    boardBadge.textContent = (strokeIndex + 1) + ' / ' + current.strokes.length;
+    boardBadge.className = 'board-badge';
+    canvas.setAttribute('aria-label', 'Напишите по чертам китайское местоимение «' + current.ru.toLowerCase() + '». Черта ' + (strokeIndex + 1) + ' из ' + current.strokes.length);
+  }
+
+  function clearTimers() {
+    window.clearTimeout(hintTimer);
+    window.clearTimeout(transitionTimer);
+  }
+
+  function beginRound() {
+    strokeIndex = 0;
+    accepted = [];
+    currentPath = [];
+    drawing = false;
+    locked = false;
+    mistakes = 0;
+    hintVisible = false;
+    updateMission();
+    setFeedback('Начните у точки и ведите по стрелке', '');
+    resetButton.disabled = true;
+    hintButton.disabled = false;
+    resizeCanvas();
+  }
+
+  function completeGlyph() {
+    locked = true;
+    hintButton.disabled = true;
+    resetButton.disabled = true;
+    boardBadge.textContent = item().han;
+    boardBadge.className = 'board-badge ok';
+    missionWord.textContent = item().han + ' · ' + item().ru.toLowerCase();
+    missionMeta.textContent = 'иероглиф вышит верно';
+    setFeedback('Нить закреплена', 'good');
+    spools[round].classList.add('done');
+    spoolsBox.setAttribute('aria-label', 'Прогресс: ' + (round + 1) + ' из ' + order.length);
+    transitionTimer = window.setTimeout(function () {
+      round++;
+      if (round >= order.length) {
+        show(finishScreen);
+        document.getElementById('restart-button').focus();
+      } else {
+        beginRound();
+      }
+    }, 1050);
+  }
+
+  function acceptStroke() {
+    accepted.push(item().strokes[strokeIndex].map(function (point) { return point.slice(); }));
+    currentPath = [];
+    strokeIndex++;
+    mistakes = 0;
+    hintVisible = false;
+    boardBadge.className = 'board-badge ok';
+    setFeedback('Верно — черта выровнена по образцу', 'good');
+    if (strokeIndex >= item().strokes.length) {
+      completeGlyph();
+      render();
+      return;
+    }
+    locked = true;
+    resetButton.disabled = false;
+    transitionTimer = window.setTimeout(function () {
+      locked = false;
+      updateMission();
+      setFeedback('Следующая черта: от точки по стрелке', '');
+      render();
+    }, 380);
+  }
+
+  function revealHint(auto) {
+    if (locked || strokeIndex >= item().strokes.length) return;
+    window.clearTimeout(hintTimer);
+    hintVisible = true;
+    setFeedback(auto ? 'Нить-призрак показывает форму черты' : 'Запомните нить-призрак', '');
+    render();
+    hintTimer = window.setTimeout(function () {
+      hintVisible = false;
+      setFeedback('Теперь повторите черту самостоятельно', '');
+      render();
+    }, 1450);
+  }
+
+  function rejectStroke() {
+    currentPath = [];
+    mistakes++;
+    boardBadge.className = 'board-badge bad';
+    setFeedback('Черта не совпала — попробуйте ещё', 'error');
+    render();
+    if (mistakes >= 2) {
+      window.setTimeout(function () { revealHint(true); }, 370);
+    }
+  }
+
+  function pointerDown(event) {
+    if (locked || drawing || gameScreen.hidden) return;
+    event.preventDefault();
+    canvas.setPointerCapture(event.pointerId);
+    drawing = true;
+    hintVisible = false;
+    currentPath = [normPoint(event)];
+    setFeedback('Ведите нить, не отрывая руку', '');
+    render();
+  }
+
+  function pointerMove(event) {
+    if (!drawing) return;
+    event.preventDefault();
+    var point = normPoint(event);
+    if (distance(point, currentPath[currentPath.length - 1]) >= .7) currentPath.push(point);
+    render();
+  }
+
+  function pointerUp(event) {
+    if (!drawing) return;
+    event.preventDefault();
+    drawing = false;
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    var point = normPoint(event);
+    if (!currentPath.length || distance(point, currentPath[currentPath.length - 1]) > .4) currentPath.push(point);
+    if (validate(currentPath, item().strokes[strokeIndex])) acceptStroke();
+    else rejectStroke();
+  }
+
+  function resetGlyph() {
+    if (locked || !accepted.length) return;
+    strokeIndex = 0;
+    accepted = [];
+    currentPath = [];
+    mistakes = 0;
+    hintVisible = false;
+    resetButton.disabled = true;
+    updateMission();
+    setFeedback('Полотно очищено — начните с первой точки', '');
+    render();
+  }
+
+  function startGame() {
+    clearTimers();
+    order = shuffle(GLYPHS);
+    round = 0;
+    spools.forEach(function (spool) { spool.classList.remove('done'); });
+    spoolsBox.setAttribute('aria-label', 'Прогресс: 0 из ' + GLYPHS.length);
+    show(gameScreen);
+    beginRound();
+    canvas.focus();
+  }
+
+  canvas.addEventListener('pointerdown', pointerDown);
+  canvas.addEventListener('pointermove', pointerMove);
+  canvas.addEventListener('pointerup', pointerUp);
+  canvas.addEventListener('pointercancel', pointerUp);
+  document.getElementById('start-button').addEventListener('click', startGame);
+  document.getElementById('restart-button').addEventListener('click', startGame);
+  resetButton.addEventListener('click', resetGlyph);
+  hintButton.addEventListener('click', function () { revealHint(false); });
+  window.addEventListener('resize', resizeCanvas);
+  if ('ResizeObserver' in window) new ResizeObserver(resizeCanvas).observe(canvas);
+  window.requestAnimationFrame(animateCue);
+}());
+</script>
+</body>
+</html>
