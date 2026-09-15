@@ -834,7 +834,15 @@
       return;
     }
     if (pa + pb !== pc || pc !== S.target) {
-      var dead = loseLife('Касса не сходится: ' + pa + ' + ' + pb + ' ≠ ' + S.target);
+      var msg;
+      if (pc !== S.target && pa + pb === S.target) {
+        msg = 'Слагаемые верны (' + pa + ' + ' + pb + ' = ' + S.target + '), но в СУММЕ стоит ' + pc + ' — собери ' + S.target;
+      } else if (pa + pb !== pc) {
+        msg = 'Касса не сходится: ' + pa + ' + ' + pb + ' ≠ ' + pc;
+      } else {
+        msg = 'Итог ' + pc + ' ≠ цели ' + S.target + ' — пересобери пример';
+      }
+      var dead = loseLife(msg);
       if (dead) gameOver();
       return;
     }
