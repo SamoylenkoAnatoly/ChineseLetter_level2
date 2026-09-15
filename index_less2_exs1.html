@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>index_less2_exs1 — Лунная счётная обсерватория</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --night: #10142d;
+    --night-deep: #070919;
+    --violet: #302b5f;
+    --paper: #f6e8c7;
+    --paper-deep: #d9bf86;
+    --copper: #da935c;
+    --copper-deep: #965338;
+    --jade: #72d6bd;
+    --jade-deep: #287e72;
+    --moon: #ffe8a6;
+    --rose: #ee6f74;
+    --ink: #2b2440;
+    --mist: #cbd1ec;
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: #f8f2e6;
+    background: #050713;
+    font-family: "Segoe UI", Arial, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  button { color: inherit; font: inherit; touch-action: manipulation; }
+  button:focus-visible { outline: 3px solid var(--moon); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: min(100%, 800px);
+    height: min(100vh, 600px);
+    height: min(100dvh, 600px);
+    min-height: 360px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 15% 19%, rgba(255,232,166,.75) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 84% 28%, rgba(114,214,189,.65) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 64% 78%, rgba(218,147,92,.45) 0 1px, transparent 1.5px),
+      radial-gradient(ellipse at 50% 112%, #373068 0%, transparent 56%),
+      linear-gradient(155deg, #171b3b 0%, #0c0f26 58%, #080a19 100%);
+    background-size: 39px 39px, 53px 53px, 71px 71px, auto, auto;
+  }
+  .app::before {
+    content: "";
+    position: absolute;
+    z-index: 30;
+    inset: 0;
+    border: 1px solid rgba(255,232,166,.2);
+    pointer-events: none;
+  }
+  .app::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -12%;
+    right: -12%;
+    bottom: -43%;
+    height: 72%;
+    border: 1px solid rgba(218,147,92,.16);
+    border-radius: 50%;
+    box-shadow: 0 -26px 90px rgba(48,43,95,.2), inset 0 15px 60px rgba(114,214,189,.035);
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    animation: screen-in .46s cubic-bezier(.2,.78,.2,1) both;
+  }
+  @keyframes screen-in {
+    from { opacity: 0; transform: scale(.985) translateY(7px); }
+    to { opacity: 1; transform: none; }
+  }
+  .start-screen,
+  .finish-screen {
+    display: grid;
+    place-items: center;
+    padding: clamp(13px, 3vw, 28px);
+  }
+  .start-card {
+    position: relative;
+    width: min(100%, 700px);
+    min-height: min(486px, calc(100dvh - 30px));
+    display: grid;
+    grid-template-columns: minmax(210px, .85fr) minmax(290px, 1.15fr);
+    align-items: center;
+    gap: clamp(20px, 5vw, 48px);
+    padding: clamp(24px, 5vw, 48px);
+    border: 1px solid rgba(218,147,92,.42);
+    border-radius: 90px 12px 90px 12px;
+    background: linear-gradient(145deg, rgba(31,33,70,.96), rgba(11,14,36,.96));
+    box-shadow: 0 30px 80px rgba(0,0,0,.38), inset 0 0 55px rgba(114,214,189,.04);
+  }
+  .start-card::before,
+  .finish-card::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px dashed rgba(114,214,189,.18);
+    border-radius: 80px 8px 80px 8px;
+    pointer-events: none;
+  }
+  .start-card::after {
+    content: "OBSERVATORY · 00—十";
+    position: absolute;
+    right: 28px;
+    top: 17px;
+    color: rgba(203,209,236,.35);
+    font: 700 8px/1 "Consolas", monospace;
+    letter-spacing: .18em;
+  }
+  .astrolabe {
+    position: relative;
+    width: 222px;
+    height: 270px;
+    display: grid;
+    place-items: center;
+  }
+  .astro-ring {
+    position: absolute;
+    width: 204px;
+    height: 204px;
+    border: 1px solid rgba(218,147,92,.62);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(218,147,92,.08), inset 0 0 25px rgba(114,214,189,.05);
+    animation: orbit 24s linear infinite;
+  }
+  .astro-ring::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1px dashed rgba(114,214,189,.36);
+    border-radius: 50%;
+  }
+  .astro-ring::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--jade);
+    box-shadow: 0 0 14px var(--jade);
+  }
+  .astro-ring.ring-two {
+    width: 152px;
+    height: 226px;
+    border-color: rgba(255,232,166,.32);
+    animation-duration: 18s;
+    animation-direction: reverse;
+  }
+  .astro-axis {
+    position: absolute;
+    width: 14px;
+    height: 235px;
+    border: 1px solid rgba(218,147,92,.38);
+    border-radius: 50%;
+    transform: rotate(43deg);
+  }
+  .astro-axis::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: -7px;
+    width: 2px;
+    height: 249px;
+    background: linear-gradient(transparent, rgba(255,232,166,.65), transparent);
+  }
+  .moon-lens {
+    position: relative;
+    z-index: 2;
+    width: 102px;
+    height: 102px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,232,166,.7);
+    border-radius: 50%;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 36% 32%, rgba(255,255,255,.85) 0 2px, transparent 3px),
+      radial-gradient(circle at 67% 67%, rgba(150,83,56,.12) 0 7px, transparent 8px),
+      radial-gradient(circle at 42% 58%, rgba(150,83,56,.1) 0 4px, transparent 5px),
+      linear-gradient(145deg, #fff2bd, #e3bd72);
+    font: 800 47px/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 0 0 34px rgba(255,232,166,.2), inset 0 0 16px rgba(150,83,56,.14);
+    animation: moon-breathe 4s ease-in-out infinite;
+  }
+  @keyframes orbit { to { transform: rotate(360deg); } }
+  @keyframes moon-breathe { 50% { box-shadow: 0 0 50px rgba(255,232,166,.32), inset 0 0 16px rgba(150,83,56,.14); } }
+  .orbit-glyph {
+    position: absolute;
+    z-index: 4;
+    width: 40px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    border: 1px solid var(--paper-deep);
+    border-radius: 4px 4px 14px 4px;
+    background: var(--paper);
+    font: 800 20px/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 0 7px 18px rgba(0,0,0,.3);
+  }
+  .orbit-glyph.g1 { left: 4px; top: 24px; transform: rotate(-13deg); }
+  .orbit-glyph.g2 { right: 0; top: 43px; transform: rotate(10deg); }
+  .orbit-glyph.g3 { left: 10px; bottom: 28px; transform: rotate(8deg); }
+  .orbit-glyph.g4 { right: 10px; bottom: 13px; transform: rotate(-8deg); }
+  .orbit-glyph.g5 { left: 91px; bottom: 0; transform: rotate(3deg); }
+  .eyebrow {
+    color: var(--jade);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .23em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin-top: 8px;
+    font: 700 clamp(34px, 6.3vw, 53px)/.94 Georgia, "Times New Roman", serif;
+    letter-spacing: -.035em;
+  }
+  .lead {
+    max-width: 360px;
+    margin-top: 14px;
+    color: #bbc2df;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .number-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 15px;
+  }
+  .number-strip span {
+    min-width: 27px;
+    padding: 5px 6px;
+    color: var(--paper);
+    border: 1px solid rgba(218,147,92,.25);
+    border-radius: 4px 4px 9px 4px;
+    background: rgba(218,147,92,.06);
+    font: 700 15px/1 "Microsoft YaHei", "SimSun", serif;
+    text-align: center;
+  }
+  .primary-button {
+    position: relative;
+    min-width: 164px;
+    margin-top: 21px;
+    padding: 13px 25px;
+    border: 0;
+    border-radius: 4px 16px 4px 16px;
+    color: #16233a;
+    background: linear-gradient(135deg, #94ead2, #54bea9);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    box-shadow: 0 9px 25px rgba(114,214,189,.18), inset 0 1px rgba(255,255,255,.5);
+    transition: transform .16s, box-shadow .16s, filter .16s;
+  }
+  .primary-button::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(22,35,58,.22);
+    border-radius: 2px 12px 2px 12px;
+  }
+  @media (hover: hover) {
+    .primary-button:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 13px 31px rgba(114,214,189,.26); }
+  }
+  .primary-button:active { transform: translateY(1px); }
+  .game-screen {
+    display: grid;
+    grid-template-rows: 58px minmax(0, 1fr) 48px;
+    gap: 8px;
+    padding: 9px 11px 10px;
+  }
+  .skybar {
+    display: grid;
+    grid-template-columns: 145px 1fr 78px;
+    align-items: center;
+    gap: 12px;
+    padding: 0 13px;
+    border: 1px solid rgba(218,147,92,.25);
+    border-radius: 20px 5px 20px 5px;
+    background: rgba(8,11,29,.76);
+    box-shadow: inset 0 0 22px rgba(114,214,189,.035);
+  }
+  .mini-brand {
+    color: var(--paper);
+    font: 700 13px/1 Georgia, serif;
+    white-space: nowrap;
+  }
+  .mini-brand b {
+    color: var(--jade);
+    font: 800 18px/1 "Microsoft YaHei", "SimSun", serif;
+  }
+  .star-progress {
+    display: flex;
+    justify-content: center;
+    gap: clamp(4px, 1vw, 8px);
+  }
+  .progress-star {
+    width: 15px;
+    height: 15px;
+    display: grid;
+    place-items: center;
+    color: transparent;
+    background: rgba(203,209,236,.16);
+    clip-path: polygon(50% 0, 61% 36%, 100% 38%, 69% 60%, 79% 100%, 50% 75%, 21% 100%, 31% 60%, 0 38%, 39% 36%);
+    font: 700 6px/1 "Microsoft YaHei", serif;
+    transition: transform .3s, color .3s, background .3s, filter .3s;
+  }
+  .progress-star.active { background: var(--copper); transform: scale(1.15); filter: drop-shadow(0 0 5px rgba(218,147,92,.7)); }
+  .progress-star.done { color: #18302e; background: var(--jade); transform: rotate(8deg); filter: drop-shadow(0 0 5px rgba(114,214,189,.75)); }
+  .round-count {
+    color: #9199bd;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-align: right;
+    text-transform: uppercase;
+  }
+  .round-count strong { display: block; margin-bottom: 2px; color: var(--moon); font-size: 16px; letter-spacing: .05em; }
+  .game-core {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(178px, .72fr) minmax(350px, 1.28fr);
+    gap: 9px;
+  }
+  .target-card,
+  .mechanism {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid rgba(218,147,92,.26);
+    background: linear-gradient(155deg, rgba(37,38,79,.88), rgba(12,15,37,.94));
+  }
+  .target-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-radius: 48px 7px 48px 7px;
+    text-align: center;
+  }
+  .target-card::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border: 1px dashed rgba(114,214,189,.16);
+    border-radius: 50%;
+    animation: orbit 35s linear infinite;
+  }
+  .target-card::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 17px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(218,147,92,.32), transparent);
+  }
+  .phase-tag {
+    position: absolute;
+    z-index: 2;
+    left: 14px;
+    top: 13px;
+    padding: 5px 8px;
+    color: var(--jade);
+    border: 1px solid rgba(114,214,189,.25);
+    border-radius: 4px 9px 4px 9px;
+    background: rgba(7,9,25,.42);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .target-kicker {
+    position: relative;
+    z-index: 2;
+    color: #929ac0;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .target-display {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 180px);
+    min-height: 150px;
+    display: grid;
+    place-items: center;
+    margin-top: 12px;
+  }
+  .arabic-value {
+    color: var(--moon);
+    font: 700 clamp(72px, 13vw, 112px)/1 Georgia, serif;
+    text-shadow: 0 0 28px rgba(255,232,166,.2);
+  }
+  .dot-field {
+    width: 142px;
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: repeat(5, 19px);
+    place-content: center;
+    gap: 12px 10px;
+  }
+  .count-dot {
+    width: 17px;
+    height: 17px;
+    border: 1px solid #fff4c9;
+    border-radius: 50%;
+    background: var(--moon);
+    box-shadow: 0 0 9px rgba(255,232,166,.72), 0 0 22px rgba(218,147,92,.27);
+    animation: star-pulse 1.8s ease-in-out infinite alternate;
+  }
+  .count-dot:nth-child(2n) { animation-delay: -.7s; }
+  .count-dot:nth-child(3n) { animation-delay: -1.2s; }
+  @keyframes star-pulse { to { transform: scale(.82); opacity: .72; } }
+  .zero-sky {
+    width: 94px;
+    height: 94px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(203,209,236,.32);
+    border-radius: 50%;
+    background: radial-gradient(circle, #0a0c20 0 53%, rgba(114,214,189,.4) 55%, transparent 59%);
+    color: #9da5c8;
+    box-shadow: 0 0 25px rgba(114,214,189,.08);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .echo-glyph {
+    position: relative;
+    width: 126px;
+    height: 142px;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    border: 1px solid var(--paper-deep);
+    border-radius: 7px 7px 30px 7px;
+    background:
+      linear-gradient(90deg, rgba(150,83,56,.055) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(150,83,56,.045) 1px, transparent 1px),
+      linear-gradient(145deg, #fff1cd, #dec286);
+    background-size: 13px 13px, 13px 13px, auto;
+    font: 800 70px/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 0 12px 34px rgba(0,0,0,.28);
+    animation: glyph-arrive .4s cubic-bezier(.2,.85,.3,1.2) both;
+  }
+  .echo-glyph::after {
+    content: attr(data-number);
+    position: absolute;
+    right: 9px;
+    bottom: 7px;
+    color: var(--copper-deep);
+    font: 800 15px/1 Georgia, serif;
+  }
+  @keyframes glyph-arrive { from { opacity: 0; transform: scale(.55) rotate(-9deg); } }
+  .target-note {
+    position: relative;
+    z-index: 2;
+    min-height: 31px;
+    max-width: 190px;
+    color: #b4bbd8;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .mechanism {
+    border-radius: 7px 48px 7px 48px;
+  }
+  .mechanism::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(400px, 86%);
+    aspect-ratio: 1;
+    border: 1px solid rgba(218,147,92,.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: inset 0 0 40px rgba(114,214,189,.025);
+  }
+  .sign-phase,
+  .echo-phase {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: phase-in .35s ease both;
+  }
+  @keyframes phase-in { from { opacity: 0; transform: translateY(7px); } }
+  .instrument-label {
+    position: relative;
+    z-index: 4;
+    margin-bottom: 11px;
+    color: #aeb5d4;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .selector-row {
+    position: relative;
+    z-index: 3;
+    width: min(100%, 425px);
+    display: grid;
+    grid-template-columns: 56px minmax(180px, 1fr) 56px;
+    align-items: center;
+    gap: 12px;
+  }
+  .turn-button {
+    width: 50px;
+    height: 66px;
+    border: 1px solid rgba(218,147,92,.45);
+    border-radius: 17px 5px 17px 5px;
+    color: var(--copper);
+    background: rgba(8,11,29,.78);
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: inset 0 0 14px rgba(218,147,92,.05);
+    transition: transform .14s, color .14s, border-color .14s, background .14s;
+  }
+  @media (hover: hover) {
+    .turn-button:hover { color: var(--moon); border-color: var(--moon); background: rgba(48,43,95,.65); transform: translateY(-2px); }
+  }
+  .turn-button:active { transform: scale(.94); }
+  .dial-shell {
+    position: relative;
+    height: 257px;
+    display: grid;
+    place-items: center;
+  }
+  .dial-ring {
+    position: absolute;
+    width: 236px;
+    height: 236px;
+    border: 1px solid rgba(218,147,92,.45);
+    border-radius: 50%;
+    background: repeating-conic-gradient(from 0deg, rgba(218,147,92,.38) 0 1deg, transparent 1deg 15deg);
+    -webkit-mask: radial-gradient(closest-side, transparent 88%, #000 89%);
+    mask: radial-gradient(closest-side, transparent 88%, #000 89%);
+    transform: rotate(var(--dial-turn, 0deg));
+    transition: transform .38s cubic-bezier(.2,.8,.2,1);
+  }
+  .dial-ring.inner {
+    width: 194px;
+    height: 194px;
+    opacity: .42;
+    background: none;
+    border-style: dashed;
+    -webkit-mask: none;
+    mask: none;
+    transform: rotate(var(--dial-turn-reverse, 0deg));
+  }
+  .neighbor-glyph {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    color: #70799f;
+    border: 1px solid rgba(203,209,236,.12);
+    border-radius: 5px 5px 13px 5px;
+    background: rgba(8,11,29,.62);
+    font: 700 21px/1 "Microsoft YaHei", "SimSun", serif;
+    transform: translateY(-50%);
+  }
+  .neighbor-glyph.previous { left: 7px; transform: translateY(-50%) rotate(-8deg); }
+  .neighbor-glyph.next { right: 7px; transform: translateY(-50%) rotate(8deg); }
+  .lens-button {
+    position: relative;
+    z-index: 4;
+    width: 142px;
+    height: 142px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 2px solid var(--paper-deep);
+    border-radius: 50%;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255,255,255,.85) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 68%, rgba(150,83,56,.1) 0 8px, transparent 9px),
+      linear-gradient(145deg, #fff1c4, #d9af68);
+    cursor: pointer;
+    box-shadow: 0 0 0 9px rgba(218,147,92,.08), 0 12px 35px rgba(0,0,0,.34), inset 0 0 18px rgba(150,83,56,.16);
+    transition: transform .16s, box-shadow .16s;
+  }
+  @media (hover: hover) {
+    .lens-button:hover { transform: scale(1.035); box-shadow: 0 0 0 11px rgba(114,214,189,.1), 0 15px 38px rgba(0,0,0,.36), inset 0 0 18px rgba(150,83,56,.16); }
+  }
+  .lens-button:active { transform: scale(.97); }
+  .lens-button.correct { animation: lens-correct .55s ease; }
+  .lens-button.wrong { animation: lens-wrong .4s ease; }
+  @keyframes lens-correct {
+    45% { box-shadow: 0 0 0 18px rgba(114,214,189,.12), 0 0 45px rgba(114,214,189,.45), inset 0 0 22px rgba(40,126,114,.22); transform: scale(1.07); }
+  }
+  @keyframes lens-wrong {
+    25% { transform: translateX(-8px) rotate(-3deg); box-shadow: 0 0 25px rgba(238,111,116,.35); }
+    60% { transform: translateX(8px) rotate(3deg); }
+  }
+  .dial-glyph {
+    font: 800 65px/1 "Microsoft YaHei", "SimSun", serif;
+  }
+  .lock-label {
+    color: var(--copper-deep);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .dial-help {
+    position: relative;
+    z-index: 3;
+    margin-top: 7px;
+    color: #737ca3;
+    font-size: 9px;
+    letter-spacing: .08em;
+  }
+  .echo-title {
+    position: relative;
+    z-index: 2;
+    color: var(--moon);
+    font: 700 clamp(21px, 3.6vw, 29px)/1.15 Georgia, serif;
+    text-align: center;
+  }
+  .echo-subtitle {
+    position: relative;
+    z-index: 2;
+    margin-top: 7px;
+    color: #939bbf;
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-align: center;
+  }
+  .echo-options {
+    position: relative;
+    z-index: 3;
+    width: min(100%, 410px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 20px;
+  }
+  .echo-option {
+    position: relative;
+    min-height: 66px;
+    padding: 9px 12px 8px 40px;
+    overflow: hidden;
+    border: 1px solid rgba(218,147,92,.32);
+    border-radius: 5px 17px 5px 17px;
+    color: var(--paper);
+    background: linear-gradient(145deg, rgba(48,43,95,.82), rgba(16,20,45,.9));
+    cursor: pointer;
+    font: 700 22px/1 Georgia, serif;
+    letter-spacing: .04em;
+    box-shadow: inset 0 0 17px rgba(114,214,189,.025);
+    transition: transform .15s, border-color .15s, background .15s;
+  }
+  .echo-option::before {
+    content: attr(data-key);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    width: 21px;
+    height: 21px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(218,147,92,.38);
+    border-radius: 50%;
+    color: var(--copper);
+    font: 800 9px/1 "Segoe UI", sans-serif;
+    transform: translateY(-50%);
+  }
+  @media (hover: hover) {
+    .echo-option:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--moon); background: linear-gradient(145deg, rgba(73,63,118,.9), rgba(22,26,56,.96)); }
+  }
+  .echo-option:active:not(:disabled) { transform: scale(.97); }
+  .echo-option.good { color: #132e2c; border-color: #b8f2e0; background: var(--jade); box-shadow: 0 0 24px rgba(114,214,189,.26); }
+  .echo-option.bad { color: #ffd8d3; border-color: var(--rose); background: rgba(117,43,59,.76); animation: echo-wrong .35s ease; }
+  @keyframes echo-wrong { 35% { transform: translateX(-6px); } 70% { transform: translateX(6px); } }
+  .feedback-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 0 13px;
+    border: 1px solid rgba(203,209,236,.14);
+    border-radius: 5px 16px 5px 16px;
+    background: rgba(8,11,29,.78);
+  }
+  .feedback {
+    min-width: 0;
+    overflow: hidden;
+    color: #b7bedb;
+    font-size: 11px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .feedback.good { color: #a5ead8; }
+  .feedback.error { color: #ffaaa8; }
+  .learned-link {
+    padding: 5px 10px;
+    border: 1px solid rgba(114,214,189,.34);
+    border-radius: 4px 10px 4px 10px;
+    color: var(--moon);
+    background: rgba(114,214,189,.07);
+    font: 700 15px/1.1 Georgia, serif;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .key-hint {
+    color: #687196;
+    font-size: 8px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .finish-screen {
+    background: rgba(5,7,19,.48);
+    backdrop-filter: blur(8px);
+  }
+  .finish-card {
+    position: relative;
+    width: min(100%, 570px);
+    min-height: 430px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    padding: 36px;
+    border: 1px solid rgba(218,147,92,.42);
+    border-radius: 80px 10px 80px 10px;
+    background: linear-gradient(145deg, rgba(36,37,77,.98), rgba(10,13,33,.98));
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 0 50px rgba(114,214,189,.04);
+    text-align: center;
+  }
+  .finish-orbit {
+    position: relative;
+    width: 105px;
+    height: 105px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(218,147,92,.5);
+    border-radius: 50%;
+    color: var(--moon);
+    font: 800 42px/1 "Microsoft YaHei", "SimSun", serif;
+    box-shadow: 0 0 30px rgba(255,232,166,.08), inset 0 0 20px rgba(114,214,189,.05);
+  }
+  .finish-orbit::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px dashed rgba(114,214,189,.42);
+    border-radius: 50%;
+    animation: orbit 10s linear infinite;
+  }
+  .finish-orbit::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--jade);
+    box-shadow: 0 0 12px var(--jade);
+  }
+  .finish-card h2 {
+    margin-top: 18px;
+    font: 700 clamp(28px, 5.5vw, 43px)/1 Georgia, serif;
+  }
+  .finish-text {
+    max-width: 390px;
+    margin-top: 10px;
+    color: #b9c0dd;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .code-label {
+    margin-top: 19px;
+    color: var(--jade);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  .completion-code {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .completion-code span {
+    width: 49px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--paper-deep);
+    border-radius: 5px 5px 15px 5px;
+    color: var(--ink);
+    background: linear-gradient(145deg, #fff0c4, #d9b36e);
+    font: 800 32px/1 Georgia, serif;
+    box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    animation: code-in .48s cubic-bezier(.2,.85,.25,1.25) both;
+  }
+  .completion-code span:nth-child(2) { animation-delay: .1s; background: linear-gradient(145deg, #a9eedc, #65c4ae); }
+  .completion-code span:nth-child(3) { animation-delay: .2s; }
+  .completion-code span:nth-child(4) { animation-delay: .3s; background: linear-gradient(145deg, #a9eedc, #65c4ae); }
+  @keyframes code-in { from { opacity: 0; transform: translateY(18px) rotate(9deg) scale(.5); } }
+  .finish-card .primary-button { margin-top: 18px; }
+  @media (max-width: 620px) {
+    .app { height: 100dvh; }
+    .start-screen,
+    .finish-screen { padding: 10px; }
+    .start-card {
+      min-height: calc(100dvh - 20px);
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 18px 23px 20px;
+      border-radius: 54px 8px 54px 8px;
+      text-align: center;
+    }
+    .start-card::before { border-radius: 47px 5px 47px 5px; }
+    .astrolabe { width: 100%; height: 155px; }
+    .astro-ring { width: 138px; height: 138px; }
+    .astro-ring.ring-two { width: 108px; height: 156px; }
+    .astro-axis { height: 160px; }
+    .astro-axis::after { height: 174px; }
+    .moon-lens { width: 75px; height: 75px; font-size: 34px; }
+    .orbit-glyph { width: 32px; height: 38px; font-size: 15px; }
+    .orbit-glyph.g1 { left: calc(50% - 105px); top: 4px; }
+    .orbit-glyph.g2 { right: calc(50% - 105px); top: 11px; }
+    .orbit-glyph.g3 { left: calc(50% - 98px); bottom: 3px; }
+    .orbit-glyph.g4 { right: calc(50% - 98px); bottom: 1px; }
+    .orbit-glyph.g5 { left: calc(50% - 16px); bottom: -3px; }
+    h1 { margin-top: 5px; font-size: clamp(31px, 9vw, 43px); }
+    .lead { margin: 9px auto 0; font-size: 12px; line-height: 1.35; }
+    .number-strip { justify-content: center; margin-top: 10px; }
+    .primary-button { margin-top: 14px; }
+    .game-screen { grid-template-rows: 50px minmax(0, 1fr) 47px; gap: 6px; padding: 6px; }
+    .skybar { grid-template-columns: 1fr auto; gap: 6px; padding: 0 9px; }
+    .mini-brand { display: none; }
+    .star-progress { gap: 4px; }
+    .progress-star { width: 13px; height: 13px; }
+    .round-count { min-width: 50px; }
+    .game-core { grid-template-columns: 1fr; grid-template-rows: 130px minmax(0, 1fr); gap: 6px; }
+    .target-card { flex-direction: row; gap: 14px; padding: 12px 15px; border-radius: 30px 5px 30px 5px; }
+    .target-card::before { width: 115px; height: 115px; left: 22%; }
+    .phase-tag { top: 8px; left: 9px; }
+    .target-kicker { display: none; }
+    .target-display { width: 126px; min-height: 100px; margin: 0; flex: 0 0 126px; }
+    .arabic-value { font-size: 74px; }
+    .dot-field { width: 120px; min-height: 84px; grid-template-columns: repeat(5, 14px); gap: 8px; }
+    .count-dot { width: 13px; height: 13px; }
+    .zero-sky { width: 71px; height: 71px; font-size: 7px; }
+    .echo-glyph { width: 82px; height: 91px; border-radius: 5px 5px 21px 5px; font-size: 48px; }
+    .echo-glyph::after { font-size: 12px; }
+    .target-note { max-width: 185px; font-size: 11px; }
+    .mechanism { border-radius: 5px 30px 5px 30px; }
+    .sign-phase,
+    .echo-phase { padding: 9px 12px; }
+    .instrument-label { margin-bottom: 5px; }
+    .selector-row { grid-template-columns: 46px minmax(175px, 1fr) 46px; gap: 6px; max-width: 370px; }
+    .turn-button { width: 44px; height: 57px; }
+    .dial-shell { height: 210px; }
+    .dial-ring { width: 194px; height: 194px; }
+    .dial-ring.inner { width: 161px; height: 161px; }
+    .lens-button { width: 118px; height: 118px; }
+    .dial-glyph { font-size: 54px; }
+    .neighbor-glyph { width: 37px; height: 46px; font-size: 18px; }
+    .echo-title { font-size: 21px; }
+    .echo-options { margin-top: 12px; gap: 7px; }
+    .echo-option { min-height: 57px; font-size: 19px; }
+    .feedback-bar { padding: 0 9px; }
+    .key-hint { display: none; }
+    .finish-card { min-height: calc(100dvh - 20px); padding: 23px; border-radius: 54px 8px 54px 8px; }
+    .finish-card::before { border-radius: 47px 5px 47px 5px; }
+  }
+  @media (max-width: 380px) {
+    .star-progress { gap: 2px; }
+    .progress-star { width: 12px; height: 12px; }
+    .target-card { gap: 7px; }
+    .target-display { width: 112px; flex-basis: 112px; }
+    .selector-row { grid-template-columns: 41px minmax(166px, 1fr) 41px; gap: 3px; }
+    .turn-button { width: 39px; }
+    .neighbor-glyph { display: none; }
+    .echo-option { padding-left: 35px; font-size: 17px; }
+  }
+  @media (max-height: 500px) {
+    .start-card { min-height: calc(100dvh - 16px); padding: 14px 28px; }
+    .astrolabe { height: 190px; transform: scale(.78); }
+    .lead { margin-top: 7px; font-size: 11px; line-height: 1.3; }
+    .number-strip { margin-top: 8px; }
+    .number-strip span { padding: 3px 5px; font-size: 13px; }
+    .primary-button { margin-top: 10px; padding-top: 10px; padding-bottom: 10px; }
+    .game-screen { grid-template-rows: 43px minmax(0,1fr) 41px; gap: 5px; padding: 5px; }
+    .game-core { grid-template-columns: minmax(150px, .58fr) minmax(320px, 1.42fr); grid-template-rows: 1fr; gap: 5px; }
+    .target-card { flex-direction: column; gap: 0; padding: 9px; }
+    .target-kicker { display: block; }
+    .target-display { min-height: 112px; width: 135px; margin-top: 4px; flex: 0 1 auto; }
+    .arabic-value { font-size: 73px; }
+    .dot-field { min-height: 90px; }
+    .echo-glyph { width: 87px; height: 98px; font-size: 48px; }
+    .target-note { font-size: 9px; }
+    .instrument-label { margin-bottom: 3px; }
+    .dial-shell { height: 196px; }
+    .dial-ring { width: 185px; height: 185px; }
+    .dial-ring.inner { width: 154px; height: 154px; }
+    .lens-button { width: 112px; height: 112px; }
+    .dial-glyph { font-size: 51px; }
+    .dial-help { margin-top: 2px; }
+    .echo-options { margin-top: 10px; }
+    .echo-option { min-height: 53px; }
+    .finish-card { min-height: calc(100dvh - 16px); padding: 18px 30px; }
+    .finish-orbit { width: 76px; height: 76px; font-size: 31px; }
+    .finish-card h2 { margin-top: 10px; }
+    .finish-text { margin-top: 7px; font-size: 11px; }
+    .code-label { margin-top: 10px; }
+    .completion-code span { width: 40px; height: 46px; font-size: 26px; }
+    .finish-card .primary-button { margin-top: 10px; }
+  }
+  @media (max-width: 620px) and (max-height: 560px) {
+    .game-core { grid-template-columns: minmax(135px, .54fr) minmax(280px, 1.46fr); grid-template-rows: 1fr; }
+    .target-card { flex-direction: column; padding: 8px; }
+    .target-display { width: 118px; min-height: 105px; flex: 0 1 auto; }
+    .target-note { font-size: 9px; }
+    .echo-options { margin-top: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <section class="screen start-screen" id="startScreen">
+    <div class="start-card">
+      <div class="astrolabe" aria-hidden="true">
+        <div class="astro-ring"></div>
+        <div class="astro-ring ring-two"></div>
+        <div class="astro-axis"></div>
+        <div class="moon-lens">数</div>
+        <span class="orbit-glyph g1">零</span>
+        <span class="orbit-glyph g2">三</span>
+        <span class="orbit-glyph g3">六</span>
+        <span class="orbit-glyph g4">九</span>
+        <span class="orbit-glyph g5">十</span>
+      </div>
+      <div class="start-copy">
+        <p class="eyebrow">index_less2_exs1 · числовой атлас</p>
+        <h1>Лунная счётная<br>обсерватория</h1>
+        <p class="lead">Сосчитайте звёзды, настройте барабан на верный иероглиф, а затем поймайте его звуковое эхо. Зажгите 11 созвездий.</p>
+        <div class="number-strip" aria-label="Иероглифы в игре">
+          <span>零</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>七</span><span>八</span><span>九</span><span>十</span>
+        </div>
+        <button class="primary-button" id="startButton" type="button">Начать</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen game-screen" id="gameScreen" hidden>
+    <header class="skybar">
+      <p class="mini-brand"><b>数</b> Лунный счёт</p>
+      <div class="star-progress" id="starProgress" role="img" aria-label="Открыто 0 из 11 созвездий"></div>
+      <p class="round-count"><strong id="roundNumber">01 / 11</strong>орбита</p>
+    </header>
+
+    <div class="game-core">
+      <section class="target-card" aria-labelledby="targetKicker">
+        <span class="phase-tag" id="phaseTag">шаг 1 · знак</span>
+        <p class="target-kicker" id="targetKicker">небесная величина</p>
+        <div class="target-display" id="targetDisplay"></div>
+        <p class="target-note" id="targetNote">Настройте барабан на иероглиф этого числа.</p>
+      </section>
+
+      <section class="mechanism" aria-label="Счётный механизм">
+        <div class="sign-phase" id="signPhase">
+          <p class="instrument-label">Вращайте барабан и зафиксируйте знак</p>
+          <div class="selector-row">
+            <button class="turn-button" id="previousButton" type="button" aria-label="Предыдущий иероглиф">‹</button>
+            <div class="dial-shell" id="dialShell">
+              <div class="dial-ring" aria-hidden="true"></div>
+              <div class="dial-ring inner" aria-hidden="true"></div>
+              <span class="neighbor-glyph previous" id="previousGlyph" aria-hidden="true"></span>
+              <button class="lens-button" id="lockButton" type="button" aria-label="Зафиксировать выбранный иероглиф">
+                <strong class="dial-glyph" id="dialGlyph"></strong>
+                <span class="lock-label">зафиксировать</span>
+              </button>
+              <span class="neighbor-glyph next" id="nextGlyph" aria-hidden="true"></span>
+            </div>
+            <button class="turn-button" id="nextButton" type="button" aria-label="Следующий иероглиф">›</button>
+          </div>
+          <p class="dial-help">← → вращать · Enter фиксировать</p>
+        </div>
+
+        <div class="echo-phase" id="echoPhase" hidden>
+          <h2 class="echo-title">Поймайте звуковое эхо</h2>
+          <p class="echo-subtitle">Как читается найденный иероглиф?</p>
+          <div class="echo-options" id="echoOptions"></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="feedback-bar">
+      <p class="feedback" id="feedback" aria-live="polite">Сосчитайте огни и настройте линзу.</p>
+      <p class="learned-link" id="learnedLink" hidden></p>
+      <p class="key-hint" id="keyHint">мышь · касание · клавиши</p>
+    </footer>
+  </section>
+
+  <section class="screen finish-screen" id="finishScreen" hidden>
+    <div class="finish-card">
+      <div class="finish-orbit" aria-hidden="true">十一</div>
+      <h2>Небесный счёт восстановлен</h2>
+      <p class="finish-text">Все 11 чисел получили знак и звучание. Обсерватория открывает код успешного выполнения.</p>
+      <p class="code-label">код успешного выполнения</p>
+      <div class="completion-code" aria-label="Код успешного выполнения 5643"><span>5</span><span>6</span><span>4</span><span>3</span></div>
+      <button class="primary-button" id="restartButton" type="button">Сыграть ещё</button>
+    </div>
+  </section>
+</main>
+<noscript><p style="padding:20px;color:#fff;text-align:center">Для игры необходимо включить JavaScript.</p></noscript>
+<script>
+(function () {
+  'use strict';
+
+  var DATA = [
+    { value: 0, hanzi: '零', pinyin: 'líng' },
+    { value: 1, hanzi: '一', pinyin: 'yī' },
+    { value: 2, hanzi: '二', pinyin: 'èr' },
+    { value: 3, hanzi: '三', pinyin: 'sān' },
+    { value: 4, hanzi: '四', pinyin: 'sì' },
+    { value: 5, hanzi: '五', pinyin: 'wǔ' },
+    { value: 6, hanzi: '六', pinyin: 'liù' },
+    { value: 7, hanzi: '七', pinyin: 'qī' },
+    { value: 8, hanzi: '八', pinyin: 'bā' },
+    { value: 9, hanzi: '九', pinyin: 'jiǔ' },
+    { value: 10, hanzi: '十', pinyin: 'shí' }
+  ];
+
+  var startScreen = document.getElementById('startScreen');
+  var gameScreen = document.getElementById('gameScreen');
+  var finishScreen = document.getElementById('finishScreen');
+  var startButton = document.getElementById('startButton');
+  var restartButton = document.getElementById('restartButton');
+  var starProgress = document.getElementById('starProgress');
+  var roundNumber = document.getElementById('roundNumber');
+  var phaseTag = document.getElementById('phaseTag');
+  var targetKicker = document.getElementById('targetKicker');
+  var targetDisplay = document.getElementById('targetDisplay');
+  var targetNote = document.getElementById('targetNote');
+  var signPhase = document.getElementById('signPhase');
+  var echoPhase = document.getElementById('echoPhase');
+  var echoOptions = document.getElementById('echoOptions');
+  var previousButton = document.getElementById('previousButton');
+  var nextButton = document.getElementById('nextButton');
+  var lockButton = document.getElementById('lockButton');
+  var dialShell = document.getElementById('dialShell');
+  var dialGlyph = document.getElementById('dialGlyph');
+  var previousGlyph = document.getElementById('previousGlyph');
+  var nextGlyph = document.getElementById('nextGlyph');
+  var feedback = document.getElementById('feedback');
+  var learnedLink = document.getElementById('learnedLink');
+  var keyHint = document.getElementById('keyHint');
+
+  var state = {
+    order: [],
+    round: 0,
+    dialIndex: 0,
+    dialTurns: 0,
+    phase: 'sign',
+    locked: false,
+    timers: [],
+    keyboard: false
+  };
+
+  var progressStars = DATA.map(function () {
+    var star = document.createElement('span');
+    star.className = 'progress-star';
+    starProgress.appendChild(star);
+    return star;
+  });
+
+  function shuffle(items) {
+    var copy = items.slice();
+    for (var i = copy.length - 1; i > 0; i -= 1) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var hold = copy[i];
+      copy[i] = copy[j];
+      copy[j] = hold;
+    }
+    return copy;
+  }
+
+  function later(callback, delay) {
+    var timer = window.setTimeout(function () {
+      state.timers = state.timers.filter(function (item) { return item !== timer; });
+      callback();
+    }, delay);
+    state.timers.push(timer);
+  }
+
+  function clearTimers() {
+    state.timers.forEach(function (timer) { window.clearTimeout(timer); });
+    state.timers = [];
+  }
+
+  function showScreen(screen) {
+    startScreen.hidden = screen !== startScreen;
+    gameScreen.hidden = screen !== gameScreen;
+    finishScreen.hidden = screen !== finishScreen;
+  }
+
+  function setFeedback(text, kind) {
+    feedback.textContent = text;
+    feedback.className = 'feedback' + (kind ? ' ' + kind : '');
+  }
+
+  function currentTarget() {
+    return state.order[state.round];
+  }
+
+  function updateProgress() {
+    progressStars.forEach(function (star, index) {
+      star.className = 'progress-star' + (index < state.round ? ' done' : index === state.round ? ' active' : '');
+      star.textContent = index < state.round ? state.order[index].hanzi : '';
+    });
+    starProgress.setAttribute('aria-label', 'Открыто ' + state.round + ' из ' + DATA.length + ' созвездий');
+    roundNumber.textContent = String(state.round + 1).padStart(2, '0') + ' / ' + DATA.length;
+  }
+
+  function renderMagnitude(target) {
+    targetDisplay.innerHTML = '';
+    var useDots = (state.round + target.value) % 2 === 0;
+    if (!useDots) {
+      var number = document.createElement('strong');
+      number.className = 'arabic-value';
+      number.textContent = target.value;
+      targetDisplay.appendChild(number);
+      targetKicker.textContent = 'небесная величина';
+      targetNote.textContent = 'Настройте барабан на иероглиф этого числа.';
+      return;
+    }
+    if (target.value === 0) {
+      var zero = document.createElement('div');
+      zero.className = 'zero-sky';
+      zero.textContent = 'нет звёзд';
+      targetDisplay.appendChild(zero);
+    } else {
+      var field = document.createElement('div');
+      field.className = 'dot-field';
+      for (var i = 0; i < target.value; i += 1) {
+        var dot = document.createElement('i');
+        dot.className = 'count-dot';
+        field.appendChild(dot);
+      }
+      targetDisplay.appendChild(field);
+    }
+    targetKicker.textContent = 'сосчитайте огни';
+    targetNote.textContent = target.value === 0 ? 'Тишина тоже число. Найдите знак нуля.' : 'Сосчитайте звёзды и найдите знак числа.';
+  }
+
+  function renderDial() {
+    var length = DATA.length;
+    var before = (state.dialIndex - 1 + length) % length;
+    var after = (state.dialIndex + 1) % length;
+    dialGlyph.textContent = DATA[state.dialIndex].hanzi;
+    previousGlyph.textContent = DATA[before].hanzi;
+    nextGlyph.textContent = DATA[after].hanzi;
+    dialShell.style.setProperty('--dial-turn', state.dialTurns + 'deg');
+    dialShell.style.setProperty('--dial-turn-reverse', -state.dialTurns + 'deg');
+    lockButton.setAttribute('aria-label', 'Зафиксировать иероглиф ' + DATA[state.dialIndex].hanzi);
+  }
+
+  function turnDial(direction) {
+    if (state.locked || state.phase !== 'sign') return;
+    state.dialIndex = (state.dialIndex + direction + DATA.length) % DATA.length;
+    state.dialTurns += direction * 30;
+    renderDial();
+    setFeedback('В визире знак ' + DATA[state.dialIndex].hanzi + '. Зафиксировать?', '');
+  }
+
+  function buildEchoChoices(target) {
+    echoOptions.innerHTML = '';
+    var decoys = shuffle(DATA.filter(function (item) { return item !== target; })).slice(0, 3);
+    var choices = shuffle([target].concat(decoys));
+    choices.forEach(function (item, index) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'echo-option';
+      button.dataset.key = String(index + 1);
+      button.dataset.correct = item === target ? '1' : '0';
+      button.textContent = item.pinyin;
+      button.setAttribute('aria-label', 'Вариант ' + (index + 1) + ': ' + item.pinyin);
+      button.addEventListener('click', function () { answerEcho(button); });
+      echoOptions.appendChild(button);
+    });
+  }
+
+  function showEcho() {
+    var target = currentTarget();
+    state.phase = 'echo';
+    state.locked = false;
+    signPhase.hidden = true;
+    echoPhase.hidden = false;
+    phaseTag.textContent = 'шаг 2 · эхо';
+    targetKicker.textContent = 'найденный знак';
+    targetDisplay.innerHTML = '';
+    var glyph = document.createElement('div');
+    glyph.className = 'echo-glyph';
+    glyph.dataset.number = target.value;
+    glyph.textContent = target.hanzi;
+    targetDisplay.appendChild(glyph);
+    targetNote.textContent = 'Выберите звучание знака ' + target.hanzi + '.';
+    buildEchoChoices(target);
+    setFeedback('Теперь свяжите ' + target.hanzi + ' с правильным пиньинем.', '');
+    keyHint.textContent = 'клавиши 1–4';
+    if (state.keyboard) {
+      var first = echoOptions.querySelector('button');
+      if (first) first.focus();
+    }
+  }
+
+  function checkSign() {
+    if (state.locked || state.phase !== 'sign') return;
+    var selected = DATA[state.dialIndex];
+    var target = currentTarget();
+    lockButton.classList.remove('correct', 'wrong');
+    void lockButton.offsetWidth;
+    if (selected === target) {
+      state.locked = true;
+      lockButton.classList.add('correct');
+      setFeedback('Орбита совпала: ' + target.hanzi + ' = ' + target.value + '. Слушаем эхо…', 'good');
+      later(showEcho, 620);
+    } else {
+      state.locked = true;
+      lockButton.classList.add('wrong');
+      setFeedback('Орбита не совпала. Попробуйте другой знак.', 'error');
+      later(function () {
+        state.locked = false;
+        lockButton.classList.remove('wrong');
+      }, 430);
+    }
+  }
+
+  function answerEcho(button) {
+    if (state.locked || state.phase !== 'echo' || button.disabled) return;
+    var target = currentTarget();
+    if (button.dataset.correct === '1') {
+      state.locked = true;
+      Array.prototype.forEach.call(echoOptions.children, function (option) { option.disabled = true; });
+      button.classList.add('good');
+      learnedLink.textContent = target.hanzi + ' · ' + target.pinyin + ' · ' + target.value;
+      learnedLink.hidden = false;
+      setFeedback('Созвездие зажжено. Запомните связку:', 'good');
+      progressStars[state.round].className = 'progress-star done';
+      progressStars[state.round].textContent = target.hanzi;
+      starProgress.setAttribute('aria-label', 'Открыто ' + (state.round + 1) + ' из ' + DATA.length + ' созвездий');
+      later(advanceRound, 1050);
+    } else {
+      state.locked = true;
+      button.classList.add('bad');
+      button.disabled = true;
+      setFeedback('Это эхо принадлежит другому знаку. Выберите ещё раз.', 'error');
+      later(function () { state.locked = false; }, 400);
+    }
+  }
+
+  function advanceRound() {
+    state.round += 1;
+    if (state.round >= DATA.length) {
+      finishGame();
+      return;
+    }
+    renderRound();
+  }
+
+  function renderRound() {
+    var target = currentTarget();
+    state.phase = 'sign';
+    state.locked = false;
+    state.dialIndex = Math.floor(Math.random() * DATA.length);
+    if (DATA[state.dialIndex] === target) state.dialIndex = (state.dialIndex + 3) % DATA.length;
+    state.dialTurns = state.round * 15;
+    signPhase.hidden = false;
+    echoPhase.hidden = true;
+    learnedLink.hidden = true;
+    lockButton.classList.remove('correct', 'wrong');
+    phaseTag.textContent = 'шаг 1 · знак';
+    keyHint.textContent = 'мышь · касание · клавиши';
+    renderMagnitude(target);
+    renderDial();
+    updateProgress();
+    setFeedback('Сосчитайте огни и настройте линзу.', '');
+    if (state.keyboard) lockButton.focus();
+  }
+
+  function startGame() {
+    clearTimers();
+    state.order = shuffle(DATA);
+    state.round = 0;
+    state.phase = 'sign';
+    state.locked = false;
+    progressStars.forEach(function (star) {
+      star.className = 'progress-star';
+      star.textContent = '';
+    });
+    showScreen(gameScreen);
+    renderRound();
+  }
+
+  function finishGame() {
+    clearTimers();
+    state.locked = true;
+    showScreen(finishScreen);
+    restartButton.focus();
+  }
+
+  previousButton.addEventListener('click', function () { turnDial(-1); });
+  nextButton.addEventListener('click', function () { turnDial(1); });
+  lockButton.addEventListener('click', checkSign);
+  startButton.addEventListener('click', startGame);
+  restartButton.addEventListener('click', startGame);
+
+  document.addEventListener('keydown', function (event) {
+    state.keyboard = true;
+    if (gameScreen.hidden || state.locked) return;
+    if (state.phase === 'sign') {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        turnDial(-1);
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        turnDial(1);
+      } else if ((event.key === 'Enter' || event.key === ' ') && document.activeElement.tagName !== 'BUTTON') {
+        event.preventDefault();
+        checkSign();
+      }
+    } else {
+      var index = ['1', '2', '3', '4'].indexOf(event.key);
+      if (index > -1) {
+        var option = echoOptions.children[index];
+        if (option && !option.disabled) {
+          event.preventDefault();
+          answerEcho(option);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('pointerdown', function () { state.keyboard = false; });
+})();
+</script>
+</body>
+</html>

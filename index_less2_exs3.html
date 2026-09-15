@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>index_less2_exs3 — Кистевой периметр</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg0: #070c08;
+    --panel: #101810;
+    --panel2: #14201490;
+    --line: #27391f;
+    --amber: #ffb648;
+    --amber-hi: #ffd98a;
+    --amber-dim: #8f6a2a;
+    --red: #ff5340;
+    --mint: #8ce68c;
+    --text: #d8d2b8;
+    --dim: #7f8b72;
+    --cjk: "Microsoft YaHei", "SimHei", "Segoe UI", sans-serif;
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    background: var(--bg0);
+    font-family: Consolas, "Lucida Console", "Courier New", monospace;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  button { color: inherit; font: inherit; touch-action: manipulation; }
+  button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+  .app {
+    position: relative;
+    width: min(100%, 800px);
+    height: min(100vh, 600px);
+    height: min(100dvh, 600px);
+    min-height: 420px;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255,182,72,.05) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 76% 34%, rgba(140,230,140,.04) 0 1px, transparent 1.6px),
+      linear-gradient(180deg, #0c140c 0%, #0a100a 55%, #080d08 100%);
+    background-size: 61px 61px, 43px 43px, auto;
+    box-shadow: inset 0 0 90px rgba(0,0,0,.55);
+  }
+  .app::before {
+    content: "";
+    position: absolute;
+    z-index: 70;
+    inset: 0;
+    border: 1px solid rgba(255,182,72,.22);
+    pointer-events: none;
+  }
+  .app::after {
+    content: "";
+    position: absolute;
+    z-index: 71;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 2px, transparent 2px 4px);
+  }
+  .app.shake { animation: app-shake .34s linear; }
+  @keyframes app-shake {
+    0%, 100% { transform: none; }
+    20% { transform: translate(-4px, 2px); }
+    40% { transform: translate(3px, -2px); }
+    60% { transform: translate(-3px, -1px); }
+    80% { transform: translate(2px, 2px); }
+  }
+  .screen {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    animation: screen-in .4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes screen-in {
+    from { opacity: 0; transform: scale(.985) translateY(7px); }
+    to { opacity: 1; transform: none; }
+  }
+  #gameScreen { display: flex; flex-direction: column; }
+
+  .start-screen, .finish-screen, .defeat-screen {
+    display: grid;
+    place-items: center;
+    padding: clamp(10px, 3vw, 26px);
+    background:
+      linear-gradient(90deg, rgba(255,182,72,.03) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255,182,72,.03) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% 118%, #17240f 0%, transparent 60%),
+      linear-gradient(160deg, #0d150c, #080d08 70%);
+    background-size: 30px 30px, 30px 30px, auto, auto;
+  }
+  .start-card, .finish-card, .defeat-card {
+    position: relative;
+    width: min(100%, 640px);
+    max-height: 100%;
+    overflow: auto;
+    border: 1px solid rgba(255,182,72,.38);
+    background: linear-gradient(165deg, rgba(20,32,20,.97), rgba(9,14,9,.98));
+    box-shadow: 0 24px 70px rgba(0,0,0,.5), inset 0 0 45px rgba(255,182,72,.04);
+    padding: clamp(16px, 4vw, 34px);
+  }
+  .start-card::before, .finish-card::before, .defeat-card::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px dashed rgba(255,182,72,.2);
+    pointer-events: none;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .34em;
+    text-transform: uppercase;
+    color: var(--amber-dim);
+    margin-bottom: 10px;
+  }
+  .start-card h1 {
+    font-size: clamp(24px, 5.4vw, 40px);
+    line-height: 1.04;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-shadow: 0 0 18px rgba(255,182,72,.35);
+    margin-bottom: 6px;
+  }
+  .subline { font-size: 12px; color: var(--dim); letter-spacing: .12em; margin-bottom: 18px; }
+  .rules { display: grid; gap: 9px; margin-bottom: 18px; }
+  .rule-row {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+    align-items: start;
+    border: 1px solid var(--line);
+    background: var(--panel2);
+    padding: 9px 12px;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .rule-row b { color: var(--amber-hi); font-weight: 700; }
+  .rule-num {
+    color: var(--amber);
+    font-weight: 700;
+    border: 1px solid var(--amber-dim);
+    text-align: center;
+    padding: 2px 0;
+    font-size: 11px;
+  }
+  .cjk { font-family: var(--cjk); }
+  .rule-row .cjk { color: var(--amber-hi); font-size: 15px; }
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .leg-cell {
+    border: 1px solid var(--line);
+    background: var(--panel2);
+    text-align: center;
+    padding: 5px 1px 4px;
+    line-height: 1.15;
+  }
+  .leg-cell .v { font-size: 10px; color: var(--dim); letter-spacing: .08em; }
+  .leg-cell .h { font-size: 19px; color: var(--amber); font-family: var(--cjk); }
+  .leg-cell .p { font-size: 9px; color: var(--dim); }
+  .btn {
+    display: inline-block;
+    background: #1a2716;
+    border: 1px solid var(--amber-dim);
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: background .15s, color .15s, box-shadow .15s;
+  }
+  .btn:hover { background: var(--amber); color: #141a08; box-shadow: 0 0 22px rgba(255,182,72,.45); }
+  .btn:active { transform: translateY(1px); }
+  .start-note { margin-top: 14px; font-size: 10.5px; color: var(--dim); letter-spacing: .14em; text-transform: uppercase; }
+
+  .hud {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 12px 7px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(20,32,20,.85), rgba(12,19,12,.9));
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+  }
+  .hud-tag { color: var(--dim); font-size: 9.5px; }
+  .hud b { color: var(--amber); font-size: 13px; }
+  .hud .alert { flex: 1; text-align: center; color: var(--dim); min-width: 120px; }
+  .hud .alert.warn { color: var(--red); animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .35; } }
+  .hp-wrap { display: grid; gap: 3px; min-width: 150px; }
+  .hp-bar { height: 9px; border: 1px solid var(--amber-dim); background: #0a0f0a; }
+  .hp-fill { height: 100%; width: 100%; background: var(--amber); box-shadow: 0 0 10px rgba(255,182,72,.6); transition: width .3s; }
+  .hp-fill.mid { background: #f2913c; }
+  .hp-fill.low { background: var(--red); box-shadow: 0 0 10px rgba(255,83,64,.7); }
+  .mute-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  .mute-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
+
+  .field {
+    position: relative;
+    flex: 1;
+    min-height: 130px;
+    overflow: hidden;
+    clip-path: inset(0);
+    background:
+      radial-gradient(ellipse at 82% 20%, rgba(255,83,64,.06) 0 0, transparent 60%),
+      linear-gradient(180deg, #0a120c 0%, #0d160e 62%, #101a10 100%);
+    border: 1px solid rgba(255,182,72,.32);
+  }
+  .field::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+    background:
+      linear-gradient(#ffb648, #ffb648) 0 0/14px 2px,
+      linear-gradient(#ffb648, #ffb648) 0 0/2px 14px,
+      linear-gradient(#ffb648, #ffb648) 100% 0/14px 2px,
+      linear-gradient(#ffb648, #ffb648) 100% 0/2px 14px,
+      linear-gradient(#ffb648, #ffb648) 0 100%/14px 2px,
+      linear-gradient(#ffb648, #ffb648) 0 100%/2px 14px,
+      linear-gradient(#ffb648, #ffb648) 100% 100%/14px 2px,
+      linear-gradient(#ffb648, #ffb648) 100% 100%/2px 14px;
+    background-repeat: no-repeat;
+    opacity: .85;
+  }
+  .field .stars {
+    position: absolute;
+    inset: 0 0 40% 0;
+    background:
+      radial-gradient(circle at 12% 30%, rgba(216,210,184,.35) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 34% 12%, rgba(216,210,184,.25) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 56% 38%, rgba(216,210,184,.3) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 70% 16%, rgba(216,210,184,.22) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 90% 44%, rgba(216,210,184,.3) 0 1px, transparent 1.6px);
+    background-size: 47px 47px, 71px 71px, 53px 53px, 89px 89px, 37px 37px;
+  }
+  .ground {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 48px;
+    background:
+      repeating-linear-gradient(78deg, rgba(255,182,72,.10) 0 26px, transparent 26px 52px),
+      linear-gradient(180deg, #131f12, #0c130c);
+    border-top: 1px solid var(--amber-dim);
+  }
+  .basewall {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 13px;
+    background: repeating-linear-gradient(45deg, #3a2f16 0 9px, #12190f 9px 18px);
+    border-right: 2px solid var(--amber-dim);
+    z-index: 3;
+  }
+  .turret { position: absolute; left: 10px; bottom: 30px; z-index: 4; filter: drop-shadow(0 0 8px rgba(255,182,72,.18)); }
+  .turret .beacon { animation: beacon 1.6s infinite; }
+  @keyframes beacon { 0%, 55% { opacity: .25; } 60%, 80% { opacity: 1; } }
+  .turret.flash .muzzle { animation: muzzle-flash .3s; }
+  @keyframes muzzle-flash { 30% { filter: brightness(4); } }
+
+  .robot {
+    position: absolute;
+    left: 0;
+    z-index: 2;
+    will-change: transform;
+    animation: robot-bob 1s ease-in-out infinite;
+  }
+  @keyframes robot-bob { 50% { margin-top: -2px; } }
+  .robot svg { display: block; filter: drop-shadow(0 0 5px rgba(201,143,58,.25)); }
+  .plate {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    min-width: 34px;
+    text-align: center;
+    border: 1px solid #4c5a3a;
+    background: #0d150d;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 2px 7px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .robot.target .plate {
+    border-color: var(--amber);
+    color: var(--amber-hi);
+    box-shadow: 0 0 12px rgba(255,182,72,.45);
+  }
+  .robot.target .plate::after {
+    content: "▼";
+    position: absolute;
+    left: 50%;
+    top: -13px;
+    transform: translateX(-50%);
+    color: var(--amber);
+    font-size: 9px;
+    animation: plate-pulse .9s ease-in-out infinite;
+  }
+  @keyframes plate-pulse { 50% { top: -9px; } }
+  .robot.dead { animation: robot-dead .6s forwards; pointer-events: none; }
+  @keyframes robot-dead {
+    0% { filter: brightness(3) drop-shadow(0 0 12px #ff5340); }
+    100% { opacity: 0; transform: translateX(var(--rx, 0px)) scale(var(--rs, 1)) translateY(10px) rotate(14deg); }
+  }
+  .boomring {
+    position: absolute;
+    z-index: 6;
+    width: 18px; height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid var(--amber-hi);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: boom .55s ease-out forwards;
+  }
+  @keyframes boom {
+    0% { opacity: 1; transform: scale(.4); }
+    100% { opacity: 0; transform: scale(4.2); border-color: var(--red); }
+  }
+  .beam {
+    position: absolute;
+    z-index: 5;
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #ffe9b0, var(--amber) 40%, rgba(255,120,50,.0));
+    box-shadow: 0 0 14px rgba(255,182,72,.8);
+    transform-origin: left center;
+    pointer-events: none;
+    animation: beam-shot .4s ease-out forwards;
+  }
+  @keyframes beam-shot {
+    0% { opacity: 1; transform: scaleX(1); }
+    70% { opacity: .6; }
+    100% { opacity: 0; transform: scaleX(1.05); }
+  }
+
+  .legend-strip {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 3px;
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(10,16,10,.9);
+  }
+  .legend-strip .leg-cell { padding: 2px 0 1px; }
+  .legend-strip .leg-cell .h { font-size: 15px; }
+  .legend-strip .leg-cell .v { font-size: 9px; }
+  .legend-strip .leg-cell .p { display: none; }
+
+  .console {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 10px 12px 8px;
+    background: linear-gradient(180deg, rgba(16,24,16,.9), rgba(10,15,10,.95));
+  }
+  .target-panel { display: grid; align-content: center; gap: 8px; min-width: 0; }
+  .panel-label { font-size: 9.5px; letter-spacing: .3em; text-transform: uppercase; color: var(--amber-dim); }
+  .target-line { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .big-number {
+    font-size: clamp(38px, 7vw, 54px);
+    font-weight: 700;
+    color: var(--amber);
+    line-height: 1;
+    text-shadow: 0 0 16px rgba(255,182,72,.35);
+    min-width: 70px;
+  }
+  .target-sub { font-size: 10.5px; color: var(--dim); letter-spacing: .14em; text-transform: uppercase; }
+  .slots { display: flex; gap: 8px; flex-wrap: wrap; }
+  .slot {
+    position: relative;
+    width: 48px; height: 48px;
+    border: 1px dashed #3c4a2e;
+    background: rgba(10,16,10,.6);
+    display: grid;
+    place-items: center;
+    font-family: var(--cjk);
+    font-size: 27px;
+    color: #2f3a26;
+  }
+  .slot.current { border-color: var(--amber); animation: slot-pulse 1.2s ease-in-out infinite; }
+  .slot.current .ghost { color: rgba(255,182,72,.28); }
+  @keyframes slot-pulse { 50% { box-shadow: 0 0 12px rgba(255,182,72,.28); } }
+  .slot.done {
+    border: 1px solid var(--amber-dim);
+    background: rgba(255,182,72,.08);
+    color: var(--amber);
+    transform: rotate(-2deg);
+  }
+  .slot.done.stamp { animation: stamp .25s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes stamp { from { transform: scale(1.6) rotate(-8deg); opacity: .2; } }
+  .stroke-counter { font-size: 11px; color: var(--dim); letter-spacing: .12em; text-transform: uppercase; }
+  .stroke-counter .cjk { color: var(--amber-hi); font-size: 15px; }
+
+  .draw-panel { display: grid; gap: 6px; justify-items: center; }
+  .canvas-frame {
+    position: relative;
+    width: 244px; height: 244px;
+    border: 1px solid var(--amber-dim);
+    background: #0a110b;
+    box-shadow: inset 0 0 26px rgba(0,0,0,.5);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .canvas-frame::before, .canvas-frame::after {
+    content: "";
+    position: absolute;
+    width: 12px; height: 12px;
+    border: 2px solid var(--amber);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .canvas-frame::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+  .canvas-frame::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+  .canvas-frame.stun { border-color: var(--red); box-shadow: inset 0 0 26px rgba(255,83,64,.25); }
+  .canvas-frame.idle { opacity: .55; }
+  #drawCanvas { display: block; width: 244px; height: 244px; touch-action: none; cursor: crosshair; }
+  .tool-row { display: flex; gap: 6px; }
+  .tool-button {
+    background: #16210f;
+    border: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 9.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .tool-button:hover:not(:disabled) { color: var(--amber); border-color: var(--amber-dim); }
+  .tool-button:disabled { opacity: .35; cursor: default; }
+
+  .feedback-bar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 14px;
+    border-top: 1px solid var(--line);
+    background: rgba(8,13,8,.95);
+    font-size: 11.5px;
+    min-height: 32px;
+  }
+  .feedback-icon { color: var(--amber); }
+  .feedback-icon.err { color: var(--red); }
+  .feedback-icon.ok { color: var(--mint); }
+  .feedback { letter-spacing: .04em; }
+
+  .finish-card, .defeat-card { text-align: center; display: grid; justify-items: center; gap: 10px; }
+  .finish-card h2, .defeat-card h2 {
+    font-size: clamp(22px, 4.6vw, 34px);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .finish-card h2 { color: var(--mint); text-shadow: 0 0 20px rgba(140,230,140,.4); }
+  .defeat-card h2 { color: var(--red); text-shadow: 0 0 20px rgba(255,83,64,.4); }
+  .finish-text { font-size: 12.5px; color: var(--dim); max-width: 440px; line-height: 1.55; }
+  .finish-text .cjk { color: var(--amber-hi); }
+  .code-label { font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--amber-dim); margin-top: 6px; }
+  .completion-code { display: flex; gap: 8px; margin-top: 4px; }
+  .completion-code span {
+    width: 46px; height: 56px;
+    display: grid; place-items: center;
+    font-size: 30px; font-weight: 700;
+    color: var(--amber);
+    border: 1px solid var(--amber-dim);
+    background: rgba(255,182,72,.06);
+    text-shadow: 0 0 14px rgba(255,182,72,.5);
+  }
+  .finish-card .btn, .defeat-card .btn { margin-top: 12px; }
+  @media (max-height: 565px) {
+    .canvas-frame, #drawCanvas { width: 206px; height: 206px; }
+  }
+  @media (max-width: 620px), (max-height: 565px) {
+    .ground { height: 36px; }
+    .turret svg { width: 78px; height: 96px; }
+    .plate { font-size: 12px; min-width: 28px; padding: 1px 5px; margin-bottom: 4px; }
+  }
+  @media (max-width: 620px) {
+    .app { height: min(100dvh, 640px); min-height: 480px; }
+    .hud { gap: 8px; padding: 6px 8px; }
+    .hud .alert { flex-basis: 100%; order: 9; min-width: 0; text-align: left; font-size: 9px; }
+    .hp-wrap { min-width: 104px; }
+    .legend-strip { gap: 2px; padding: 4px 6px; }
+    .legend-strip .leg-cell .h { font-size: 13px; }
+    .legend-strip .leg-cell .v { font-size: 8px; }
+    .console { grid-template-columns: 1fr; gap: 8px; padding: 8px; }
+    .target-panel { gap: 5px; }
+    .big-number { font-size: 34px; min-width: 56px; }
+    .slots { gap: 6px; }
+    .slot { width: 40px; height: 40px; font-size: 22px; }
+    .canvas-frame, #drawCanvas { width: min(220px, 56vw); height: min(220px, 56vw); }
+    .field { min-height: 132px; }
+    .start-card .leg-cell .h { font-size: 16px; }
+    .start-card .leg-cell .p { display: none; }
+    .rule-row { font-size: 11.5px; }
+  }
+  @media (max-height: 480px) {
+    .app { min-height: 300px; }
+    .hud { gap: 6px; padding: 4px 8px; font-size: 9px; }
+    .field { min-height: 64px; }
+    .ground { height: 26px; }
+    .turret svg { width: 64px; height: 79px; }
+    .legend-strip { gap: 2px; padding: 2px 4px; }
+    .legend-strip .leg-cell .h { font-size: 11px; }
+    .legend-strip .leg-cell .v { font-size: 7px; }
+    .console { grid-template-columns: 1fr auto; gap: 8px; padding: 6px 8px; }
+    .canvas-frame, #drawCanvas { width: 148px; height: 148px; }
+    .slot { width: 30px; height: 30px; font-size: 17px; }
+    .big-number { font-size: 26px; min-width: 44px; }
+    .stroke-counter { font-size: 9.5px; }
+    .feedback-bar { min-height: 22px; padding: 3px 10px; font-size: 10px; }
+    .tool-button { padding: 6px 8px; font-size: 8.5px; }
+  }
+  @media (max-height: 480px) and (max-width: 620px) {
+    .hud .alert { display: none; }
+  }
+  @media (pointer: coarse) {
+    .tool-button { padding: 9px 14px; }
+    .btn { padding: 14px 26px; }
+  }
+</style>
+</head>
+<body>
+<main class="app" id="app">
+
+  <section class="screen start-screen" id="startScreen">
+    <div class="start-card">
+      <p class="eyebrow">станция наблюдения · сектор 09</p>
+      <h1>Кистевой<br>периметр</h1>
+      <p class="subline">оборона линии «кисть» · китайские числа 0–99</p>
+      <div class="rules">
+        <div class="rule-row"><span class="rule-num">01</span><p>Роботы-разрядники несут числа. Составьте число из иероглифов по разрядам: <b>47</b> → <span class="cjk">四 十 七</span>, <b>20</b> → <span class="cjk">二 十</span>, <b>15</b> → <span class="cjk">十 五</span>.</p></div>
+        <div class="rule-row"><span class="rule-num">02</span><p>Рисуйте каждый знак кистью на консоли <b>в правильном порядке черт</b>. Готовый знак — заряд, полное число — выстрел орудия.</p></div>
+        <div class="rule-row"><span class="rule-num">03</span><p>Сбой в порядке черт сбрасывает текущий знак. Робот, дошедший до стены, отнимает целостность базы. Уничтожьте <b>18 целей</b>.</p></div>
+      </div>
+      <div class="legend">
+        <div class="leg-cell"><p class="v">0</p><p class="h">零</p><p class="p">líng</p></div>
+        <div class="leg-cell"><p class="v">1</p><p class="h">一</p><p class="p">yī</p></div>
+        <div class="leg-cell"><p class="v">2</p><p class="h">二</p><p class="p">èr</p></div>
+        <div class="leg-cell"><p class="v">3</p><p class="h">三</p><p class="p">sān</p></div>
+        <div class="leg-cell"><p class="v">4</p><p class="h">四</p><p class="p">sì</p></div>
+        <div class="leg-cell"><p class="v">5</p><p class="h">五</p><p class="p">wǔ</p></div>
+        <div class="leg-cell"><p class="v">6</p><p class="h">六</p><p class="p">liù</p></div>
+        <div class="leg-cell"><p class="v">7</p><p class="h">七</p><p class="p">qī</p></div>
+        <div class="leg-cell"><p class="v">8</p><p class="h">八</p><p class="p">bā</p></div>
+        <div class="leg-cell"><p class="v">9</p><p class="h">九</p><p class="p">jiǔ</p></div>
+        <div class="leg-cell"><p class="v">10</p><p class="h">十</p><p class="p">shí</p></div>
+      </div>
+      <button class="btn" id="startButton" type="button">Начать оборону</button>
+      <p class="start-note">18 целей · 3 эшелона · строгий порядок черт</p>
+    </div>
+  </section>
+
+  <section class="screen" id="gameScreen" hidden>
+    <header class="hud">
+      <div><span class="hud-tag">эшелон</span> <b id="waveLabel">1/3</b></div>
+      <div class="hp-wrap">
+        <span class="hud-tag">целостность базы · <span id="hpLabel">100</span>%</span>
+        <div class="hp-bar"><div class="hp-fill" id="hpFill"></div></div>
+      </div>
+      <p class="alert" id="hudAlert">сканирование сектора…</p>
+      <div><span class="hud-tag">уничтожено</span> <b id="killLabel">0/18</b></div>
+      <button class="mute-btn" id="muteButton" type="button">звук вкл</button>
+    </header>
+
+    <div class="field" id="field">
+      <div class="stars"></div>
+      <div class="ground"></div>
+      <div class="basewall"></div>
+      <div class="turret" id="turret" aria-hidden="true">
+        <svg viewBox="0 0 100 122" width="96" height="118">
+          <line x1="22" y1="54" x2="22" y2="32" stroke="#8f6a2a" stroke-width="3"/>
+          <path d="M10 36 A14 14 0 0 1 34 36" fill="none" stroke="#8f6a2a" stroke-width="3"/>
+          <line x1="22" y1="32" x2="34" y2="20" stroke="#ffb648" stroke-width="2"/>
+          <circle cx="22" cy="49" r="3" fill="#ff5340" class="beacon"/>
+          <rect x="10" y="54" width="52" height="38" fill="#182417" stroke="#c98f3a" stroke-width="2"/>
+          <rect x="18" y="63" width="20" height="12" fill="none" stroke="#8f6a2a" stroke-width="2"/>
+          <g class="muzzle">
+            <rect x="62" y="64" width="20" height="10" fill="#182417" stroke="#c98f3a" stroke-width="2"/>
+            <path d="M82 61 L97 59 L97 79 L82 77 Z" fill="#2a1f10" stroke="#ffb648" stroke-width="2"/>
+            <line x1="87" y1="61.5" x2="87" y2="76.5" stroke="#ffb648" stroke-width="1.5"/>
+            <line x1="92" y1="60.5" x2="92" y2="77.5" stroke="#ffb648" stroke-width="1.5"/>
+          </g>
+          <rect x="4" y="92" width="64" height="10" fill="#182417" stroke="#c98f3a" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="legend-strip" aria-label="Шпаргалка чисел">
+      <div class="leg-cell"><p class="v">0</p><p class="h">零</p></div>
+      <div class="leg-cell"><p class="v">1</p><p class="h">一</p></div>
+      <div class="leg-cell"><p class="v">2</p><p class="h">二</p></div>
+      <div class="leg-cell"><p class="v">3</p><p class="h">三</p></div>
+      <div class="leg-cell"><p class="v">4</p><p class="h">四</p></div>
+      <div class="leg-cell"><p class="v">5</p><p class="h">五</p></div>
+      <div class="leg-cell"><p class="v">6</p><p class="h">六</p></div>
+      <div class="leg-cell"><p class="v">7</p><p class="h">七</p></div>
+      <div class="leg-cell"><p class="v">8</p><p class="h">八</p></div>
+      <div class="leg-cell"><p class="v">9</p><p class="h">九</p></div>
+      <div class="leg-cell"><p class="v">10</p><p class="h">十</p></div>
+    </div>
+
+    <section class="console" aria-label="Консоль наведения">
+      <div class="target-panel">
+        <p class="panel-label" id="panelLabel">цель захвачена</p>
+        <div class="target-line">
+          <p class="big-number" id="targetNumber">——</p>
+          <p class="target-sub" id="targetSub">ожидание контакта</p>
+        </div>
+        <div class="slots" id="slots"></div>
+        <p class="stroke-counter" id="strokeCounter">сектор чист</p>
+      </div>
+      <div class="draw-panel">
+        <div class="canvas-frame" id="canvasFrame">
+          <canvas id="drawCanvas" aria-label="Поле для рисования иероглифа"></canvas>
+        </div>
+        <div class="tool-row">
+          <button class="tool-button" id="undoButton" type="button" disabled>отменить черту</button>
+          <button class="tool-button" id="clearButton" type="button" disabled>стереть знак</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="feedback-bar">
+      <span class="feedback-icon" id="feedbackIcon" aria-hidden="true">▸</span>
+      <p class="feedback" id="feedback" aria-live="polite">Станция «Кисть» на линии. Ожидание команды.</p>
+    </footer>
+  </section>
+
+  <section class="screen finish-screen" id="finishScreen" hidden>
+    <div class="finish-card">
+      <p class="eyebrow" id="finishEyebrow">все 18 целей уничтожены</p>
+      <h2>Периметр удержан</h2>
+      <p class="finish-text">Роботы-разрядники отбиты: числа от <span class="cjk">零</span> до <span class="cjk">九十九</span> собраны кистью в строгом порядке черт. Штаб транслирует код успешного выполнения.</p>
+      <p class="code-label">код успешного выполнения</p>
+      <div class="completion-code" aria-label="Код успешного выполнения 6823"><span>6</span><span>8</span><span>2</span><span>3</span></div>
+      <button class="btn" id="restartButton" type="button">Повторить оборону</button>
+    </div>
+  </section>
+
+  <section class="screen defeat-screen" id="defeatScreen" hidden>
+    <div class="defeat-card">
+      <p class="eyebrow">целостность базы — 0%</p>
+      <h2>Периметр прорван</h2>
+      <p class="finish-text">Стена не выдержала. Уничтожено целей: <b id="defeatKills">0</b> из 18. Перезапустите станцию и держите порядок черт.</p>
+      <button class="btn" id="retryButton" type="button">Вернуться в бой</button>
+    </div>
+  </section>
+</main>
+<noscript><p style="padding:20px;color:#fff;text-align:center">Для игры необходимо включить JavaScript.</p></noscript>
+<script>
+(function () {
+  'use strict';
+
+  var CHARS = [
+    { v: 0, h: '零', m: [[[356,803],[427,792],[507,800],[611,823],[646,824],[675,815]],[[221,701],[232,668],[231,653],[186,569],[180,515]],[[258,674],[275,665],[306,666],[393,684],[650,720],[750,725],[780,714],[802,686],[738,609]],[[465,769],[491,750],[498,736],[500,648],[493,548],[497,512]],[[334,596],[383,581],[400,568]],[[311,504],[357,491],[391,469]],[[607,627],[658,609],[682,592]],[[599,522],[654,496],[676,475]],[[498,464],[465,457],[395,366],[286,264],[194,195],[95,145]],[[518,443],[517,434],[593,372],[755,259],[811,238],[979,225]],[[440,347],[496,320],[520,292]],[[310,201],[333,189],[367,184],[558,235],[591,232],[606,220],[618,200],[599,174],[509,96],[491,92]],[[410,98],[512,39],[538,9],[553,-22]]] },
+    { v: 1, h: '一', m: [[[121,393],[193,372],[417,402],[827,434],[920,401]]] },
+    { v: 2, h: '二', m: [[[293,587],[386,581],[688,633],[733,629]],[[126,219],[195,200],[469,236],[823,263],[916,230]]] },
+    { v: 3, h: '三', m: [[[316,655],[367,645],[416,648],[660,692],[722,692]],[[331,407],[375,405],[628,443],[657,443],[700,432]],[[127,152],[158,142],[195,139],[500,178],[846,204],[881,200],[955,174]]] },
+    { v: 4, h: '四', m: [[[132,606],[163,582],[189,529],[224,229],[244,159]],[[187,595],[227,581],[466,625],[712,650],[801,654],[833,638],[866,588],[816,348],[781,226],[760,193],[755,149]],[[377,587],[408,560],[387,462],[351,379],[298,316]],[[530,611],[571,584],[566,446],[579,393],[608,377],[638,373],[699,371],[732,379]],[[263,216],[285,201],[651,229],[697,224],[706,211]]] },
+    { v: 5, h: '五', m: [[[304,694],[343,685],[400,686],[704,735],[753,733]],[[460,663],[489,633],[483,587],[391,195],[375,174],[362,168]],[[273,435],[308,428],[345,430],[616,476],[654,467],[685,434],[619,200],[592,179]],[[63,118],[138,97],[419,149],[654,161],[855,153],[905,138],[966,110]]] },
+    { v: 6, h: '六', m: [[[441,756],[455,743],[531,705],[568,654]],[[125,455],[184,444],[454,484],[805,517],[851,515],[918,494]],[[360,347],[383,297],[347,242],[292,181],[249,145],[162,97]],[[611,333],[753,186],[774,154],[789,97]]] },
+    { v: 7, h: '七', m: [[[101,340],[172,328],[492,417],[767,476],[820,476],[882,461]],[[364,750],[397,734],[424,701],[407,327],[414,194],[431,131],[477,103],[544,91],[658,97],[747,116],[784,112]]] },
+    { v: 8, h: '八', m: [[[331,470],[358,421],[291,303],[204,206],[143,156],[89,123]],[[452,695],[484,681],[525,640],[645,378],[693,302],[755,227],[839,190],[978,147]]] },
+    { v: 9, h: '九', m: [[[402,808],[428,792],[451,765],[424,515],[412,464],[374,360],[330,274],[266,191],[170,103],[78,49]],[[153,472],[190,458],[227,459],[587,561],[638,560],[646,551],[639,520],[618,464],[589,349],[576,202],[589,136],[603,107],[642,70],[679,55],[736,43],[801,43],[872,55],[917,78],[932,98],[946,267]]] },
+    { v: 10, h: '十', m: [[[109,442],[177,422],[373,456],[819,505],[869,499],[932,476]],[[456,811],[484,803],[522,767],[512,593],[507,-33]]] }
+  ];
+  var CHARBYV = {};
+  CHARS.forEach(function (c) { CHARBYV[c.v] = c; });
+  var PINYIN = ['líng', 'yī', 'èr', 'sān', 'sì', 'wǔ', 'liù', 'qī', 'bā', 'jiǔ', 'shí'];
+
+  var PATHS = [
+    ['M 496 777 Q 674 807 677 807 Q 687 814 682 824 Q 676 837 647 846 Q 616 853 585 844 Q 537 831 486 823 Q 431 814 364 813 Q 327 809 352 790 Q 395 763 451 772 Q 454 773 458 772 L 496 777 Z','M 252 681 Q 242 700 232 708 Q 213 724 210 696 Q 213 669 196 639 Q 145 585 147 568 Q 147 544 163 511 Q 179 483 201 512 Q 235 581 259 651 C 263 662 263 662 252 681 Z','M 523 685 Q 698 715 741 705 Q 759 695 757 686 Q 758 683 753 671 Q 726 611 733 605 Q 740 601 756 612 Q 808 645 850 654 Q 884 664 884 672 Q 883 682 811 735 Q 789 753 716 741 Q 580 726 525 716 L 473 709 Q 424 705 367 695 Q 312 688 256 683 Q 253 683 252 681 C 222 676 230 660 259 651 Q 281 639 318 647 Q 405 672 475 679 L 523 685 Z','M 475 679 Q 478 646 469 565 Q 463 537 488 506 Q 498 496 506 506 Q 521 530 522 595 Q 522 640 523 685 L 525 716 Q 526 726 528 735 Q 534 756 515 767 Q 505 773 496 777 C 469 790 452 798 458 772 Q 458 768 460 763 Q 463 754 473 709 L 475 679 Z','M 329 583 Q 389 547 405 552 Q 417 555 417 572 Q 414 584 401 597 Q 382 615 325 607 Q 318 606 320 596 Q 321 589 329 583 Z','M 307 493 Q 376 454 394 457 Q 404 460 405 475 Q 404 485 391 498 Q 363 520 304 514 Q 297 513 299 504 Q 300 498 307 493 Z','M 604 615 Q 664 573 685 577 Q 697 578 697 596 Q 696 608 683 622 Q 655 643 602 638 Q 593 638 595 628 Q 596 621 604 615 Z','M 595 508 Q 653 457 678 458 Q 691 459 694 478 Q 694 491 681 508 Q 657 533 595 534 Q 586 534 587 523 Q 587 516 595 508 Z','M 515 455 Q 518 462 517 467 Q 516 480 489 490 Q 461 502 448 500 Q 439 499 436 485 Q 397 368 145 188 Q 117 170 86 148 Q 64 135 91 136 Q 205 140 422 356 Q 426 365 498 437 L 515 455 Z','M 498 437 Q 730 205 791 194 Q 800 194 812 193 Q 887 194 964 215 Q 983 219 985 224 Q 986 231 970 237 Q 769 297 757 302 Q 652 354 515 455 C 491 473 477 458 498 437 Z','M 457 320 Q 479 304 501 285 Q 511 276 523 278 Q 530 279 534 288 Q 535 300 528 321 Q 524 334 500 344 Q 443 359 436 354 Q 432 351 434 342 Q 437 335 457 320 Z','M 505 80 Q 626 164 668 172 Q 689 176 683 195 Q 682 211 615 255 Q 596 268 571 260 Q 504 238 405 215 Q 378 208 316 213 Q 291 214 299 193 Q 306 180 326 167 Q 357 148 394 167 Q 418 174 543 213 Q 556 217 567 211 Q 579 204 574 191 Q 531 145 483 88 C 464 65 480 63 505 80 Z','M 483 88 Q 435 103 410 109 Q 400 113 399 101 Q 400 88 411 79 Q 460 40 521 -18 Q 537 -36 553 -39 Q 562 -40 569 -29 Q 579 -16 564 27 Q 552 64 505 80 L 483 88 Z'],
+    ['M 518 382 Q 572 385 623 389 Q 758 399 900 383 Q 928 379 935 390 Q 944 405 930 419 Q 896 452 845 475 Q 829 482 798 473 Q 723 460 480 434 Q 180 409 137 408 Q 130 408 124 408 Q 108 408 106 395 Q 105 380 127 363 Q 146 348 183 334 Q 195 330 216 338 Q 232 344 306 354 Q 400 373 518 382 Z'],
+    ['M 308 603 Q 260 597 293 574 Q 339 544 436 558 Q 551 576 673 596 Q 731 608 741 615 Q 753 625 747 636 Q 738 652 702 663 Q 669 672 559 641 Q 424 610 308 603 Z','M 517 212 Q 569 213 620 219 Q 756 229 896 214 Q 921 210 929 220 Q 938 235 924 248 Q 891 279 842 302 Q 826 309 797 301 Q 728 286 481 261 Q 172 236 155 234 Q 142 234 128 234 Q 113 234 111 221 Q 110 208 131 191 Q 150 176 185 163 Q 197 159 217 167 Q 233 173 306 183 Q 400 202 517 212 Z'],
+    ['M 326 667 Q 283 663 312 640 Q 369 610 428 623 Q 543 641 665 661 Q 720 671 729 678 Q 739 688 735 698 Q 728 711 693 722 Q 660 731 561 701 Q 420 673 326 667 Z','M 329 421 Q 304 417 332 392 Q 348 379 385 383 Q 557 405 685 416 Q 721 420 709 440 Q 694 462 657 472 Q 621 479 558 466 Q 435 441 329 421 Z','M 130 165 Q 102 162 122 139 Q 140 120 163 113 Q 191 104 212 110 Q 515 179 929 157 Q 930 158 933 157 Q 960 156 967 167 Q 974 183 953 201 Q 884 255 835 246 Q 643 210 130 165 Z'],
+    ['M 181 600 Q 160 612 138 618 Q 131 621 125 615 Q 115 608 127 596 Q 187 488 192 250 Q 193 186 231 153 Q 234 150 239 147 Q 258 141 260 176 Q 260 179 260 181 L 256 222 Q 255 237 233 382 Q 223 476 218 552 C 216 582 208 586 181 600 Z','M 717 200 Q 732 151 739 143 Q 746 131 756 132 Q 768 133 780 152 Q 822 206 870 461 Q 880 527 903 564 Q 916 579 914 589 Q 915 605 874 643 Q 825 691 790 679 Q 784 679 778 677 Q 756 673 680 666 Q 451 647 302 616 Q 220 604 181 600 C 151 597 189 543 218 552 Q 222 553 236 558 Q 294 576 370 589 L 410 596 Q 485 611 523 611 L 589 618 Q 686 630 773 631 Q 798 632 810 616 Q 825 603 823 571 Q 820 493 784 354 Q 759 245 748 231 Q 747 227 739 225 Q 733 226 726 230 C 709 223 709 223 717 200 Z','M 370 589 Q 391 546 349 422 Q 336 386 316 357 Q 306 341 296 326 Q 292 322 289 316 Q 286 307 295 308 Q 322 308 372 379 Q 408 436 424 507 Q 428 529 436 547 Q 443 559 439 570 Q 429 585 410 596 C 385 612 359 617 370 589 Z','M 523 611 Q 524 608 529 604 Q 545 585 545 536 Q 546 493 546 439 Q 545 384 570 366 Q 592 345 691 351 Q 725 352 735 368 Q 745 378 738 386 Q 731 393 634 397 Q 589 400 587 441 Q 581 502 605 588 Q 609 603 601 612 Q 597 616 589 618 C 562 631 504 634 523 611 Z','M 260 181 Q 270 180 283 180 Q 421 199 717 200 C 747 200 748 209 726 230 Q 693 269 620 252 Q 418 225 256 222 C 226 221 230 183 260 181 Z'],
+    ['M 499 673 Q 590 688 686 701 Q 750 711 761 720 Q 771 729 767 738 Q 760 753 727 762 Q 693 772 598 744 Q 453 713 314 705 Q 272 701 301 680 Q 340 653 430 664 Q 440 665 452 667 L 499 673 Z','M 482 468 Q 494 520 507 568 Q 525 635 524 641 Q 512 660 499 673 C 479 695 448 697 452 667 Q 461 625 443 526 Q 436 499 428 460 L 419 421 Q 395 322 357 159 C 350 130 401 136 408 165 Q 442 307 472 429 L 482 468 Z','M 641 177 Q 678 360 738 416 Q 759 438 741 459 Q 722 475 661 505 Q 640 514 614 505 Q 545 481 482 468 L 428 460 Q 355 450 280 446 Q 261 446 262 434 Q 265 424 286 416 Q 314 401 357 413 Q 388 417 419 421 L 472 429 Q 527 439 584 446 Q 614 452 625 440 Q 643 421 637 384 Q 615 266 585 174 C 576 145 635 148 641 177 Z','M 357 159 Q 329 158 301 152 Q 159 130 72 134 Q 62 135 53 128 Q 46 121 52 110 Q 64 94 119 62 Q 134 55 156 64 Q 339 130 526 140 Q 670 152 937 99 Q 943 99 949 97 Q 970 93 977 103 Q 984 115 964 132 Q 883 199 844 191 Q 840 191 837 189 Q 807 183 641 177 L 585 174 Q 521 178 408 165 L 357 159 Z'],
+    ['M 472 702 Q 502 677 534 645 Q 552 629 572 630 Q 585 631 592 649 Q 598 668 585 705 Q 578 727 541 744 Q 447 771 436 764 Q 429 758 432 742 Q 436 729 472 702 Z','M 128 467 Q 103 464 121 443 Q 137 427 159 419 Q 184 412 205 418 Q 427 478 848 478 Q 875 478 901 477 Q 925 477 931 487 Q 938 502 918 519 Q 846 571 778 551 Q 514 509 128 467 Z','M 346 344 Q 342 241 202 138 Q 169 116 152 101 Q 139 86 157 88 Q 220 85 332 184 Q 405 257 428 279 Q 443 291 430 311 Q 391 359 360 361 Q 347 361 346 344 Z','M 611 302 Q 675 223 752 114 Q 767 86 785 79 Q 795 76 806 87 Q 822 100 815 155 Q 811 224 623 335 Q 620 338 618 338 Q 608 347 603 332 Q 600 316 611 302 Z'],
+    ['M 433 375 Q 649 436 864 443 Q 889 443 895 453 Q 901 469 887 480 Q 812 531 750 510 Q 698 494 450 429 Q 441 428 434 424 L 387 414 Q 314 398 270 386 Q 204 367 103 353 Q 88 352 88 339 Q 89 326 111 313 Q 130 303 166 293 Q 179 290 196 301 Q 253 328 386 363 L 433 375 Z','M 386 363 Q 386 159 409 117 Q 445 69 575 64 Q 719 58 792 93 Q 805 102 804 113 Q 800 132 779 142 Q 749 157 729 154 Q 716 154 707 147 Q 680 125 543 118 Q 473 118 450 150 Q 426 189 433 375 L 434 424 Q 437 644 465 686 Q 481 714 452 734 Q 416 759 394 765 Q 363 772 354 758 Q 347 748 357 739 Q 391 705 388 630 Q 391 551 387 414 L 386 363 Z'],
+    ['M 317 465 Q 318 338 155 190 Q 136 178 79 126 Q 67 110 85 113 Q 110 114 146 137 Q 258 209 325 305 Q 368 363 406 409 Q 419 422 404 441 Q 355 486 329 484 Q 316 483 317 465 Z','M 446 687 Q 507 636 530 577 Q 608 343 711 190 Q 732 163 846 151 Q 892 147 958 141 Q 983 140 984 146 Q 984 152 963 163 Q 756 269 675 396 Q 621 480 551 644 Q 530 690 483 702 Q 449 709 445 702 Q 438 692 446 687 Z'],
+    ['M 388 486 Q 319 225 74 56 Q 59 44 74 41 Q 92 42 133 60 Q 217 103 278 166 Q 348 230 380 303 Q 438 441 451 505 L 456 539 Q 456 593 481 702 Q 487 733 500 762 Q 510 784 490 795 Q 430 835 398 823 Q 382 817 390 799 Q 411 762 412 689 Q 402 550 396 523 L 388 486 Z','M 451 505 Q 520 527 570 535 Q 592 539 598 534 Q 602 527 598 511 Q 490 112 639 36 Q 676 18 741 10 Q 877 -3 968 54 Q 989 66 980 90 Q 961 156 954 255 Q 953 274 946 273 Q 940 273 935 254 Q 925 212 913 164 Q 903 127 879 104 Q 860 86 800 80 Q 733 70 679 89 Q 631 104 616 136 Q 594 173 602 259 Q 612 350 654 464 Q 673 512 702 538 Q 718 551 717 564 Q 716 576 646 607 Q 631 617 613 602 Q 568 572 456 539 L 396 523 Q 335 510 278 493 Q 232 483 156 482 Q 141 483 144 467 Q 147 455 174 439 Q 205 421 243 437 Q 321 465 388 486 L 451 505 Z'],
+    ['M 541 450 Q 754 474 901 462 Q 935 462 940 467 Q 949 482 935 494 Q 862 560 793 538 Q 745 529 542 499 L 482 492 Q 355 479 290 469 Q 218 457 112 455 Q 97 455 96 443 Q 95 430 116 414 Q 134 401 168 388 Q 180 384 199 393 Q 215 399 292 413 Q 377 434 482 444 L 541 450 Z','M 482 444 Q 482 240 478 171 Q 475 -6 495 -40 Q 511 -56 521 -34 Q 539 21 540 425 Q 540 438 541 450 L 542 499 Q 543 722 569 763 Q 576 781 555 798 Q 528 819 482 830 Q 461 836 447 821 Q 437 812 450 799 Q 480 774 482 739 Q 482 651 482 492 L 482 444 Z']
+  ];
+  CHARS.forEach(function (c) {
+    c.strokePaths = PATHS[c.v].map(function (d) { return new Path2D(d); });
+  });
+
+  var RS = 24;
+  var T_SHAPE = 0.36, T_POS = 0.27, T_SIZE = 0.55, MIN_SIZE = 26, MIN_LEN = 28;
+
+  function dist(a, b) { var dx = a[0] - b[0], dy = a[1] - b[1]; return Math.sqrt(dx * dx + dy * dy); }
+  function pathLength(p) { var L = 0; for (var i = 1; i < p.length; i++) L += dist(p[i - 1], p[i]); return L; }
+  function bboxOf(p) {
+    var x1 = 1e9, y1 = 1e9, x2 = -1e9, y2 = -1e9;
+    for (var i = 0; i < p.length; i++) {
+      if (p[i][0] < x1) x1 = p[i][0];
+      if (p[i][0] > x2) x2 = p[i][0];
+      if (p[i][1] < y1) y1 = p[i][1];
+      if (p[i][1] > y2) y2 = p[i][1];
+    }
+    return { x1: x1, y1: y1, x2: x2, y2: y2, w: x2 - x1, h: y2 - y1, cx: (x1 + x2) / 2, cy: (y1 + y2) / 2 };
+  }
+  function resample(pts, n) {
+    var out = [[pts[0][0], pts[0][1]]];
+    if (pts.length < 2) { for (var k = 1; k < n; k++) out.push([pts[0][0], pts[0][1]]); return out; }
+    var L = pathLength(pts);
+    if (L <= 0) { for (var k2 = 1; k2 < n; k2++) out.push([pts[0][0], pts[0][1]]); return out; }
+    var step = L / (n - 1), D = 0, i = 1, px = pts[0], guard = 0;
+    while (out.length < n - 1 && i < pts.length && guard++ < 20000) {
+      var q = pts[i], d = dist(px, q);
+      if (d === 0) { i++; continue; }
+      if (D + d >= step) {
+        var t = (step - D) / d;
+        var nx = px[0] + t * (q[0] - px[0]), ny = px[1] + t * (q[1] - px[1]);
+        out.push([nx, ny]);
+        px = [nx, ny];
+        D = 0;
+      } else { D += d; px = q; i++; }
+    }
+    while (out.length < n) out.push([pts[pts.length - 1][0], pts[pts.length - 1][1]]);
+    return out;
+  }
+  CHARS.forEach(function (c) {
+    c.strokes = c.m.map(function (st) {
+      var pts = st.map(function (p) { return [p[0], 1024 - p[1]]; });
+      var rs = resample(pts, RS);
+      var b = bboxOf(rs);
+      var size = Math.max(b.w, b.h, 1);
+      return {
+        n: rs.map(function (p) { return [(p[0] - b.cx) / size, (p[1] - b.cy) / size]; }),
+        cx: b.cx, cy: b.cy, size: size, len: pathLength(pts)
+      };
+    });
+  });
+  function scoreStroke(pts, tpl) {
+    var rs = resample(pts, RS);
+    var b = bboxOf(rs);
+    var size = Math.max(b.w, b.h, 1);
+    var d = 0;
+    for (var k = 0; k < RS; k++) {
+      var ux = (rs[k][0] - b.cx) / size, uy = (rs[k][1] - b.cy) / size;
+      d += Math.sqrt((ux - tpl.n[k][0]) * (ux - tpl.n[k][0]) + (uy - tpl.n[k][1]) * (uy - tpl.n[k][1]));
+    }
+    d /= RS;
+    var pos = Math.sqrt((b.cx - tpl.cx) * (b.cx - tpl.cx) + (b.cy - tpl.cy) * (b.cy - tpl.cy)) / 1024;
+    var sz = Math.abs(size - tpl.size) / 1024;
+    return { ok: size >= MIN_SIZE && d <= T_SHAPE && pos <= T_POS && sz <= T_SIZE, d: d, pos: pos, sz: sz, size: size };
+  }
+
+  function numberToSeq(n) {
+    if (n === 0) return [0];
+    var t = Math.floor(n / 10), o = n % 10, s = [];
+    if (t === 0) return [o];
+    if (t > 1) s.push(t);
+    s.push(10);
+    if (o > 0) s.push(o);
+    return s;
+  }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function randInt(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function twoDigit() { return randInt(2, 9) * 10 + randInt(1, 9); }
+  function teen() { return 10 + randInt(1, 9); }
+  function tens() { return randInt(2, 9) * 10; }
+  function buildSchedule() {
+    var d9 = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    var e1 = d9.slice(0, 3).concat([0], d9.slice(3, 6));
+    var e2 = [10, twoDigit(), teen(), tens(), twoDigit(), teen()];
+    var e3 = [twoDigit(), tens(), twoDigit(), teen(), twoDigit()];
+    var t1 = [1, 9, 17, 25, 34, 41, 48], t2 = [56, 64, 72, 79, 86, 92], t3 = [99, 104, 110, 116, 122];
+    var s1 = [20, 23, 25, 13, 28, 29, 30], s2 = [29, 31, 31, 34, 34, 36], s3 = [36, 37, 38, 40, 41];
+    var sched = [];
+    function push(list, times, speeds) {
+      for (var i = 0; i < list.length; i++) sched.push({ at: times[i], num: list[i], speed: speeds[i] });
+    }
+    push(e1, t1, s1); push(e2, t2, s2); push(e3, t3, s3);
+    return sched;
+  }
+
+  var ROBOT_SVG = {
+    scout: '<svg viewBox="0 0 44 34" width="44" height="34"><g fill="none" stroke="#c98f3a" stroke-width="2"><rect x="8" y="8" width="27" height="14" fill="#182417"/><line x1="13" y1="22" x2="9" y2="32"/><line x1="22" y1="22" x2="22" y2="32"/><line x1="30" y1="22" x2="36" y2="32"/><line x1="21" y1="8" x2="21" y2="2"/><circle cx="31" cy="15" r="2.6" fill="#ff5340" stroke="none"/></g></svg>',
+    walker: '<svg viewBox="0 0 54 46" width="54" height="46"><g fill="none" stroke="#c98f3a" stroke-width="2"><rect x="12" y="4" width="27" height="20" fill="#182417"/><rect x="16" y="24" width="19" height="8" fill="#182417"/><line x1="18" y1="32" x2="11" y2="44"/><line x1="33" y1="32" x2="41" y2="44"/><line x1="39" y1="10" x2="50" y2="17"/><circle cx="20" cy="10" r="2.6" fill="#ff5340" stroke="none"/><line x1="39" y1="17" x2="50" y2="17"/></g></svg>',
+    tank: '<svg viewBox="0 0 84 40" width="84" height="40"><g fill="none" stroke="#c98f3a" stroke-width="2"><rect x="4" y="24" width="70" height="13" rx="6" fill="#182417"/><circle cx="16" cy="30" r="3" fill="#0d150d"/><circle cx="32" cy="30" r="3" fill="#0d150d"/><circle cx="48" cy="30" r="3" fill="#0d150d"/><circle cx="63" cy="30" r="3" fill="#0d150d"/><path d="M14 24 L20 9 L60 9 L68 24 Z" fill="#182417"/><line x1="68" y1="14" x2="83" y2="11"/><circle cx="56" cy="16" r="2.6" fill="#ff5340" stroke="none"/></g></svg>'
+  };
+  var LANES = [10, 44, 24, 58, 4, 34, 16, 50, 28, 60, 8, 38];
+  var TOTAL = 18, BREACH_X = 96, GROUND = 2;
+
+  var app = document.getElementById('app');
+  var startScreen = document.getElementById('startScreen');
+  var gameScreen = document.getElementById('gameScreen');
+  var finishScreen = document.getElementById('finishScreen');
+  var defeatScreen = document.getElementById('defeatScreen');
+  var field = document.getElementById('field');
+  var turret = document.getElementById('turret');
+  var waveLabel = document.getElementById('waveLabel');
+  var hudAlert = document.getElementById('hudAlert');
+  var hpFill = document.getElementById('hpFill');
+  var hpLabel = document.getElementById('hpLabel');
+  var killLabel = document.getElementById('killLabel');
+  var muteButton = document.getElementById('muteButton');
+  var panelLabel = document.getElementById('panelLabel');
+  var targetNumber = document.getElementById('targetNumber');
+  var targetSub = document.getElementById('targetSub');
+  var slotsEl = document.getElementById('slots');
+  var strokeCounter = document.getElementById('strokeCounter');
+  var canvasFrame = document.getElementById('canvasFrame');
+  var cv = document.getElementById('drawCanvas');
+  var undoButton = document.getElementById('undoButton');
+  var clearButton = document.getElementById('clearButton');
+  var feedbackEl = document.getElementById('feedback');
+  var feedbackIcon = document.getElementById('feedbackIcon');
+  var defeatKills = document.getElementById('defeatKills');
+
+  var ctx = cv.getContext('2d');
+  cv.width = 488; cv.height = 488;
+
+  var AC = null, muted = false;
+  function ac() {
+    if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; } }
+    return AC;
+  }
+  function tone(f0, f1, dur, type, vol, delay) {
+    if (muted) return;
+    var a = ac(); if (!a) return;
+    if (a.state === 'suspended') { try { a.resume(); } catch (e) {} }
+    try {
+      var t = a.currentTime + (delay || 0);
+      var o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'square';
+      o.frequency.setValueAtTime(f0, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+      g.gain.setValueAtTime(vol || 0.04, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(a.destination);
+      o.start(t); o.stop(t + dur + 0.02);
+    } catch (e) {}
+  }
+  var sndStroke = function () { tone(760, 980, 0.06, 'square', 0.03); };
+  var sndChar = function () { tone(520, 780, 0.09, 'square', 0.05); tone(780, 1040, 0.09, 'square', 0.04, 0.09); };
+  var sndFire = function () { tone(240, 50, 0.35, 'sawtooth', 0.09); };
+  var sndErr = function () { tone(150, 70, 0.22, 'square', 0.06); };
+  var sndBreach = function () { tone(540, 190, 0.4, 'sawtooth', 0.09); tone(420, 150, 0.4, 'sawtooth', 0.08, 0.18); };
+  var sndWin = function () { tone(520, 520, 0.12, 'square', 0.05); tone(660, 660, 0.12, 'square', 0.05, 0.14); tone(880, 880, 0.2, 'square', 0.06, 0.28); };
+  var sndLose = function () { tone(300, 300, 0.2, 'sawtooth', 0.07); tone(220, 220, 0.2, 'sawtooth', 0.07, 0.22); tone(150, 60, 0.5, 'sawtooth', 0.08, 0.44); };
+
+  var running = false, elapsed = 0, lastT = 0, schedule = [], nextIdx = 0;
+  var robots = [], target = null, hp = 100, destroyed = 0, spawnedCount = 0;
+  var stunUntil = 0, alertTimer = 0;
+  var draw = { active: false, pts: [], confirmed: [], strokeIndex: 0, error: null };
+
+  function now() { return performance.now(); }
+  function setFeedback(text, kind) {
+    feedbackEl.textContent = text;
+    feedbackIcon.textContent = kind === 'err' ? '✕' : kind === 'ok' ? '◆' : kind === 'warn' ? '⚠' : '▸';
+    feedbackIcon.className = 'feedback-icon' + (kind ? ' ' + kind : '');
+  }
+  function currentChar() {
+    if (!target || target.state !== 'walk' || target.charsDone >= target.seq.length) return null;
+    return CHARBYV[target.seq[target.charsDone]];
+  }
+  function updateTools() {
+    undoButton.disabled = draw.confirmed.length === 0 || !running;
+    clearButton.disabled = (draw.confirmed.length === 0 && draw.pts.length === 0) || !running;
+  }
+  function updateHUD() {
+    killLabel.textContent = destroyed + '/' + TOTAL;
+    var ech = spawnedCount <= 7 ? 1 : spawnedCount <= 13 ? 2 : 3;
+    waveLabel.textContent = ech + '/3';
+    hpFill.style.width = Math.max(0, hp) + '%';
+    hpLabel.textContent = Math.max(0, Math.round(hp));
+    hpFill.className = 'hp-fill' + (hp <= 35 ? ' low' : hp <= 65 ? ' mid' : '');
+  }
+  function renderSlots(stamped) {
+    slotsEl.innerHTML = '';
+    if (!target) return;
+    for (var i = 0; i < target.seq.length; i++) {
+      var cell = document.createElement('div');
+      var ch = CHARBYV[target.seq[i]];
+      if (i < target.charsDone) {
+        cell.className = 'slot done' + (stamped === i ? ' stamp' : '');
+        cell.textContent = ch.h;
+      } else if (i === target.charsDone) {
+        cell.className = 'slot current';
+        var g = document.createElement('span');
+        g.className = 'ghost';
+        g.textContent = ch.h;
+        cell.appendChild(g);
+      } else {
+        cell.className = 'slot';
+        cell.textContent = '?';
+      }
+      slotsEl.appendChild(cell);
+    }
+  }
+  function renderTargetPanel(stamped) {
+    if (target && target.state === 'walk') {
+      panelLabel.textContent = 'цель захвачена';
+      targetNumber.textContent = String(target.num);
+      targetSub.textContent = 'робот ' + (target.id + 1) + ' · ' + target.seq.length + ' ' + (target.seq.length === 1 ? 'знак' : target.seq.length < 5 ? 'знака' : 'знаков');
+      renderSlots(stamped);
+      var cc = currentChar();
+      if (cc) strokeCounter.innerHTML = 'знак <span class="cjk">' + cc.h + '</span> (' + PINYIN[target.seq[target.charsDone]] + ') · черта ' + (draw.strokeIndex + 1) + '/' + cc.strokes.length;
+      else strokeCounter.textContent = 'знак собран';
+    } else {
+      panelLabel.textContent = 'цель потеряна';
+      targetNumber.textContent = '——';
+      targetSub.textContent = 'сканирование сектора';
+      slotsEl.innerHTML = '';
+      strokeCounter.textContent = 'сектор чист';
+    }
+    canvasFrame.classList.toggle('idle', !currentChar());
+  }
+  function retarget() {
+    var best = null;
+    for (var i = 0; i < robots.length; i++) {
+      var r = robots[i];
+      if (r.state !== 'walk') continue;
+      if (r.el) r.el.classList.remove('target');
+      if (!best || r.x < best.x) best = r;
+    }
+    var changed = best !== target;
+    target = best;
+    if (target && target.el) target.el.classList.add('target');
+    draw.confirmed = []; draw.strokeIndex = 0; draw.pts = []; draw.active = false;
+    renderTargetPanel();
+    updateTools();
+    if (changed && target) setFeedback('Захвачена цель: ' + target.num + '. Кисть к бою.', '');
+  }
+  function spawnRobot(entry, idx) {
+    var seq = numberToSeq(entry.num);
+    var type = entry.num === 0 ? 'tank' : seq.length === 1 ? 'scout' : 'walker';
+    var el = document.createElement('div');
+    el.className = 'robot ' + type;
+    el.innerHTML = '<div class="plate"><span>' + entry.num + '</span></div>' + ROBOT_SVG[type];
+    field.appendChild(el);
+    var fieldW = field.clientWidth, fieldH = field.clientHeight;
+    var scale = fieldH < 200 ? 0.68 : (fieldW < 620 ? 0.78 : 1);
+    var laneRange = Math.max(12, Math.min(fieldH - 96, 90));
+    var lane = (LANES[idx % LANES.length] / 60) * laneRange;
+    var pace = Math.max(0.35, (fieldW - BREACH_X) / 704);
+    var baseW = type === 'tank' ? 84 : type === 'walker' ? 54 : 44;
+    var baseH = type === 'tank' ? 40 : type === 'walker' ? 46 : 34;
+    var maxLane = Math.max(0, fieldH - baseH * scale - 26 * scale - 6);
+    lane = Math.min(lane, maxLane);
+    var r = {
+      id: idx, num: entry.num, seq: seq, charsDone: 0,
+      x: fieldW - baseW * scale - 2, lane: lane, speed: entry.speed * pace, type: type,
+      dmg: type === 'tank' ? 25 : type === 'walker' ? 18 : 14,
+      w: baseW * scale, h: baseH * scale, scale: scale,
+      el: el, state: 'walk'
+    };
+    el.style.bottom = (GROUND + lane) + 'px';
+    el.style.transformOrigin = 'bottom left';
+    el.style.transform = 'translateX(' + r.x + 'px) scale(' + scale + ')';
+    robots.push(r);
+    spawnedCount = idx + 1;
+    if (!target) retarget(); else updateHUD();
+  }
+  function removeRobot(r) {
+    var i = robots.indexOf(r);
+    if (i >= 0) robots.splice(i, 1);
+    if (r.el && r.el.parentNode) r.el.parentNode.removeChild(r.el);
+  }
+  function detonate(r) {
+    r.state = 'dying';
+    if (r.el) {
+      r.el.classList.remove('target');
+      r.el.style.setProperty('--rx', r.x + 'px');
+      r.el.style.setProperty('--rs', r.scale);
+      r.el.classList.add('dead');
+    }
+    var ring = document.createElement('div');
+    ring.className = 'boomring';
+    ring.style.left = (r.x + r.w / 2) + 'px';
+    ring.style.bottom = (GROUND + r.lane + r.h / 2) + 'px';
+    field.appendChild(ring);
+    setTimeout(function () { if (ring.parentNode) ring.parentNode.removeChild(ring); }, 600);
+    setTimeout(function () { removeRobot(r); }, 650);
+  }
+  function fireAt(r) {
+    var beam = document.createElement('div');
+    beam.className = 'beam';
+    var yFromBottom = 78;
+    beam.style.left = '92px';
+    beam.style.bottom = yFromBottom + 'px';
+    var dx = Math.max(20, r.x - 92 + r.w / 2);
+    beam.style.width = dx + 'px';
+    field.appendChild(beam);
+    setTimeout(function () { if (beam.parentNode) beam.parentNode.removeChild(beam); }, 450);
+    turret.classList.add('flash');
+    setTimeout(function () { turret.classList.remove('flash'); }, 320);
+    sndFire();
+    detonate(r);
+    destroyed++;
+    updateHUD();
+    setFeedback('Чернильный залп — цель ' + r.num + ' уничтожена.', 'ok');
+    if (destroyed >= TOTAL) {
+      target = null;
+      renderTargetPanel();
+      win();
+      return;
+    }
+    retarget();
+  }
+  function breach(r) {
+    r.state = 'breach';
+    hp -= r.dmg;
+    updateHUD();
+    sndBreach();
+    app.classList.remove('shake');
+    void app.offsetWidth;
+    app.classList.add('shake');
+    detonate(r);
+    setFeedback('Прорыв у стены! Робот ' + r.num + ' нанёс −' + r.dmg + ' целостности.', 'warn');
+    if (hp <= 0) {
+      hp = 0; updateHUD();
+      lose();
+      return;
+    }
+    if (target === r) { target = null; retarget(); }
+  }
+  function win() {
+    running = false;
+    sndWin();
+    setFeedback('Сектор чист. Волна отбита.', 'ok');
+    document.getElementById('finishEyebrow').textContent = 'целей уничтожено: ' + destroyed + ' из 18 · периметр удержан';
+    setTimeout(function () {
+      gameScreen.hidden = true;
+      finishScreen.hidden = false;
+    }, 950);
+  }
+  function lose() {
+    running = false;
+    sndLose();
+    defeatKills.textContent = destroyed;
+    setFeedback('Целостность базы на нуле…', 'err');
+    setTimeout(function () {
+      gameScreen.hidden = true;
+      defeatScreen.hidden = false;
+    }, 950);
+  }
+  function resetGame() {
+    for (var i = robots.length - 1; i >= 0; i--) removeRobot(robots[i]);
+    robots = []; target = null;
+    hp = 100; destroyed = 0; spawnedCount = 0; nextIdx = 0; elapsed = 0;
+    stunUntil = 0;
+    schedule = buildSchedule();
+    draw = { active: false, pts: [], confirmed: [], strokeIndex: 0, error: null };
+    hudAlert.textContent = 'сканирование сектора…';
+    hudAlert.className = 'alert';
+    updateHUD();
+    renderTargetPanel();
+    updateTools();
+    setFeedback('Станция «Кисть» на линии. Первый контакт на подходе.', '');
+    running = true;
+    lastT = now();
+  }
+
+  function renderDraw() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    var s = cv.width / 1024;
+    ctx.setTransform(s, 0, 0, s, 0, 0);
+    ctx.strokeStyle = 'rgba(255,182,72,.08)';
+    ctx.lineWidth = 1;
+    for (var g = 256; g < 1024; g += 256) {
+      ctx.beginPath(); ctx.moveTo(g, 0); ctx.lineTo(g, 1024); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, g); ctx.lineTo(1024, g); ctx.stroke();
+    }
+    var cc = currentChar();
+    if (cc) {
+      ctx.save();
+      ctx.translate(0, 1024);
+      ctx.scale(1, -1);
+      ctx.fillStyle = 'rgba(255,182,72,.13)';
+      for (var si = 0; si < cc.strokePaths.length; si++) ctx.fill(cc.strokePaths[si]);
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = '#ffb648';
+      ctx.shadowColor = 'rgba(255,182,72,.75)';
+      ctx.shadowBlur = 16;
+      for (var ci = 0; ci < draw.confirmed.length; ci++) {
+        var sp = cc.strokePaths[draw.confirmed[ci]];
+        if (sp) ctx.fill(sp);
+      }
+      ctx.restore();
+    }
+    function strokePath(pts, color, alpha, width) {
+      if (pts.length < 2) return;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width || 58;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (draw.error && now() < draw.error.until) strokePath(draw.error.pts, '#ff5340', 0.95);
+    else if (draw.active && draw.pts.length) strokePath(draw.pts, '#ffd98a', 0.95);
+  }
+
+  function finishStroke() {
+    var pts = draw.pts;
+    draw.pts = [];
+    draw.active = false;
+    var cc = currentChar();
+    if (!cc || !running) { renderDraw(); updateTools(); return; }
+    if (pts.length < 3 || pathLength(pts) < MIN_LEN) { renderDraw(); updateTools(); return; }
+    var tpl = cc.strokes[draw.strokeIndex];
+    if (!tpl) { failStroke(pts); return; }
+    var sc = scoreStroke(pts, tpl);
+    if (sc.ok) {
+      draw.confirmed.push(draw.strokeIndex);
+      draw.strokeIndex++;
+      sndStroke();
+      if (draw.strokeIndex >= cc.strokes.length) {
+        target.charsDone++;
+        sndChar();
+        draw.confirmed = []; draw.strokeIndex = 0;
+        renderTargetPanel(target.charsDone - 1);
+        setFeedback('Заряд сформирован: ' + cc.h + '. ' + (target.charsDone < target.seq.length ? 'Следующий знак.' : 'Огонь!'), 'ok');
+        if (target.charsDone >= target.seq.length) {
+          var r = target;
+          target = null;
+          renderTargetPanel();
+          fireAt(r);
+        }
+      } else {
+        renderTargetPanel();
+      }
+    } else {
+      failStroke(pts);
+    }
+    updateTools();
+    renderDraw();
+  }
+  function failStroke(pts) {
+    draw.error = { pts: pts, until: now() + 430 };
+    draw.confirmed = [];
+    draw.strokeIndex = 0;
+    stunUntil = now() + 620;
+    sndErr();
+    setFeedback('Сбой наведения: нарушена форма или порядок черт. Знак сброшен.', 'err');
+    renderTargetPanel();
+  }
+
+  function toFrame(e) {
+    var r = cv.getBoundingClientRect();
+    return [(e.clientX - r.left) / r.width * 1024, (e.clientY - r.top) / r.height * 1024];
+  }
+  cv.addEventListener('pointerdown', function (e) {
+    if (!running || now() < stunUntil || !currentChar()) return;
+    e.preventDefault();
+    cv.setPointerCapture(e.pointerId);
+    draw.active = true;
+    draw.pts = [toFrame(e)];
+    renderDraw();
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!draw.active) return;
+    e.preventDefault();
+    draw.pts.push(toFrame(e));
+    renderDraw();
+  });
+  cv.addEventListener('pointerup', function (e) { if (draw.active) finishStroke(); });
+  cv.addEventListener('pointercancel', function () { if (draw.active) finishStroke(); });
+
+  undoButton.addEventListener('click', function () {
+    if (draw.confirmed.length) {
+      draw.confirmed.pop();
+      draw.strokeIndex--;
+      renderTargetPanel();
+      renderDraw();
+      updateTools();
+    }
+  });
+  clearButton.addEventListener('click', function () {
+    draw.confirmed = [];
+    draw.strokeIndex = 0;
+    draw.pts = [];
+    renderTargetPanel();
+    renderDraw();
+    updateTools();
+  });
+  muteButton.addEventListener('click', function () {
+    muted = !muted;
+    muteButton.textContent = muted ? 'звук выкл' : 'звук вкл';
+    if (!muted) sndStroke();
+  });
+
+  function echelonLabel() {
+    if (spawnedCount <= 7) return 'эшелон 1: разведка';
+    if (spawnedCount <= 13) return 'эшелон 2: штурм';
+    return 'эшелон 3: прорыв';
+  }
+  function loop(t) {
+    requestAnimationFrame(loop);
+    var dt = Math.min((t - lastT) / 1000, 0.05);
+    lastT = t;
+    if (!running) return;
+    elapsed += dt;
+    while (nextIdx < schedule.length && elapsed >= schedule[nextIdx].at) {
+      spawnRobot(schedule[nextIdx], nextIdx);
+      nextIdx++;
+    }
+    for (var i = robots.length - 1; i >= 0; i--) {
+      var r = robots[i];
+      if (r.state !== 'walk') continue;
+      r.x -= r.speed * dt;
+      r.el.style.transform = 'translateX(' + r.x + 'px) scale(' + r.scale + ')';
+      if (r.x <= BREACH_X) { breach(r); continue; }
+    }
+    if (target && target.state !== 'walk') retarget();
+    if (running && hp > 0 && nextIdx >= schedule.length && robots.length === 0 && destroyed < TOTAL) {
+      win();
+      return;
+    }
+    alertTimer -= dt;
+    if (alertTimer <= 0) {
+      alertTimer = 0.25;
+      var near = null;
+      for (var j = 0; j < robots.length; j++) {
+        var q = robots[j];
+        if (q.state === 'walk' && (!near || q.x < near.x)) near = q;
+      }
+      if (!near) {
+        if (nextIdx >= schedule.length && destroyed < TOTAL) {
+          hudAlert.textContent = 'последние цели в секторе';
+          hudAlert.className = 'alert';
+        } else {
+          hudAlert.textContent = 'сканирование сектора…';
+          hudAlert.className = 'alert';
+        }
+      } else if (near.x < field.clientWidth * 0.32) {
+        hudAlert.textContent = '⚠ робот ' + near.num + ' в ближней зоне!';
+        hudAlert.className = 'alert warn';
+      } else {
+        hudAlert.textContent = echelonLabel();
+        hudAlert.className = 'alert';
+      }
+      var stunned = now() < stunUntil;
+      canvasFrame.classList.toggle('stun', stunned);
+    }
+    renderDraw();
+  }
+  requestAnimationFrame(loop);
+
+  function beginRun() {
+    ac();
+    startScreen.hidden = true;
+    defeatScreen.hidden = true;
+    finishScreen.hidden = true;
+    gameScreen.hidden = false;
+    resetGame();
+  }
+  document.getElementById('startButton').addEventListener('click', beginRun);
+  document.getElementById('restartButton').addEventListener('click', beginRun);
+  document.getElementById('retryButton').addEventListener('click', beginRun);
+})();
+</script>
+</body>
+</html>
