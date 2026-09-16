@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>index_less3_exs2 — Мастерская воздушных змеев</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --paper: #f8f1de;
+    --paper-2: #f3e8ce;
+    --paper-3: #e7d8b4;
+    --ink: #2e2822;
+    --ink-soft: #6b5d4a;
+    --red: #c8402a;
+    --red-deep: #9c2f1c;
+    --blue: #33527d;
+    --green: #2e7d4f;
+    --gold: #d9a441;
+    --rope: #8a6a3f;
+    --line: #cdbb90;
+    --hz: "Microsoft YaHei", "Noto Sans SC", "PingFang SC", "SimSun", sans-serif;
+    --serif: Georgia, "PT Serif", "Times New Roman", serif;
+  }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    font-family: var(--serif);
+    background:
+      radial-gradient(ellipse at 18% 8%, rgba(255,255,255,.65), transparent 55%),
+      linear-gradient(150deg, #f3ead2 0%, #ecdfc0 60%, #e6d6b2 100%);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  button { color: inherit; font: inherit; touch-action: manipulation; }
+  button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  .app {
+    position: relative;
+    width: min(100%, 820px);
+    height: min(100dvh, 560px);
+    min-height: 380px;
+    overflow: hidden;
+    isolation: isolate;
+    border: 3px solid #8a6a3f;
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 4px rgba(200,64,42,.38), 0 18px 40px rgba(90,70,40,.28);
+    background: linear-gradient(180deg, #f6eed7 0%, #f1e4c3 100%);
+  }
+  .screen { position: absolute; inset: 0; animation: screen-in .45s cubic-bezier(.2,.78,.2,1) both; }
+  @keyframes screen-in { from { opacity: 0; transform: scale(.985) translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .start-screen, .finish-screen {
+    display: grid;
+    place-items: center;
+    padding: clamp(10px, 2vh, 20px);
+    overflow: auto;
+  }
+  .card {
+    position: relative;
+    width: min(100%, 640px);
+    max-height: 100%;
+    overflow: auto;
+    background: linear-gradient(#fbf5e6, #f3e8ce);
+    border: 2px solid #b98a4e;
+    border-radius: 14px;
+    box-shadow: 0 10px 26px rgba(90,70,40,.2), inset 0 0 0 1px rgba(255,255,255,.55);
+    padding: clamp(10px, 1.8vh, 16px) clamp(12px, 3vw, 26px);
+    text-align: center;
+  }
+  .c-title { font-size: clamp(17px, 3.8vw, 24px); font-weight: 800; letter-spacing: .4px; color: var(--red); text-shadow: 0 1px 0 rgba(255,255,255,.7); }
+  .c-sub { font-family: var(--hz); font-size: clamp(12px, 2.4vw, 15px); letter-spacing: 8px; text-indent: 8px; color: var(--blue); margin: 1px 0 6px; }
+  .c-intro { font-size: clamp(10.5px, 2vw, 13px); line-height: 1.45; color: var(--ink-soft); max-width: 480px; margin: 0 auto 8px; }
+  .seal {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(#cf4a2f, #a83220);
+    border: 2px solid #7e2413;
+    box-shadow: inset 0 0 0 1.5px rgba(253,244,224,.4);
+    display: grid;
+    grid-auto-rows: 1fr;
+    place-items: center;
+    padding: 3px 0;
+    transform: rotate(4deg);
+  }
+  .seal span { font-family: var(--hz); font-size: 13px; line-height: 1.05; color: #fdf4e0; }
+
+  .c-deco { display: flex; justify-content: center; align-items: flex-start; gap: 14px; margin-bottom: 0; }
+  .c-deco svg { width: clamp(30px, 6vw, 42px); animation: bob 3.4s ease-in-out infinite; }
+  .c-deco svg:nth-child(2) { animation-delay: .5s; margin-top: 12px; }
+  .c-deco svg:nth-child(3) { animation-delay: 1.1s; }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2.4deg); } }
+
+  .rules { list-style: none; text-align: left; display: grid; gap: 3px; margin: 0 0 8px; }
+  .rules li { position: relative; padding-left: 16px; font-size: clamp(10px, 1.9vw, 12.5px); line-height: 1.4; color: var(--ink-soft); }
+  .rules li::before { content: "◆"; position: absolute; left: 0; top: 1px; font-size: 9px; color: var(--red); }
+  .menu-cap { font-size: clamp(9px, 1.8vw, 10.5px); letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+  .menu { list-style: none; text-align: left; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; margin: 0 0 6px; background: rgba(255,252,242,.55); }
+  .menu li { display: grid; grid-template-columns: 1.5fr auto auto minmax(88px, 1fr); gap: 8px; align-items: center; padding: 3px 10px; }
+  .menu li + li { border-top: 1px dashed rgba(185,138,78,.45); }
+  .m-parts { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; }
+  .chip { font-family: var(--hz); font-size: clamp(12px, 2.4vw, 14px); color: var(--ink); background: #fffdf4; border: 1.5px solid var(--line); border-radius: 6px; padding: 0 5px; line-height: 1.55; }
+  .plus { color: var(--red); font-weight: 700; font-size: 11px; }
+  .m-hz { font-family: var(--hz); font-size: clamp(14px, 3vw, 18px); font-weight: 700; color: var(--ink); }
+  .m-py { font-size: clamp(9.5px, 1.9vw, 11.5px); font-style: italic; color: var(--blue); white-space: nowrap; }
+  .m-ru { font-size: clamp(9.5px, 1.9vw, 11.5px); color: var(--ink-soft); text-align: right; }
+  .note { font-size: clamp(9.5px, 1.9vw, 11px); color: var(--ink-soft); margin: 6px 0 8px; line-height: 1.4; }
+
+  .btn {
+    font-family: var(--serif);
+    font-weight: 700;
+    letter-spacing: .6px;
+    color: #fff7e6;
+    background: linear-gradient(#d7553a, #b93a20);
+    border: 2px solid var(--red-deep);
+    border-radius: 12px;
+    padding: 8px 24px;
+    box-shadow: 0 4px 0 #7e2413, 0 8px 16px rgba(156,47,28,.22);
+    cursor: pointer;
+  }
+  .btn:hover { filter: brightness(1.07); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #7e2413, 0 4px 8px rgba(156,47,28,.2); }
+  .btn-small { padding: 7px 20px; font-size: 14px; }
+  .btn-ghost {
+    font-size: 12px;
+    color: var(--ink);
+    background: transparent;
+    border: 2px solid rgba(46,40,34,.5);
+    border-radius: 8px;
+    padding: 4px 12px;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { background: rgba(46,40,34,.07); }
+
+  .screen-game { display: flex; flex-direction: column; }
+  .hud { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 14px 3px; }
+  .hud-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .hud-kites { display: flex; gap: 6px; align-items: flex-end; }
+  .hk { width: clamp(15px, 2.4vw, 19px); display: inline-block; opacity: .32; transition: opacity .3s, transform .3s; }
+  .hk svg { display: block; width: 100%; height: auto; }
+  .hk.on { opacity: 1; transform: translateY(-4px); filter: drop-shadow(0 2px 2px rgba(90,70,40,.45)); }
+  .hud-round { font-size: clamp(10px, 1.9vw, 12px); letter-spacing: .4px; color: var(--ink-soft); white-space: nowrap; }
+  .hud-right { display: flex; align-items: center; gap: 10px; }
+  .hud-mist { font-size: clamp(10px, 1.9vw, 12px); letter-spacing: .4px; color: var(--ink-soft); white-space: nowrap; }
+  .hud-mist b { color: var(--red); }
+
+  .scene {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4px 10px;
+    background:
+      linear-gradient(180deg, #cfe7ee 0%, #dfeedb 55%, #f4ecd3 100%);
+    border-bottom: 2px dashed rgba(138,106,63,.4);
+  }
+  .scene::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 28px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(#fff8dc, #f3dc9c);
+    box-shadow: 0 0 24px rgba(245,222,150,.95);
+  }
+  .cloud {
+    position: absolute;
+    width: 88px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 20px -7px 0 -5px rgba(255,255,255,.85), -22px -5px 0 -7px rgba(255,255,255,.85);
+    animation: drift linear infinite;
+  }
+  .c1 { top: 16%; left: 0; animation-duration: 48s; }
+  .c2 { top: 38%; left: 0; animation-duration: 66s; animation-delay: -28s; width: 116px; opacity: .8; }
+  .c3 { top: 7%; left: 0; animation-duration: 56s; animation-delay: -12s; opacity: .7; }
+  @keyframes drift { from { transform: translateX(-170px); } to { transform: translateX(980px); } }
+
+  .kite-wrap {
+    position: relative;
+    z-index: 2;
+    height: clamp(92px, 22vh, 136px);
+    margin-top: 2px;
+    transition: transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .kite-wrap svg { display: block; height: 100%; width: auto; animation: sway 4.4s ease-in-out infinite; }
+  .kite-wrap.fly { transform: translateY(-14px); }
+  .kite-wrap.fly svg { animation-duration: 1.7s; }
+  @keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3.5deg); } }
+
+  .string { width: 2px; height: clamp(6px, 1.8vh, 16px); background: linear-gradient(var(--rope), #6d5330); z-index: 1; }
+
+  .sign {
+    position: relative;
+    z-index: 2;
+    min-width: clamp(170px, 40vw, 300px);
+    max-width: 94%;
+    margin-top: clamp(6px, 1.6vh, 12px);
+    background: linear-gradient(#d8ab6b, #bd8a4a);
+    border: 2px solid #7c5a30;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(90,70,40,.3), inset 0 0 0 1px rgba(255,248,225,.35);
+    padding: 5px 20px 6px;
+    text-align: center;
+    transform: rotate(-.8deg);
+  }
+  .sign::before, .sign::after { content: ""; position: absolute; top: -12px; width: 2px; height: 13px; background: #7c5a30; }
+  .sign::before { left: 24px; transform: rotate(16deg); }
+  .sign::after { right: 24px; transform: rotate(-16deg); }
+  .sign-ru { font-size: clamp(13px, 2.7vw, 18px); font-weight: 700; color: #33241a; letter-spacing: .3px; }
+  .sign-py { font-size: clamp(10.5px, 2vw, 13px); font-style: italic; color: #6b4a24; }
+  .sign-hz {
+    display: none;
+    font-family: var(--hz);
+    font-size: clamp(12px, 2.4vw, 16px);
+    color: #fdf4e0;
+    letter-spacing: 3px;
+    text-indent: 3px;
+    background: var(--red);
+    border-radius: 6px;
+    padding: 0 8px;
+    margin: 3px auto 0;
+    width: fit-content;
+  }
+  .sign.reveal .sign-hz { display: block; animation: hz-in .5s cubic-bezier(.2,.9,.3,1.3) both; }
+  @keyframes hz-in { from { transform: scale(.4) rotate(-5deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .slots-wrap { flex: none; display: flex; justify-content: center; padding: 14px 10px 5px; }
+  .slots { position: relative; display: flex; gap: clamp(10px, 2.6vw, 20px); }
+  .slots::before { content: ""; position: absolute; top: 4px; left: -24px; right: -24px; height: 2px; background: var(--rope); border-radius: 2px; }
+  .slot {
+    position: relative;
+    width: clamp(44px, 9vw, 58px);
+    height: clamp(48px, 9.4vw, 62px);
+    border: 2px dashed rgba(138,106,63,.55);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,252,243,.4);
+  }
+  .slot::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--rope);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .slot .num { position: absolute; top: 2px; right: 6px; font-size: 10px; color: rgba(107,93,74,.75); }
+  .slot .hz:empty::after { content: "?"; font-size: 16px; color: rgba(138,106,63,.5); font-family: var(--serif); }
+  .slot .hz { font-family: var(--hz); font-size: clamp(21px, 4.8vw, 29px); font-weight: 700; color: var(--ink); }
+  .slot.filled { border: 2px solid var(--red); background: linear-gradient(#fffdf2, #f4ead0); animation: tie .4s cubic-bezier(.2,.9,.3,1.4) both; }
+  .slot.filled::before { opacity: 1; background: var(--red); border-color: var(--red-deep); }
+  @keyframes tie { 0% { transform: scale(.55) rotate(-7deg); } 60% { transform: scale(1.12) rotate(2deg); } 100% { transform: none; } }
+
+  .pool-wrap { flex: none; padding: 6px 10px 3px; }
+  .pool-cap { text-align: center; font-size: clamp(9px, 1.8vw, 10.5px); letter-spacing: 2px; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 6px; }
+  .pool { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(8px, 2vw, 14px); }
+  .ribbon {
+    position: relative;
+    width: clamp(50px, 10vw, 62px);
+    height: clamp(48px, 9.4vw, 60px);
+    background: linear-gradient(#fffdf4, #f2e7cb);
+    border: 2px solid var(--ink);
+    border-radius: 9px;
+    transform: rotate(var(--r, 0deg));
+    box-shadow: 0 3px 0 rgba(90,70,40,.35), 0 6px 12px rgba(90,70,40,.14);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform .15s, box-shadow .15s, opacity .25s;
+  }
+  .ribbon:hover { transform: rotate(0deg) translateY(-3px); box-shadow: 0 6px 0 rgba(90,70,40,.3), 0 10px 16px rgba(90,70,40,.18); }
+  .ribbon:active { transform: rotate(0deg) translateY(1px); box-shadow: 0 2px 0 rgba(90,70,40,.35); }
+  .ribbon .r-hz { font-family: var(--hz); font-size: clamp(21px, 4.8vw, 29px); font-weight: 700; color: var(--ink); }
+  .ribbon .r-num { position: absolute; top: 2px; left: 6px; font-size: 10px; font-weight: 700; color: var(--red); }
+  .ribbon.used { opacity: 0; pointer-events: none; transform: scale(.4) rotate(24deg); }
+  .ribbon.wrong { animation: shake .4s; border-color: var(--red); }
+  .pool.done .ribbon:not(.used) { opacity: .3; pointer-events: none; }
+  @keyframes shake {
+    0%, 100% { transform: rotate(var(--r, 0deg)); }
+    20% { transform: translateX(-5px) rotate(var(--r, 0deg)); }
+    40% { transform: translateX(5px) rotate(var(--r, 0deg)); }
+    60% { transform: translateX(-4px) rotate(var(--r, 0deg)); }
+    80% { transform: translateX(3px) rotate(var(--r, 0deg)); }
+  }
+
+  .fb-row { flex: none; display: flex; align-items: center; gap: 12px; padding: 4px 14px 9px; min-height: 46px; }
+  .fb { flex: 1; font-size: clamp(11px, 2.2vw, 13.5px); line-height: 1.4; color: var(--ink-soft); }
+  .fb.good { color: var(--green); font-weight: 700; }
+  .fb.bad { color: var(--red); font-weight: 700; }
+
+  .fin-sky { border: 2px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, #cfe7ee, #f2ecd7); padding: 12px 6px 0; margin: 6px 0 8px; overflow: hidden; }
+  .fin-kites { display: flex; justify-content: center; align-items: flex-start; gap: clamp(4px, 1.6vw, 14px); }
+  .fk { width: clamp(44px, 10vw, 70px); animation: bob 3.2s ease-in-out infinite; }
+  .fk:nth-child(2) { margin-top: 26px; animation-delay: .4s; }
+  .fk:nth-child(3) { margin-top: 8px; animation-delay: 1.6s; }
+  .fk:nth-child(4) { margin-top: 20px; animation-delay: .8s; }
+  .fk:nth-child(5) { margin-top: 32px; animation-delay: 1.2s; }
+  .fk svg { display: block; width: 100%; filter: drop-shadow(0 3px 3px rgba(90,70,40,.25)); }
+  .fin-stats { font-size: clamp(11px, 2.2vw, 13px); color: var(--ink-soft); margin-bottom: 6px; }
+  .code-label { font-size: clamp(9.5px, 1.9vw, 11px); letter-spacing: 2.5px; text-transform: uppercase; color: var(--red); }
+  .code { display: flex; justify-content: center; gap: 8px; margin: 6px 0 4px; }
+  .code span {
+    display: grid;
+    place-items: center;
+    width: clamp(40px, 8vw, 52px);
+    height: clamp(46px, 9vw, 58px);
+    background: linear-gradient(#d24a31, #a83220);
+    color: #fdf4e0;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 800;
+    border: 2px solid #7e2413;
+    border-radius: 9px;
+    box-shadow: 0 4px 0 rgba(90,40,25,.45), inset 0 0 0 2px rgba(253,244,224,.35);
+  }
+  .code span:nth-child(odd) { transform: rotate(-2.5deg); }
+  .code span:nth-child(even) { transform: rotate(2deg); }
+
+  .cheat { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(59,47,30,.45); }
+  .cheat-card {
+    width: min(100%, 560px);
+    max-height: 100%;
+    overflow: auto;
+    background: linear-gradient(#fbf5e6, #f3e8ce);
+    border: 2px solid #b98a4e;
+    border-radius: 14px;
+    padding: 14px 18px;
+    text-align: center;
+    box-shadow: 0 14px 30px rgba(50,38,20,.35);
+  }
+  .cheat-card h2 { font-size: 18px; color: var(--red); margin-bottom: 8px; }
+  .cheat-actions { margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <section class="screen start-screen" id="scrStart">
+    <div class="card">
+      <div class="seal" aria-hidden="true"><span>纸</span><span>鸢</span></div>
+      <div class="c-deco" id="startDeco" aria-hidden="true"></div>
+      <h1 class="c-title">Мастерская воздушных змеев</h1>
+      <p class="c-sub">纸鸢工坊</p>
+      <p class="c-intro">Змей взлетит, только если правильно связать его нить — собрать приветствие из частей иероглифов.</p>
+      <ul class="rules">
+        <li>На деревянной табличке — перевод фразы и пиньинь.</li>
+        <li>Нажимайте ленточки в правильном порядке: части сами завяжутся на нити узелками.</li>
+        <li>Среди ленточек есть части других фраз — не перевяжите лишнего.</li>
+      </ul>
+      <p class="menu-cap">пять фраз и их части</p>
+      <ul class="menu" id="startMenu"></ul>
+      <p class="note">Ошибки не страшны — узлы можно перевязывать. Клавиши 1–5 выбирают ленточку, Enter — дальше. Пять змеев в небе откроют код.</p>
+      <button class="btn" type="button" id="startBtn">Начать</button>
+    </div>
+  </section>
+
+  <section class="screen screen-game" id="scrGame" hidden>
+    <header class="hud">
+      <div class="hud-left">
+        <div class="hud-kites" id="hudKites"></div>
+        <span class="hud-round" id="hudRound">Змей 1/5</span>
+      </div>
+      <div class="hud-right">
+        <span class="hud-mist">Ошибки: <b id="hudMist">0</b></span>
+        <button class="btn-ghost" type="button" id="cheatBtn">Шпаргалка</button>
+      </div>
+    </header>
+    <div class="scene">
+      <i class="cloud c1" aria-hidden="true"></i>
+      <i class="cloud c2" aria-hidden="true"></i>
+      <i class="cloud c3" aria-hidden="true"></i>
+      <div class="kite-wrap" id="kiteWrap"></div>
+      <div class="string" aria-hidden="true"></div>
+      <div class="sign" id="sign">
+        <div class="sign-ru" id="signRu"></div>
+        <div class="sign-py" id="signPy"></div>
+        <div class="sign-hz" id="signHz"></div>
+      </div>
+    </div>
+    <div class="slots-wrap"><div class="slots" id="slots"></div></div>
+    <div class="pool-wrap">
+      <div class="pool-cap">ленточки — вяжите фразу по порядку</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <footer class="fb-row">
+      <p class="fb" id="fbText" aria-live="polite"></p>
+      <button class="btn btn-small" type="button" id="nextBtn" hidden>Далее</button>
+    </footer>
+  </section>
+
+  <section class="screen finish-screen" id="scrFinish" hidden>
+    <div class="card">
+      <div class="seal" aria-hidden="true"><span>纸</span><span>鸢</span></div>
+      <h2 class="c-title">Все пять змеев в небе</h2>
+      <p class="c-sub">大功告成</p>
+      <div class="fin-sky"><div class="fin-kites" id="finKites"></div></div>
+      <p class="fin-stats" id="finStats"></p>
+      <p class="code-label">код успешного выполнения</p>
+      <div class="code" role="img" aria-label="Код успешного выполнения 5677"><span>5</span><span>6</span><span>7</span><span>7</span></div>
+      <p class="note">Перепишите код, чтобы подтвердить задание</p>
+      <button class="btn" type="button" id="againBtn">Играть снова</button>
+    </div>
+  </section>
+
+  <div class="cheat" id="cheat" hidden>
+    <div class="cheat-card">
+      <h2>Шпаргалка</h2>
+      <ul class="menu" id="cheatList"></ul>
+      <div class="cheat-actions"><button class="btn-ghost" type="button" id="cheatClose">Закрыть</button></div>
+    </div>
+  </div>
+
+</div>
+<script>
+(function () {
+  'use strict';
+
+  var PHRASES = [
+    { hz: '你好',   parts: ['你', '好'],        py: 'nǐ hǎo',     ru: 'здравствуй(те)' },
+    { hz: '谢谢',   parts: ['讠', '身', '寸'],  py: 'xièxie',     ru: 'спасибо' },
+    { hz: '再见',   parts: ['再', '见'],        py: 'zài jiàn',   ru: 'до свидания' },
+    { hz: '对不起', parts: ['对', '不', '起'],  py: 'duìbuqǐ',    ru: 'извините' },
+    { hz: '没关系', parts: ['没', '关', '系'],  py: 'méi guānxi', ru: 'ничего страшного' }
+  ];
+
+  var KITE_COLORS = ['#c8402a', '#33527d', '#3f7d4e', '#c07f2a', '#7c4a82'];
+  var ROTS = [-3, 2, -2, 3, -1, 2];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var scrStart = $('#scrStart'), scrGame = $('#scrGame'), scrFinish = $('#scrFinish');
+  var hudKites = $('#hudKites'), hudRound = $('#hudRound'), hudMist = $('#hudMist');
+  var signEl = $('#sign'), signRu = $('#signRu'), signPy = $('#signPy'), signHz = $('#signHz');
+  var kiteWrap = $('#kiteWrap');
+  var slotsEl = $('#slots'), poolEl = $('#pool');
+  var fbText = $('#fbText'), nextBtn = $('#nextBtn');
+  var finKites = $('#finKites'), finStats = $('#finStats');
+  var cheat = $('#cheat'), cheatBtn = $('#cheatBtn'), cheatClose = $('#cheatClose');
+
+  var order = [], round = 0, progress = 0, mistakes = 0;
+  var phase = 'start';
+  var kiteSeq = 0;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function darker(hex, k) {
+    var n = parseInt(hex.slice(1), 16);
+    var r = Math.round(((n >> 16) & 255) * k);
+    var g = Math.round(((n >> 8) & 255) * k);
+    var b = Math.round((n & 255) * k);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function kiteSVG(color, label) {
+    var id = 'kg' + (++kiteSeq);
+    var deep = darker(color, 0.72);
+    var size = label ? (label.length > 2 ? 14 : 18) : 0;
+    var text = '';
+    if (label) {
+      text = '<text x="60" y="' + (70 + Math.round(size * 0.36) + 1) + '" text-anchor="middle" font-family="Microsoft YaHei, SimSun, sans-serif" font-weight="700" font-size="' + size + '" fill="#33241a">' + label + '</text>';
+    }
+    return '<svg viewBox="0 0 120 178" aria-hidden="true">' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="' + color + '"/><stop offset="1" stop-color="' + deep + '"/>' +
+      '</linearGradient></defs>' +
+      '<path d="M60 136 C 80 150, 50 158, 70 176" fill="none" stroke="#8a6a3f" stroke-width="2"/>' +
+      '<rect x="66" y="146" width="11" height="11" rx="2" fill="#d9a441" stroke="#8a6a3f" stroke-width="1.5" transform="rotate(32 71 151)"/>' +
+      '<rect x="56" y="162" width="10" height="10" rx="2" fill="#c8402a" stroke="#8a6a3f" stroke-width="1.5" transform="rotate(-24 61 167)"/>' +
+      '<path d="M60 4 L106 70 L60 136 L14 70 Z" fill="url(#' + id + ')" stroke="#3a2a18" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M60 22 L90 70 L60 118 L30 70 Z" fill="rgba(255,251,240,.16)"/>' +
+      '<line x1="60" y1="4" x2="60" y2="136" stroke="#5c3a1e" stroke-width="2.4"/>' +
+      '<line x1="14" y1="70" x2="106" y2="70" stroke="#5c3a1e" stroke-width="2.4"/>' +
+      '<circle cx="60" cy="70" r="17" fill="#fbf3de" stroke="#3a2a18" stroke-width="2.4"/>' +
+      text +
+      (label ? '' : '<circle cx="60" cy="70" r="7" fill="#c8402a"/>') +
+      '</svg>';
+  }
+
+  function menuRows() {
+    return PHRASES.map(function (p) {
+      var chips = p.parts.map(function (ch) { return '<span class="chip">' + ch + '</span>'; }).join('<span class="plus">+</span>');
+      return '<li><span class="m-parts">' + chips + '</span><span class="m-hz">' + p.hz + '</span><span class="m-py">' + p.py + '</span><span class="m-ru">' + p.ru + '</span></li>';
+    }).join('');
+  }
+
+  function show(name) {
+    scrStart.hidden = name !== 'start';
+    scrGame.hidden = name !== 'game';
+    scrFinish.hidden = name !== 'finish';
+  }
+
+  function setFb(text, cls) {
+    fbText.textContent = text;
+    fbText.className = 'fb' + (cls ? ' ' + cls : '');
+  }
+
+  function buildHudKites() {
+    hudKites.innerHTML = PHRASES.map(function (p, i) {
+      return '<span class="hk" id="hk' + i + '" role="img" aria-label="Змей фразы ' + p.hz + ': не готов">' + kiteSVG(KITE_COLORS[i], '') + '</span>';
+    }).join('');
+  }
+
+  function markKite(i) {
+    var k = document.getElementById('hk' + i);
+    if (k) {
+      k.classList.add('on');
+      k.setAttribute('aria-label', 'Змей фразы ' + PHRASES[i].hz + ': в небе');
+    }
+  }
+
+  function buildSlots(n) {
+    slotsEl.innerHTML = '';
+    for (var i = 0; i < n; i++) {
+      var d = document.createElement('div');
+      d.className = 'slot';
+      d.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="hz"></span>';
+      slotsEl.appendChild(d);
+    }
+  }
+
+  function fillSlot(i, ch) {
+    var s = slotsEl.children[i];
+    if (!s) return;
+    s.classList.add('filled');
+    s.querySelector('.hz').textContent = ch;
+  }
+
+  function decoysFor(idx) {
+    var rest = [];
+    PHRASES.forEach(function (p, i) { if (i !== idx) rest = rest.concat(p.parts); });
+    shuffle(rest);
+    return rest.slice(0, PHRASES[idx].parts.length === 2 ? 3 : 2);
+  }
+
+  function renumber() {
+    var btns = poolEl.querySelectorAll('.ribbon:not(.used)');
+    for (var i = 0; i < btns.length; i++) {
+      var n = btns[i].querySelector('.r-num');
+      if (n) n.textContent = String(i + 1);
+    }
+  }
+
+  function buildPool(idx) {
+    var items = PHRASES[idx].parts.concat(decoysFor(idx));
+    shuffle(items);
+    poolEl.innerHTML = '';
+    poolEl.classList.remove('done');
+    items.forEach(function (ch, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ribbon';
+      b.dataset.ch = ch;
+      b.style.setProperty('--r', ROTS[i % ROTS.length] + 'deg');
+      b.setAttribute('aria-label', 'Ленточка с частью ' + ch);
+      b.innerHTML = '<span class="r-num">' + (i + 1) + '</span><span class="r-hz">' + ch + '</span>';
+      poolEl.appendChild(b);
+    });
+  }
+
+  function renderRound() {
+    var idx = order[round], p = PHRASES[idx];
+    progress = 0;
+    signRu.textContent = '«' + p.ru + '»';
+    signPy.textContent = p.py;
+    signHz.textContent = p.hz;
+    signEl.classList.remove('reveal');
+    kiteWrap.innerHTML = kiteSVG(KITE_COLORS[idx], '');
+    kiteWrap.classList.remove('fly');
+    buildSlots(p.parts.length);
+    buildPool(idx);
+    hudRound.textContent = 'Змей ' + (round + 1) + '/' + order.length;
+    nextBtn.hidden = true;
+    setFb('Свяжите фразу: нажимайте ленточки в правильном порядке.', '');
+  }
+
+  function remainText(n) {
+    return n === 1 ? 'Остался 1 узелок.' : 'Осталось ' + n + ' узелка.';
+  }
+
+  function pick(btn) {
+    if (phase !== 'play' || !btn || btn.classList.contains('used')) return;
+    var p = PHRASES[order[round]];
+    var ch = btn.dataset.ch;
+    if (ch === p.parts[progress]) {
+      progress++;
+      btn.classList.add('used');
+      renumber();
+      fillSlot(progress - 1, ch);
+      if (progress === p.parts.length) roundDone();
+      else setFb('«' + ch + '» — на нити! ' + remainText(p.parts.length - progress), 'good');
+    } else {
+      mistakes++;
+      hudMist.textContent = mistakes;
+      var later = p.parts.indexOf(ch) !== -1;
+      setFb(later ? '«' + ch + '» нужна этой фразе, но её черёд ещё не настал.' : '«' + ch + '» — часть другой фразы, она тут лишняя.', 'bad');
+      btn.classList.remove('wrong');
+      void btn.offsetWidth;
+      btn.classList.add('wrong');
+    }
+  }
+
+  function roundDone() {
+    phase = 'between';
+    var p = PHRASES[order[round]];
+    markKite(order[round]);
+    signEl.classList.add('reveal');
+    kiteWrap.classList.add('fly');
+    poolEl.classList.add('done');
+    setFb('Готово: ' + p.hz + ' (' + p.parts.join('+') + ') — ' + p.py + ', «' + p.ru + '». Змей рвётся в небо!', 'good');
+    nextBtn.textContent = round === order.length - 1 ? 'Завершить' : 'Далее';
+    nextBtn.hidden = false;
+    nextBtn.focus();
+  }
+
+  function next() {
+    if (phase !== 'between') return;
+    round++;
+    if (round >= order.length) { finish(); return; }
+    phase = 'play';
+    renderRound();
+  }
+
+  function finish() {
+    phase = 'finish';
+    finKites.innerHTML = order.map(function (idx) {
+      var p = PHRASES[idx];
+      return '<div class="fk" role="img" aria-label="Змей с фразой ' + p.hz + '">' + kiteSVG(KITE_COLORS[idx], p.hz) + '</div>';
+    }).join('');
+    finStats.textContent = mistakes === 0 ? 'Ни одной ошибки — золотые руки мастера!' : 'Ошибок при вязке узлов: ' + mistakes + '. Змеи всё равно в небе!';
+    show('finish');
+  }
+
+  function startGame() {
+    order = shuffle([0, 1, 2, 3, 4]);
+    round = 0;
+    progress = 0;
+    mistakes = 0;
+    hudMist.textContent = '0';
+    buildHudKites();
+    phase = 'play';
+    show('game');
+    renderRound();
+  }
+
+  function closeCheat() { cheat.hidden = true; }
+
+  $('#startBtn').addEventListener('click', startGame);
+  $('#againBtn').addEventListener('click', startGame);
+  nextBtn.addEventListener('click', next);
+  poolEl.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.ribbon') : null;
+    pick(b);
+  });
+  cheatBtn.addEventListener('click', function () { cheat.hidden = false; cheatClose.focus(); });
+  cheatClose.addEventListener('click', function () { closeCheat(); cheatBtn.focus(); });
+  cheat.addEventListener('click', function (e) { if (e.target === cheat) closeCheat(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeCheat(); return; }
+    if (!cheat.hidden) return;
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.tagName === 'BUTTON') return;
+    if (phase === 'start' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startGame(); }
+    else if (phase === 'play' && e.key >= '1' && e.key <= '6') {
+      var btns = poolEl.querySelectorAll('.ribbon:not(.used)');
+      var b = btns[parseInt(e.key, 10) - 1];
+      if (b) pick(b);
+    }
+    else if (phase === 'between' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); next(); }
+    else if (phase === 'finish' && e.key === 'Enter') { e.preventDefault(); startGame(); }
+  });
+
+  $('#startMenu').innerHTML = menuRows();
+  $('#cheatList').innerHTML = menuRows();
+  $('#startDeco').innerHTML = kiteSVG(KITE_COLORS[0], '你好') + kiteSVG(KITE_COLORS[1], '谢谢') + kiteSVG(KITE_COLORS[2], '再见');
+  buildHudKites();
+})();
+</script>
+</body>
+</html>
