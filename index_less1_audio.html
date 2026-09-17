@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Урок 1 · Местоимения — неоновый проспект</title>
 <style>
 :root{
@@ -11,15 +11,16 @@
   --cjk:"Microsoft YaHei","Noto Sans SC","PingFang SC","SimHei",sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;overscroll-behavior:none}
 body{
   background:radial-gradient(130% 100% at 50% 0%,#1a0940 0%,var(--bg1) 45%,var(--bg0) 100%);
   color:#e8e6ff;
   font-family:"Courier New",ui-monospace,Consolas,monospace;
-  min-height:100vh;
-  -webkit-tap-highlight-color:transparent;
+  min-height:100vh;min-height:100dvh;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
 }
-.app{position:relative;width:100%;max-width:1040px;margin:0 auto;padding:10px 10px 14px;min-height:100vh;display:flex;flex-direction:column;user-select:none;overflow:hidden}
+.app{position:relative;width:100%;max-width:1040px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;user-select:none;overflow:hidden}
 .app::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:9;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0 1px,transparent 1px 3px),
              radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(2,0,10,.55));
@@ -72,8 +73,8 @@ h1.title{
   background:linear-gradient(90deg,var(--cyan),var(--pink));outline:none;cursor:pointer;margin:0}
 .vol input::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.8)}
 .vol input::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.8)}
-.stage{position:relative;width:100%;flex:1 1 auto;min-height:min(420px,72vh);border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#05020f;box-shadow:0 0 26px rgba(138,92,255,.16)}
-#cv{position:absolute;inset:0;display:block;touch-action:none;cursor:pointer}
+.stage{position:relative;width:100%;flex:1 1 auto;min-height:min(420px,72vh);min-height:min(420px,72dvh);border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#05020f;box-shadow:0 0 26px rgba(138,92,255,.16)}
+#cv{position:absolute;inset:0;display:block;touch-action:none;cursor:pointer;-webkit-touch-callout:none}
 .toast{position:absolute;top:10px;left:50%;transform:translate(-50%,-10px);opacity:0;transition:all .25s ease;
   background:rgba(7,3,20,.93);border:1px solid var(--cyan);color:#eaffff;padding:8px 16px;border-radius:8px;
   font-size:clamp(12px,3vw,14px);letter-spacing:1px;box-shadow:0 0 16px rgba(0,229,255,.35);pointer-events:none;
@@ -93,6 +94,25 @@ h1.title{
 .code span:nth-child(2){animation-delay:.21s}
 .code span:nth-child(3){animation-delay:.42s}
 .code span:nth-child(4){animation-delay:.63s}
+@media (max-width:600px){
+  .app{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
+  .hud{gap:6px 8px;padding:0}
+  .btn.small{padding:6px 10px;font-size:11px}
+  .vol input{width:64px}
+  .toast{top:6px;padding:6px 10px}
+}
+@media (max-height:520px){
+  .scr{padding:8px 6px;gap:2px}
+  h1.title{font-size:22px;letter-spacing:2px}
+  .sub{letter-spacing:1px}
+  .lead{font-size:11px;line-height:1.4;margin:2px 0 0}
+  .chips{gap:4px;margin:2px 0}
+  .chip{font-size:12px;padding:2px 8px}
+  .btn.big{padding:9px 24px;font-size:14px}
+  .note{margin:4px 0 0;font-size:9px;letter-spacing:0}
+  .sunwrap{width:26%;top:2%}
+  .stage{min-height:min(300px,62vh);min-height:min(300px,62dvh)}
+}
 </style>
 </head>
 <body>
@@ -172,6 +192,8 @@ function resetG(){
        flash:0, flashC:'#00e5ff', shake:0, showCorrect:false};
 }
 
+var SILENT = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+var voiceUnlocked = false;
 function initAudio(){
   if(!actx){ try{ actx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ actx = null; } }
   if(actx){
@@ -179,6 +201,14 @@ function initAudio(){
     if(!master){ master = actx.createGain(); master.gain.value = VOL; master.connect(actx.destination); }
   }
   if(!voice){ voice = new Audio(); voice.preload = 'auto'; voice.volume = VOL; }
+  if(!voiceUnlocked){
+    voiceUnlocked = true;
+    try{
+      voice.src = SILENT;
+      var p = voice.play();
+      if(p && p.catch) p.catch(function(){});
+    }catch(e){}
+  }
 }
 function applyVolume(){
   if(voice) voice.volume = VOL;
@@ -555,6 +585,7 @@ function beginBtn(){
   startGame();
 }
 CV.addEventListener('pointerdown', function(e){
+  e.preventDefault();
   if(G.scr !== 'game' || G.phase !== 'play') return;
   var r = CV.getBoundingClientRect();
   var x = e.clientX - r.left;
@@ -579,6 +610,9 @@ volEl.addEventListener('input', function(){
   applyVolume();
 });
 window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', function(){ setTimeout(resize, 300); });
+if(window.ResizeObserver){ try{ new ResizeObserver(function(){ resize(); }).observe(document.querySelector('.stage')); }catch(e){} }
+CV.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 
 (function(){
   var chips = document.getElementById('chips'), h = '';
