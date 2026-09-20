@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Базовые задания · Урок 5 · Дата и время — как правильно писать</title>
+<style>
+:root{
+  --jade:#6fd0aa;
+  --jade-dark:#3f8f70;
+  --paper:#f3e9d2;
+  --gold:#d8b571;
+  --gold-dark:#b3924f;
+  --ink:#3a3226;
+  --ink-soft:#8a7d63;
+  --red:#a8524a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:Georgia,"Times New Roman",serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:28px 16px 56px;
+}
+main{width:100%;max-width:860px}
+.screen{animation:fade .35s ease}
+[hidden]{display:none !important}
+h1{font-size:2.1rem;margin:.2em 0}
+h2{font-size:1.5rem;margin:.2em 0}
+.subtitle{color:var(--ink-soft);font-style:italic;margin:.2em 0 1.2em}
+.han{font-family:"Noto Serif SC","SimSun","Songti SC","STSong",serif}
+.btn{
+  font:inherit;
+  padding:.55em 1.4em;
+  border-radius:10px;
+  border:2px solid var(--jade-dark);
+  background:#fff;
+  color:var(--ink);
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease,box-shadow .12s ease,background .12s ease;
+}
+@media (hover:hover){
+  .btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(63,143,112,.25)}
+}
+.btn.primary{background:var(--jade);border-color:var(--jade-dark)}
+.btn.gold{background:var(--gold);border-color:var(--gold-dark)}
+.btn.small{padding:.3em .9em;font-size:.9rem}
+button:focus-visible{outline:3px solid var(--jade-dark);outline-offset:2px}
+.hint-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:.45em;
+  color:var(--ink-soft);
+  font-style:italic;
+  cursor:pointer;
+  user-select:none;
+  padding:.5em .4em;
+}
+.hint-toggle input{accent-color:var(--jade-dark);width:1.05em;height:1.05em;cursor:pointer}
+#screen-start{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:6vh}
+#screen-start .han-big{font-size:4.2rem;line-height:1.15;color:var(--jade-dark);margin:.1em 0}
+#screen-start .lead{max-width:36em;color:var(--ink-soft)}
+#btn-start{font-size:1.25rem;margin-top:1.1em}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:14px;
+  margin-top:.8em;
+}
+.card{
+  font:inherit;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.15em;
+  padding:16px 8px 12px;
+  background:#fff;
+  border:2px solid var(--gold);
+  border-radius:14px;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;
+}
+@media (hover:hover){
+  .card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(179,146,79,.35);border-color:var(--gold-dark)}
+}
+.card .han{font-size:2.3rem;line-height:1.15}
+.card .py{color:var(--jade-dark);font-style:italic}
+.card .ru{color:var(--ink-soft);font-size:.9rem;text-align:center}
+.char-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.char-info{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.char-info .han{font-size:2.6rem;line-height:1.1}
+.char-info .py{color:var(--jade-dark);font-style:italic;font-size:1.15rem}
+.char-info .ru{color:var(--ink-soft)}
+.grid-wrap{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin:18px 0 4px}
+.tzg{
+  position:relative;
+  width:262px;
+  height:262px;
+  border:3px solid var(--red);
+  border-radius:6px;
+  background:
+    linear-gradient(to right,transparent calc(50% - 1px),rgba(168,82,74,.30) calc(50% - 1px),rgba(168,82,74,.30) calc(50% + 1px),transparent calc(50% + 1px)),
+    linear-gradient(to bottom,transparent calc(50% - 1px),rgba(168,82,74,.30) calc(50% - 1px),rgba(168,82,74,.30) calc(50% + 1px),transparent calc(50% + 1px)),
+    linear-gradient(45deg,transparent calc(50% - .7px),rgba(168,82,74,.16) calc(50% - .7px),rgba(168,82,74,.16) calc(50% + .7px),transparent calc(50% + .7px)),
+    linear-gradient(-45deg,transparent calc(50% - .7px),rgba(168,82,74,.16) calc(50% - .7px),rgba(168,82,74,.16) calc(50% + .7px),transparent calc(50% + .7px));
+}
+.tzg .hw{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;touch-action:none;-webkit-tap-highlight-color:transparent}
+.tzg-label{text-align:center;color:var(--ink-soft);font-size:.9rem;margin-top:6px}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.status{text-align:center;min-height:1.6em;color:var(--jade-dark);font-style:italic;margin-bottom:0}
+footer{margin-top:3em;text-align:center;color:var(--ink-soft);font-size:.85rem}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .screen{animation:none}
+  .btn,.card{transition:none}
+}
+@media (max-width:520px){
+  body{padding:16px 10px 40px}
+  h1{font-size:1.6rem}
+  h2{font-size:1.3rem}
+  #screen-start{padding-top:1.5vh}
+  #screen-start .han-big{font-size:2.8rem}
+  #screen-start .lead{font-size:.95rem}
+  .cards{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .card .han{font-size:2rem}
+  .char-info .han{font-size:2.1rem}
+  .char-info .py{font-size:1.05rem}
+  .grid-wrap{gap:14px;margin:12px 0 2px}
+  .controls{gap:8px}
+  .btn{padding:.55em 1.05em}
+  .tzg-label{font-size:.85rem}
+  footer{margin-top:2em}
+}
+</style>
+</head>
+<body>
+<main>
+  <section id="screen-start" class="screen">
+    <p class="subtitle">Базовые задания · Урок 5</p>
+    <h1>Дата и время: учимся писать</h1>
+    <p class="han-big han">年 · 月 · 日 · 星期</p>
+    <p class="lead">6 слов и знаков о дате и времени: правильный порядок черт, пошаговый показ и тренировка написания от руки в тетрадной клетке.</p>
+    <button id="btn-start" class="btn primary" type="button">Начать</button>
+  </section>
+
+  <section id="screen-select" class="screen" hidden>
+    <h2>Выберите слово или знак</h2>
+    <p class="subtitle">6 элементов о дате и времени</p>
+    <div id="cards" class="cards"></div>
+  </section>
+
+  <section id="screen-char" class="screen" hidden>
+    <div class="char-top">
+      <button id="btn-back" class="btn small" type="button">← К выбору</button>
+      <div class="char-info">
+        <span id="char-han" class="han"></span>
+        <span id="char-py" class="py"></span>
+        <span id="char-ru" class="ru"></span>
+      </div>
+    </div>
+    <div class="grid-wrap" id="grid"></div>
+    <div class="controls">
+      <button id="btn-anim" class="btn primary" type="button">Показать анимацию</button>
+      <button id="btn-step" class="btn" type="button">По чертам</button>
+      <button id="btn-quiz" class="btn gold" type="button">Тренировка</button>
+      <label class="hint-toggle" for="chk-nohints"><input type="checkbox" id="chk-nohints"> без подсказок</label>
+      <button id="btn-reset" class="btn small" type="button">Сброс</button>
+    </div>
+    <p id="status" class="status" aria-live="polite"></p>
+  </section>
+
+  <footer>Тетрадь · Урок 5 · база</footer>
+</main>
+<noscript><p style="text-align:center;padding:20px;">Для работы этой страницы включите JavaScript.</p></noscript>
+<script>/**
+ * Hanzi Writer v3.5.0 | https://chanind.github.io/hanzi-writer
+ */
+
+var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window?global:window,r=e.performance&&(()=>e.performance.now())||(()=>Date.now()),i=e.requestAnimationFrame||(t=>setTimeout(()=>t(r()),1e3/60)),s=e.cancelAnimationFrame||clearTimeout;function o(t){return t[t.length-1]}const n=(t,e)=>t<0?e+t:t;function a(t,e){const r={...t};for(const i in e){const s=t[i],o=e[i];s!==o&&(s&&o&&"object"==typeof s&&"object"==typeof o&&!Array.isArray(o)?r[i]=a(s,o):r[i]=o)}return r}let h=0;function l(){return h++,h}function c(t){return t.reduce((t,e)=>e+t,0)/t.length}function d(t){const e=t.toUpperCase().trim();if(/^#([A-F0-9]{3}){1,2}$/.test(e)){let t=e.substring(1).split("");3===t.length&&(t=[t[0],t[0],t[1],t[1],t[2],t[2]]);const r=""+t.join("");return{r:parseInt(r.slice(0,2),16),g:parseInt(r.slice(2,4),16),b:parseInt(r.slice(4,6),16),a:1}}const r=e.match(/^RGBA?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/);if(r)return{r:parseInt(r[1],10),g:parseInt(r[2],10),b:parseInt(r[3],10),a:parseFloat(r[4]||1,10)};throw new Error("Invalid color: "+t)}function u(t,e){const r={};for(let i=0;i<e;i++)r[i]=t;return r}function _(t,e){const r={};for(let i=0;i<t;i++)r[i]=e(i);return r}const p=(null===(t=e.navigator)||void 0===t?void 0:t.userAgent)||"",g=p.indexOf("MSIE ")>0||p.indexOf("Trident/")>0||p.indexOf("Edge/")>0,k=()=>{};class m{constructor(t,e,r=k){this._mutationChains=[],this._onStateChange=r,this.state={options:{drawingFadeDuration:e.drawingFadeDuration,drawingWidth:e.drawingWidth,drawingColor:d(e.drawingColor),strokeColor:d(e.strokeColor),outlineColor:d(e.outlineColor),radicalColor:d(e.radicalColor||e.strokeColor),highlightColor:d(e.highlightColor)},character:{main:{opacity:e.showCharacter?1:0,strokes:{}},outline:{opacity:e.showOutline?1:0,strokes:{}},highlight:{opacity:1,strokes:{}}},userStrokes:null};for(let e=0;e<t.strokes.length;e++)this.state.character.main.strokes[e]={opacity:1,displayPortion:1},this.state.character.outline.strokes[e]={opacity:1,displayPortion:1},this.state.character.highlight.strokes[e]={opacity:0,displayPortion:1}}overwriteOnStateChange(t){this._onStateChange=t}updateState(t){const e=a(this.state,t);this._onStateChange(e,this.state),this.state=e}run(t,e={}){const r=t.map(t=>t.scope);return this.cancelMutations(r),new Promise(i=>{const s={_isActive:!0,_index:0,_resolve:i,_mutations:t,_loop:e.loop,_scopes:r};this._mutationChains.push(s),this._run(s)})}_run(t){if(!t._isActive)return;const e=t._mutations;if(t._index>=e.length){if(!t._loop)return t._isActive=!1,this._mutationChains=this._mutationChains.filter(e=>e!==t),void t._resolve({canceled:!1});t._index=0}t._mutations[t._index].run(this).then(()=>{t._isActive&&(t._index++,this._run(t))})}_getActiveMutations(){return this._mutationChains.map(t=>t._mutations[t._index])}pauseAll(){this._getActiveMutations().forEach(t=>t.pause())}resumeAll(){this._getActiveMutations().forEach(t=>t.resume())}cancelMutations(t){for(const e of this._mutationChains)for(const r of e._scopes)for(const i of t)(r.startsWith(i)||i.startsWith(r))&&this._cancelMutationChain(e)}cancelAll(){this.cancelMutations([""])}_cancelMutationChain(t){var e;t._isActive=!1;for(let e=t._index;e<t._mutations.length;e++)t._mutations[e].cancel(this);null===(e=t._resolve)||void 0===e||e.call(t,{canceled:!0}),this._mutationChains=this._mutationChains.filter(e=>e!==t)}}const f=(t,e)=>({x:t.x-e.x,y:t.y-e.y}),v=t=>Math.sqrt(Math.pow(t.x,2)+Math.pow(t.y,2)),y=(t,e)=>v(f(t,e)),C=(t,e=1)=>{const r=10*e;return{x:Math.round(r*t.x)/r,y:Math.round(r*t.y)/r}},w=t=>{let e=t[0];return t.slice(1).reduce((t,r)=>{const i=y(r,e);return e=r,t+i},0)},S=(t,e,r)=>{const i=f(e,t),s=r/v(i);return{x:e.x+s*i.x,y:e.y+s*i.y}},P=t=>{const e=((t,e=30)=>{const r=w(t)/(e-1),i=[t[0]],s=o(t),n=t.slice(1);for(let t=0;t<e-2;t++){let t=o(i),e=r,s=!1;for(;!s;){const r=y(t,n[0]);if(r<e)e-=r,t=n.shift();else{const o=S(t,n[0],e-r);i.push(o),s=!0}}}return i.push(s),i})(t),r={x:c(e.map(t=>t.x)),y:c(e.map(t=>t.y))},i=e.map(t=>f(t,r)),s=Math.sqrt(c([Math.pow(i[0].x,2)+Math.pow(i[0].y,2),Math.pow(o(i).x,2)+Math.pow(o(i).y,2)]));return((t,e=.05)=>{const r=t.slice(0,1);for(const i of t.slice(1)){const t=r[r.length-1],s=y(i,t);if(s>e){const o=Math.ceil(s/e),n=s/o;for(let e=0;e<o;e++)r.push(S(i,t,-1*n*(e+1)))}else r.push(i)}return r})(i.map(t=>({x:t.x/s,y:t.y/s})))};function D(t,e=!1){const r=C(t[0]),i=t.slice(1);let s=`M ${r.x} ${r.y}`;return i.forEach(t=>{const e=C(t);s+=` L ${e.x} ${e.y}`}),e&&(s+="Z"),s}const x=(t,e)=>{const r=(t=>{if(t.length<3)return t;const e=[t[0],t[1]];return t.slice(2).forEach(t=>{const r=e.length,i=f(t,e[r-1]),s=f(e[r-1],e[r-2]);i.y*s.x-i.x*s.y==0&&e.pop(),e.push(t)}),e})(t);if(r.length<2)return r;const i=r[1],s=r[0],o=S(i,s,e),n=r.slice(1);return n.unshift(o),n};class M{constructor(t,e,r,i=!1){this.path=t,this.points=e,this.strokeNum=r,this.isInRadical=i}getStartingPoint(){return this.points[0]}getEndingPoint(){return this.points[this.points.length-1]}getLength(){return w(this.points)}getVectors(){let t=this.points[0];return this.points.slice(1).map(e=>{const r=f(e,t);return t=e,r})}getDistance(t){const e=this.points.map(e=>y(e,t));return Math.min(...e)}getAverageDistance(t){return t.reduce((t,e)=>t+this.getDistance(e),0)/t.length}}class R{constructor(t,e){this.symbol=t,this.strokes=e}}function T({radStrokes:t,strokes:e,medians:r}){return e.map((e,i)=>{const s=r[i].map(t=>{const[e,r]=t;return{x:e,y:r}});return new M(e,s,i,(o=i,(null!==(n=null==t?void 0:t.indexOf(o))&&void 0!==n?n:-1)>=0));var o,n})}const[A,O]=[{x:0,y:-124},{x:1024,y:900}],b=O.x-A.x,$=O.y-A.y;class L{constructor(t){const{padding:e,width:r,height:i}=t;this.padding=e,this.width=r,this.height=i;const s=r-2*e,o=i-2*e,n=s/b,a=o/$;this.scale=Math.min(n,a);const h=e+(s-this.scale*b)/2,l=e+(o-this.scale*$)/2;this.xOffset=-1*A.x*this.scale+h,this.yOffset=-1*A.y*this.scale+l}convertExternalPoint(t){return{x:(t.x-this.xOffset)/this.scale,y:(this.height-this.yOffset-t.y)/this.scale}}}const z=(t,e)=>{const r=(t=>{const e=[];let r=t[0];return t.slice(1).forEach(t=>{e.push(f(t,r)),r=t}),e})(t),i=e.getVectors();return c(r.map(t=>{const e=i.map(e=>{return i=t,((r=e).x*i.x+r.y*i.y)/v(r)/v(i);var r,i});return Math.max(...e)}))>0},E=t=>{if(t.length<2)return t;const[e,...r]=t,i=[e];for(const t of r)s=t,o=i[i.length-1],(s.x!==o.x||s.y!==o.y)&&i.push(t);var s,o;return i},W=[Math.PI/16,Math.PI/32,0,-1*Math.PI/32,-1*Math.PI/16],F=(t,e,r)=>{const i=P(t),s=P(e);let o=1/0;return W.forEach(t=>{const e=((t,e)=>{const r=t.length>=e.length?t:e,i=t.length>=e.length?e:t,s=(t,e,s,o)=>{if(0===t&&0===e)return y(r[0],i[0]);if(t>0&&0===e)return Math.max(s[0],y(r[t],i[0]));const n=o[o.length-1];return 0===t&&e>0?Math.max(n,y(r[0],i[e])):Math.max(Math.min(s[e],s[e-1],n),y(r[t],i[e]))};let o=[];for(let t=0;t<r.length;t++){const e=[];for(let r=0;r<i.length;r++)e.push(s(t,r,o,e));o=e}return o[i.length-1]})(i,((t,e)=>t.map(t=>({x:Math.cos(e)*t.x-Math.sin(e)*t.y,y:Math.sin(e)*t.x+Math.cos(e)*t.y})))(s,t));e<o&&(o=e)}),o<=.4*r},H=(t,e,r)=>{const{leniency:i=1,isOutlineVisible:s=!1,checkBackwards:o=!0}=r,n=e.getAverageDistance(t),a=n<=350*(s||e.strokeNum>0?.5:1)*i;if(!a)return{isMatch:!1,avgDist:n,meta:{isStrokeBackwards:!1}};const h=((t,e,r)=>{const i=y(e.getStartingPoint(),t[0]),s=y(e.getEndingPoint(),t[t.length-1]);return i<=250*r&&s<=250*r})(t,e,i),l=z(t,e),c=F(t,e.points,i),d=((t,e,r)=>r*(w(t)+25)/(e.getLength()+25)>=.35)(t,e,i),u=a&&h&&l&&c&&d;if(o&&!u){if(H([...t].reverse(),e,{...r,checkBackwards:!1}).isMatch)return{isMatch:u,avgDist:n,meta:{isStrokeBackwards:!0}}}return{isMatch:u,avgDist:n,meta:{isStrokeBackwards:!1}}};class I{constructor(t,e,r){this.id=t,this.points=[e],this.externalPoints=[r]}appendPoint(t,e){this.points.push(t),this.externalPoints.push(e)}}class B{constructor(t,e,r={}){this._tick=t=>{if(null!==this._startPauseTime)return;const e=Math.min(1,(t-this._startTime-this._pausedDuration)/this._duration);if(1===e)this._renderState.updateState(this._values),this._frameHandle=void 0,this.cancel(this._renderState);else{const t=j(e),r=q(this._startState,this._values,t);this._renderState.updateState(r),this._frameHandle=i(this._tick)}},this.scope=t,this._valuesOrCallable=e,this._duration=r.duration||0,this._force=r.force,this._pausedDuration=0,this._startPauseTime=null}run(t){return this._values||this._inflateValues(t),0===this._duration&&t.updateState(this._values),0===this._duration||N(t.state,this._values)?Promise.resolve():(this._renderState=t,this._startState=t.state,this._startTime=performance.now(),this._frameHandle=i(this._tick),new Promise(t=>{this._resolve=t}))}_inflateValues(t){let e=this._valuesOrCallable;"function"==typeof this._valuesOrCallable&&(e=this._valuesOrCallable(t.state)),this._values=function(t,e){const r=t.split("."),i={};let s=i;for(let t=0;t<r.length;t++){const i=t===r.length-1?e:{};s[r[t]]=i,s=i}return i}(this.scope,e)}pause(){null===this._startPauseTime&&(this._frameHandle&&s(this._frameHandle),this._startPauseTime=performance.now())}resume(){null!==this._startPauseTime&&(this._frameHandle=i(this._tick),this._pausedDuration+=performance.now()-this._startPauseTime,this._startPauseTime=null)}cancel(t){var e;null===(e=this._resolve)||void 0===e||e.call(this),this._resolve=void 0,s(this._frameHandle||-1),this._frameHandle=void 0,this._force&&(this._values||this._inflateValues(t),t.updateState(this._values))}}function q(t,e,r){const i={};for(const s in e){const o=e[s],n=null==t?void 0:t[s];i[s]="number"==typeof n&&"number"==typeof o&&o>=0?r*(o-n)+n:q(n,o,r)}return i}function N(t,e){for(const r in e){const i=e[r],s=null==t?void 0:t[r];if(i>=0){if(i!==s)return!1}else if(!N(s,i))return!1}return!0}B.Delay=class{constructor(t){this._duration=t,this._startTime=null,this._paused=!1,this.scope="delay."+t}run(){return this._startTime=r(),this._runningPromise=new Promise(t=>{this._resolve=t,this._timeout=setTimeout(()=>this.cancel(),this._duration)}),this._runningPromise}pause(){if(this._paused)return;const t=performance.now()-(this._startTime||0);this._duration=Math.max(0,this._duration-t),clearTimeout(this._timeout),this._paused=!0}resume(){this._paused&&(this._startTime=performance.now(),this._timeout=setTimeout(()=>this.cancel(),this._duration),this._paused=!1)}cancel(){clearTimeout(this._timeout),this._resolve&&this._resolve(),this._resolve=void 0}};const j=t=>-Math.cos(t*Math.PI)/2+.5,U=(t,e,r)=>[new B(`character.${t}.strokes`,u({opacity:1,displayPortion:1},e.strokes.length),{duration:r,force:!0})],V=(t,e,r)=>[new B("character."+t,{opacity:1,strokes:u({opacity:1,displayPortion:1},e.strokes.length)},{duration:r,force:!0})],Q=(t,e,r)=>[new B(`character.${t}.opacity`,0,{duration:r,force:!0}),...U(t,e,0)],G=(t,e,r)=>[new B("options."+t,e,{duration:r})],X=(t,e,r)=>{const i=t.strokeNum,s=(t.getLength()+600)/(3*r);return[new B("options.highlightColor",e),new B("character.highlight",{opacity:1,strokes:{[i]:{displayPortion:0,opacity:0}}}),new B("character.highlight.strokes."+i,{displayPortion:1,opacity:1},{duration:s}),new B(`character.highlight.strokes.${i}.opacity`,0,{duration:s,force:!0})]},K=(t,e,r)=>{const i=e.strokeNum,s=(e.getLength()+600)/(3*r);return[new B("character."+t,{opacity:1,strokes:{[i]:{displayPortion:0,opacity:1}}}),new B(`character.${t}.strokes.${i}.displayPortion`,1,{duration:s})]},Y=(t,e,r,i,s)=>{let o=Q(t,e,r);return o=o.concat(U(t,e,0)),o.push(new B("character."+t,{opacity:1,strokes:u({opacity:0},e.strokes.length)},{force:!0})),e.strokes.forEach((e,r)=>{r>0&&o.push(new B.Delay(s)),o=o.concat(K(t,e,i))}),o},J=(t,e)=>[new B(`userStrokes.${t}.opacity`,0,{duration:e}),new B("userStrokes."+t,null,{force:!0})];class Z{constructor(t,e,r){this._currentStrokeIndex=0,this._mistakesOnStroke=0,this._totalMistakes=0,this._character=t,this._renderState=e,this._isActive=!1,this._positioner=r}startQuiz(t){this._isActive=!0,this._options=t;const e=n(t.quizStartStrokeNum,this._character.strokes.length);return this._currentStrokeIndex=Math.min(e,this._character.strokes.length-1),this._mistakesOnStroke=0,this._totalMistakes=0,this._renderState.run((r=this._character,i=t.strokeFadeDuration,s=this._currentStrokeIndex,[...Q("main",r,i),new B("character.highlight",{opacity:1,strokes:u({opacity:0},r.strokes.length)},{force:!0}),new B("character.main",{opacity:1,strokes:_(r.strokes.length,t=>({opacity:t<s?1:0}))},{force:!0})]));var r,i,s}startUserStroke(t){if(!this._isActive)return null;if(this._userStroke)return this.endUserStroke();const e=this._positioner.convertExternalPoint(t),r=l();return this._userStroke=new I(r,e,t),this._renderState.run(((t,e)=>[new B("quiz.activeUserStrokeId",t,{force:!0}),new B("userStrokes."+t,{points:[e],opacity:1},{force:!0})])(r,e))}continueUserStroke(t){if(!this._userStroke)return Promise.resolve();const e=this._positioner.convertExternalPoint(t);this._userStroke.appendPoint(e,t);const r=this._userStroke.points.slice(0);return this._renderState.run((i=this._userStroke.id,[new B(`userStrokes.${i}.points`,r,{force:!0})]));var i}setPositioner(t){this._positioner=t}endUserStroke(){var t;if(!this._userStroke)return;if(this._renderState.run(J(this._userStroke.id,null!==(t=this._options.drawingFadeDuration)&&void 0!==t?t:300)),1===this._userStroke.points.length)return void(this._userStroke=void 0);const{acceptBackwardsStrokes:e,markStrokeCorrectAfterMisses:r}=this._options,i=this._getCurrentStroke(),{isMatch:s,meta:o}=function(t,e,r,i={}){const s=e.strokes,o=E(t.points);if(o.length<2)return{isMatch:!1,meta:{isStrokeBackwards:!1}};const{isMatch:n,meta:a,avgDist:h}=H(o,s[r],i);if(!n)return{isMatch:n,meta:a};const l=s.slice(r+1);let c=h;for(let t=0;t<l.length;t++){const{isMatch:e,avgDist:r}=H(o,l[t],{...i,checkBackwards:!1});e&&r<c&&(c=r)}if(c<h){const t=.6*(c+h)/(2*h),{isMatch:e,meta:n}=H(o,s[r],{...i,leniency:(i.leniency||1)*t});return{isMatch:e,meta:n}}return{isMatch:n,meta:a}}(this._userStroke,this._character,this._currentStrokeIndex,{isOutlineVisible:this._renderState.state.character.outline.opacity>0,leniency:this._options.leniency}),n=r&&this._mistakesOnStroke+1>=r;if(s||n||o.isStrokeBackwards&&e)this._handleSuccess(o);else{this._handleFailure(o);const{showHintAfterMisses:t,highlightColor:e,strokeHighlightSpeed:r}=this._options;!1!==t&&this._mistakesOnStroke>=t&&this._renderState.run(X(i,d(e),r))}this._userStroke=void 0}cancel(){this._isActive=!1,this._userStroke&&this._renderState.run(J(this._userStroke.id,this._options.drawingFadeDuration))}_getStrokeData({isCorrect:t,meta:e}){return{character:this._character.symbol,strokeNum:this._currentStrokeIndex,mistakesOnStroke:this._mistakesOnStroke,totalMistakes:this._totalMistakes,strokesRemaining:this._character.strokes.length-this._currentStrokeIndex-(t?1:0),drawnPath:(r=this._userStroke,{pathString:D(r.externalPoints),points:r.points.map(t=>C(t))}),isBackwards:e.isStrokeBackwards};var r}_handleSuccess(t){if(!this._options)return;const{strokes:e,symbol:r}=this._character,{onCorrectStroke:i,onComplete:s,highlightOnComplete:o,strokeFadeDuration:n,highlightCompleteColor:a,highlightColor:h,strokeHighlightDuration:l}=this._options;null==i||i({...this._getStrokeData({isCorrect:!0,meta:t})});let c=(u="main",_=this._currentStrokeIndex,[new B(`character.${u}.strokes.${_}`,{displayPortion:1,opacity:1},{duration:n,force:!0})]);var u,_;this._mistakesOnStroke=0,this._currentStrokeIndex+=1;this._currentStrokeIndex===e.length&&(this._isActive=!1,null==s||s({character:r,totalMistakes:this._totalMistakes}),o&&(c=c.concat(((t,e,r)=>[new B("options.highlightColor",e),...Q("highlight",t),...V("highlight",t,r/2),...Q("highlight",t,r/2)])(this._character,d(a||h),2*(l||0))))),this._renderState.run(c)}_handleFailure(t){var e,r;this._mistakesOnStroke+=1,this._totalMistakes+=1,null===(e=(r=this._options).onMistake)||void 0===e||e.call(r,this._getStrokeData({isCorrect:!1,meta:t}))}_getCurrentStroke(){return this._character.strokes[this._currentStrokeIndex]}}function tt(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function et(t,e,r){t.setAttributeNS(null,e,r)}function rt(t,e){Object.keys(e).forEach(r=>et(t,r,e[r]))}function it(t){var e;null==t||null===(e=t.parentNode)||void 0===e||e.removeChild(t)}class st{constructor(t){this.stroke=t,this._pathLength=t.getLength()+st.STROKE_WIDTH/2}_getStrokeDashoffset(t){return.999*this._pathLength*(1-t)}_getColor({strokeColor:t,radicalColor:e}){return e&&this.stroke.isInRadical?e:t}}st.STROKE_WIDTH=200;class ot extends st{constructor(t){super(t),this._oldProps=void 0}mount(t){this._animationPath=tt("path"),this._clip=tt("clipPath"),this._strokePath=tt("path");const e="mask-"+l();et(this._clip,"id",e),et(this._strokePath,"d",this.stroke.path),this._animationPath.style.opacity="0",et(this._animationPath,"clip-path",function(t){let e="";return window.location&&window.location.href&&(e=window.location.href.replace(/#[^#]*$/,"").replace(/"/gi,"%22")),`url("${e}#${t}")`}(e));const r=x(this.stroke.points,100);return et(this._animationPath,"d",D(r)),rt(this._animationPath,{stroke:"#FFFFFF","stroke-width":200..toString(),fill:"none","stroke-linecap":"round","stroke-linejoin":"miter","stroke-dasharray":`${this._pathLength},${this._pathLength}`}),this._clip.appendChild(this._strokePath),t.defs.appendChild(this._clip),t.svg.appendChild(this._animationPath),this}render(t){var e,r;if(t===this._oldProps||!this._animationPath)return;t.displayPortion!==(null===(e=this._oldProps)||void 0===e?void 0:e.displayPortion)&&(this._animationPath.style.strokeDashoffset=this._getStrokeDashoffset(t.displayPortion).toString());const i=this._getColor(t);if(!this._oldProps||i!==this._getColor(this._oldProps)){const{r:t,g:e,b:r,a:s}=i;rt(this._animationPath,{stroke:`rgba(${t},${e},${r},${s})`})}t.opacity!==(null===(r=this._oldProps)||void 0===r?void 0:r.opacity)&&(this._animationPath.style.opacity=t.opacity.toString()),this._oldProps=t}}class nt{constructor(t){this._oldProps=void 0,this._strokeRenderers=t.strokes.map(t=>new ot(t))}mount(t){const e=t.createSubRenderTarget();this._group=e.svg,this._strokeRenderers.forEach(t=>{t.mount(e)})}render(t){var e,r;if(t===this._oldProps||!this._group)return;const{opacity:i,strokes:s,strokeColor:o,radicalColor:n=null}=t;var a;i!==(null===(e=this._oldProps)||void 0===e?void 0:e.opacity)&&(this._group.style.opacity=i.toString(),g||(0===i?this._group.style.display="none":0===(null===(a=this._oldProps)||void 0===a?void 0:a.opacity)&&this._group.style.removeProperty("display")));const h=!this._oldProps||o!==this._oldProps.strokeColor||n!==this._oldProps.radicalColor;if(h||s!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokes))for(let t=0;t<this._strokeRenderers.length;t++){var l;!h&&null!==(l=this._oldProps)&&void 0!==l&&l.strokes&&s[t]===this._oldProps.strokes[t]||this._strokeRenderers[t].render({strokeColor:o,radicalColor:n,opacity:s[t].opacity,displayPortion:s[t].displayPortion})}this._oldProps=t}}class at{constructor(){this._oldProps=void 0}mount(t){this._path=tt("path"),t.svg.appendChild(this._path)}render(t){var e,r,i,s;if(this._path&&t!==this._oldProps){if(t.strokeColor!==(null===(e=this._oldProps)||void 0===e?void 0:e.strokeColor)||t.strokeWidth!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokeWidth)){const{r:e,g:r,b:i,a:s}=t.strokeColor;rt(this._path,{fill:"none",stroke:`rgba(${e},${r},${i},${s})`,"stroke-width":t.strokeWidth.toString(),"stroke-linecap":"round","stroke-linejoin":"round"})}t.opacity!==(null===(i=this._oldProps)||void 0===i?void 0:i.opacity)&&et(this._path,"opacity",t.opacity.toString()),t.points!==(null===(s=this._oldProps)||void 0===s?void 0:s.points)&&et(this._path,"d",D(t.points)),this._oldProps=t}}destroy(){it(this._path)}}class ht{constructor(t){this.node=t}addPointerStartListener(t){this.node.addEventListener("mousedown",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchstart",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerMoveListener(t){this.node.addEventListener("mousemove",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchmove",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerEndListener(t){document.addEventListener("mouseup",t),document.addEventListener("touchend",t)}getBoundingClientRect(){return this.node.getBoundingClientRect()}updateDimensions(t,e){this.node.setAttribute("width",""+t),this.node.setAttribute("height",""+e)}_eventify(t,e){return{getPoint:()=>e.call(this,t),preventDefault:()=>t.preventDefault()}}_getMousePoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.clientX-e,y:t.clientY-r}}_getTouchPoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.touches[0].clientX-e,y:t.touches[0].clientY-r}}}class lt extends ht{constructor(t,e){super(t),this.svg=t,this.defs=e,"createSVGPoint"in t&&(this._pt=t.createSVGPoint())}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("SVG"===s||"G"===s)return i;{const t=tt("svg");return i.appendChild(t),t}})();rt(o,{width:e,height:r});const n=tt("defs");return o.appendChild(n),new lt(o,n)}createSubRenderTarget(){const t=tt("g");return this.svg.appendChild(t),new lt(t,this.defs)}_getMousePoint(t){if(this._pt&&(this._pt.x=t.clientX,this._pt.y=t.clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getMousePoint.call(this,t)}_getTouchPoint(t){if(this._pt&&(this._pt.x=t.touches[0].clientX,this._pt.y=t.touches[0].clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getTouchPoint(t)}}var ct={HanziWriterRenderer:class{constructor(t,e){this._character=t,this._positioner=e,this._mainCharRenderer=new nt(t),this._outlineCharRenderer=new nt(t),this._highlightCharRenderer=new nt(t),this._userStrokeRenderers={}}mount(t){const e=t.createSubRenderTarget(),r=e.svg,{xOffset:i,yOffset:s,height:o,scale:n}=this._positioner;et(r,"transform",`translate(${i}, ${o-s}) scale(${n}, ${-1*n})`),this._outlineCharRenderer.mount(e),this._mainCharRenderer.mount(e),this._highlightCharRenderer.mount(e),this._positionedTarget=e}render(t){const{main:e,outline:r,highlight:i}=t.character,{outlineColor:s,radicalColor:o,highlightColor:n,strokeColor:a,drawingWidth:h,drawingColor:l}=t.options;this._outlineCharRenderer.render({opacity:r.opacity,strokes:r.strokes,strokeColor:s}),this._mainCharRenderer.render({opacity:e.opacity,strokes:e.strokes,strokeColor:a,radicalColor:o}),this._highlightCharRenderer.render({opacity:i.opacity,strokes:i.strokes,strokeColor:n});const c=t.userStrokes||{};for(const t in this._userStrokeRenderers){var d;if(!c[t])null===(d=this._userStrokeRenderers[t])||void 0===d||d.destroy(),delete this._userStrokeRenderers[t]}for(const t in c){const e=c[t];if(!e)continue;const r={strokeWidth:h,strokeColor:l,...e};(()=>{if(this._userStrokeRenderers[t])return this._userStrokeRenderers[t];const e=new at;return e.mount(this._positionedTarget),this._userStrokeRenderers[t]=e,e})().render(r)}}destroy(){it(this._positionedTarget.svg),this._positionedTarget.defs.innerHTML=""}},createRenderTarget:lt.init};const dt=(t,e)=>{t.beginPath();const r=e[0],i=e.slice(1);t.moveTo(r.x,r.y);for(const e of i)t.lineTo(e.x,e.y);t.stroke()};class ut extends st{constructor(t,e=!0){super(t),e&&Path2D?this._path2D=new Path2D(this.stroke.path):this._pathCmd=(t=>{const e=t.split(/(^|\s+)(?=[A-Z])/).filter(t=>" "!==t),r=[t=>t.beginPath()];for(const t of e){const[e,...i]=t.split(/\s+/),s=i.map(t=>parseFloat(t));"M"===e?r.push(t=>t.moveTo(...s)):"L"===e?r.push(t=>t.lineTo(...s)):"C"===e?r.push(t=>t.bezierCurveTo(...s)):"Q"===e&&r.push(t=>t.quadraticCurveTo(...s))}return t=>r.forEach(e=>e(t))})(this.stroke.path),this._extendedMaskPoints=x(this.stroke.points,st.STROKE_WIDTH/2)}render(t,e){if(e.opacity<.05)return;var r;(t.save(),this._path2D)?t.clip(this._path2D):(null===(r=this._pathCmd)||void 0===r||r.call(this,t),t.globalAlpha=0,t.stroke(),t.clip());const{r:i,g:s,b:o,a:n}=this._getColor(e),a=1===n?`rgb(${i},${s},${o})`:`rgb(${i},${s},${o},${n})`,h=this._getStrokeDashoffset(e.displayPortion);t.globalAlpha=e.opacity,t.strokeStyle=a,t.fillStyle=a,t.lineWidth=st.STROKE_WIDTH,t.lineCap="round",t.lineJoin="round",t.setLineDash([this._pathLength,this._pathLength],h),t.lineDashOffset=h,dt(t,this._extendedMaskPoints),t.restore()}}class _t{constructor(t){this._strokeRenderers=t.strokes.map(t=>new ut(t))}render(t,e){if(e.opacity<.05)return;const{opacity:r,strokeColor:i,radicalColor:s,strokes:o}=e;for(let e=0;e<this._strokeRenderers.length;e++)this._strokeRenderers[e].render(t,{strokeColor:i,radicalColor:s,opacity:o[e].opacity*r,displayPortion:o[e].displayPortion||0})}}function pt(t,e){if(e.opacity<.05)return;const{opacity:r,strokeWidth:i,strokeColor:s,points:o}=e,{r:n,g:a,b:h,a:l}=s;t.save(),t.globalAlpha=r,t.lineWidth=i,t.strokeStyle=`rgba(${n},${a},${h},${l})`,t.lineCap="round",t.lineJoin="round",dt(t,o),t.restore()}class gt extends ht{constructor(t){super(t)}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("CANVAS"===s)return i;const t=document.createElement("canvas");return i.appendChild(t),t})();return o.setAttribute("width",e),o.setAttribute("height",r),new gt(o)}getContext(){return this.node.getContext("2d")}}var kt={HanziWriterRenderer:class{constructor(t,e){this.destroy=k,this._character=t,this._positioner=e,this._mainCharRenderer=new _t(t),this._outlineCharRenderer=new _t(t),this._highlightCharRenderer=new _t(t)}mount(t){this._target=t}_animationFrame(t){const{width:e,height:r,scale:i,xOffset:s,yOffset:o}=this._positioner,n=this._target.getContext();n.clearRect(0,0,e,r),n.save(),n.translate(s,r-o),n.transform(1,0,0,-1,0,0),n.scale(i,i),t(n),n.restore(),n.draw&&n.draw()}render(t){const{outline:e,main:r,highlight:i}=t.character,{outlineColor:s,strokeColor:o,radicalColor:n,highlightColor:a,drawingColor:h,drawingWidth:l}=t.options;this._animationFrame(c=>{this._outlineCharRenderer.render(c,{opacity:e.opacity,strokes:e.strokes,strokeColor:s}),this._mainCharRenderer.render(c,{opacity:r.opacity,strokes:r.strokes,strokeColor:o,radicalColor:n}),this._highlightCharRenderer.render(c,{opacity:i.opacity,strokes:i.strokes,strokeColor:a});const d=t.userStrokes||{};for(const t in d){const e=d[t];if(e){pt(c,{strokeWidth:l,strokeColor:h,...e})}}})}},createRenderTarget:gt.init};const mt={charDataLoader:(t,e,r)=>{const i=new XMLHttpRequest;i.overrideMimeType&&i.overrideMimeType("application/json"),i.open("GET",(t=>`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${t}.json`)(t),!0),i.onerror=t=>{r(i,t)},i.onreadystatechange=()=>{4===i.readyState&&(200===i.status?e(JSON.parse(i.responseText)):0!==i.status&&r&&r(i))},i.send(null)},onLoadCharDataError:null,onLoadCharDataSuccess:null,showOutline:!0,showCharacter:!0,renderer:"svg",width:0,height:0,padding:20,strokeAnimationSpeed:1,strokeFadeDuration:400,strokeHighlightDuration:200,strokeHighlightSpeed:2,delayBetweenStrokes:1e3,delayBetweenLoops:2e3,strokeColor:"#555",radicalColor:null,highlightColor:"#AAF",outlineColor:"#DDD",drawingColor:"#333",leniency:1,showHintAfterMisses:3,highlightOnComplete:!0,highlightCompleteColor:null,markStrokeCorrectAfterMisses:!1,acceptBackwardsStrokes:!1,quizStartStrokeNum:0,drawingFadeDuration:300,drawingWidth:4,strokeWidth:2,outlineWidth:2,rendererOverride:{}};class ft{constructor(t){this._loadCounter=0,this._isLoading=!1,this.loadingFailed=!1,this._options=t}_debouncedLoad(t,e){const r=t=>{var r;e===this._loadCounter&&(null===(r=this._resolve)||void 0===r||r.call(this,t))},i=t=>{var r;e===this._loadCounter&&(null===(r=this._reject)||void 0===r||r.call(this,t))},s=this._options.charDataLoader(t,r,i);s&&("then"in s?s.then(r).catch(i):r(s))}_setupLoadingPromise(){return new Promise((t,e)=>{this._resolve=t,this._reject=e}).then(t=>{var e,r;return this._isLoading=!1,null===(e=(r=this._options).onLoadCharDataSuccess)||void 0===e||e.call(r,t),t}).catch(t=>{if(this._isLoading=!1,this.loadingFailed=!0,this._options.onLoadCharDataError)return void this._options.onLoadCharDataError(t);if(t instanceof Error)throw t;const e=new Error("Failed to load char data for "+this._loadingChar);throw e.reason=t,e})}loadCharData(t){this._loadingChar=t;const e=this._setupLoadingPromise();return this.loadingFailed=!1,this._isLoading=!0,this._loadCounter++,this._debouncedLoad(t,this._loadCounter),e}}class vt{constructor(t,e={}){const{HanziWriterRenderer:r,createRenderTarget:i}="canvas"===e.renderer?kt:ct,s=e.rendererOverride||{};this._renderer={HanziWriterRenderer:s.HanziWriterRenderer||r,createRenderTarget:s.createRenderTarget||i},this.target=this._renderer.createRenderTarget(t,e.width,e.height),this._options=this._assignOptions(e),this._loadingManager=new ft(this._options),this._setupListeners()}static create(t,e,r){const i=new vt(t,r);return i.setCharacter(e),i}static loadCharacterData(t,e={}){const r=(()=>{const{_loadingManager:r,_loadingOptions:i}=vt;return(null==r?void 0:r._loadingChar)===t&&i===e?r:new ft({...mt,...e})})();return vt._loadingManager=r,vt._loadingOptions=e,r.loadCharData(t)}static getScalingTransform(t,e,r=0){const i=new L({width:t,height:e,padding:r});return{x:i.xOffset,y:i.yOffset,scale:i.scale,transform:(s=`\n        translate(${i.xOffset}, ${i.height-i.yOffset})\n        scale(${i.scale}, ${-1*i.scale})\n      `,s.replace(/^\s+/,"").replace(/\s+$/,"")).replace(/\s+/g," ")};var s}showCharacter(t={}){return this._options.showCharacter=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(V("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideCharacter(t={}){return this._options.showCharacter=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Q("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateCharacter(t={}){return this.cancelQuiz(),this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Y("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateStroke(t,e={}){return this.cancelQuiz(),this._withData(()=>{var r;return null===(r=this._renderState)||void 0===r?void 0:r.run(((t,e,r,i)=>{const s=e.strokes[r];return[new B("character."+t,r=>{const i=r.character[t],s={opacity:1,strokes:{}};for(let t=0;t<e.strokes.length;t++)s.strokes[t]={opacity:i.opacity*i.strokes[t].opacity};return s}),...K(t,s,i)]})("main",this._character,n(t,this._character.strokes.length),this._options.strokeAnimationSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}highlightStroke(t,e={}){return this._withData(()=>{var r,i;if(this._character&&this._renderState)return this._renderState.run(X((r=this._character.strokes,i=t,r[n(i,r.length)]),d(this._options.highlightColor),this._options.strokeHighlightSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}async loopCharacterAnimation(){return this.cancelQuiz(),this._withData(()=>this._renderState.run(((t,e,r,i,s,o)=>{const n=Y(t,e,r,i,s);return n.push(new B.Delay(o)),n})("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes,this._options.delayBetweenLoops),{loop:!0}))}pauseAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.pauseAll()})}resumeAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.resumeAll()})}showOutline(t={}){return this._options.showOutline=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(V("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideOutline(t={}){return this._options.showOutline=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Q("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}updateDimensions({width:t,height:e,padding:r}){if(void 0!==t&&(this._options.width=t),void 0!==e&&(this._options.height=e),void 0!==r&&(this._options.padding=r),this.target.updateDimensions(this._options.width,this._options.height),this._character&&this._renderState&&this._hanziWriterRenderer&&this._positioner){this._hanziWriterRenderer.destroy();const t=this._initAndMountHanziWriterRenderer(this._character);this._renderState.overwriteOnStateChange(e=>t.render(e)),t.render(this._renderState.state),this._quiz&&this._quiz.setPositioner(this._positioner)}}updateColor(t,e,r={}){var i;let s=[];const o=d((()=>"radicalColor"!==t||e?e:this._options.strokeColor)());this._options[t]=e;const n=null!==(i=r.duration)&&void 0!==i?i:this._options.strokeFadeDuration;return s=s.concat(G(t,o,n)),"radicalColor"!==t||e||(s=s.concat(G(t,null,0))),this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.run(s).then(t=>{var e;return null===(e=r.onComplete)||void 0===e||e.call(r,t),t})})}quiz(t={}){return this._withData(async()=>{this._character&&this._renderState&&this._positioner&&(this.cancelQuiz(),this._quiz=new Z(this._character,this._renderState,this._positioner),this._options={...this._options,...t},this._quiz.startQuiz(this._options))})}cancelQuiz(){this._quiz&&(this._quiz.cancel(),this._quiz=void 0)}setCharacter(t){return this.cancelQuiz(),this._char=t,this._hanziWriterRenderer&&this._hanziWriterRenderer.destroy(),this._renderState&&this._renderState.cancelAll(),this._hanziWriterRenderer=null,this._withDataPromise=this._loadingManager.loadCharData(t).then(e=>{if(!e||this._loadingManager.loadingFailed)return;this._character=function(t,e){const r=T(e);return new R(t,r)}(t,e),this._renderState=new m(this._character,this._options,t=>r.render(t));const r=this._initAndMountHanziWriterRenderer(this._character);r.render(this._renderState.state)}),this._withDataPromise}_initAndMountHanziWriterRenderer(t){const{width:e,height:r,padding:i}=this._options;this._positioner=new L({width:e,height:r,padding:i});const s=new this._renderer.HanziWriterRenderer(t,this._positioner);return s.mount(this.target),this._hanziWriterRenderer=s,s}async getCharacterData(){if(!this._char)throw new Error("setCharacter() must be called before calling getCharacterData()");return await this._withData(()=>this._character)}_assignOptions(t){const e={...mt,...t};return t.strokeAnimationDuration&&!t.strokeAnimationSpeed&&(e.strokeAnimationSpeed=500/t.strokeAnimationDuration),t.strokeHighlightDuration&&!t.strokeHighlightSpeed&&(e.strokeHighlightSpeed=500/e.strokeHighlightDuration),t.highlightCompleteColor||(e.highlightCompleteColor=e.highlightColor),this._fillWidthAndHeight(e)}_fillWidthAndHeight(t){const e={...t};if(e.width&&!e.height)e.height=e.width;else if(e.height&&!e.width)e.width=e.height;else if(!e.width&&!e.height){const{width:t,height:r}=this.target.getBoundingClientRect(),i=Math.min(t,r);e.width=i,e.height=i}return e}_withData(t){if(this._loadingManager.loadingFailed)throw Error("Failed to load character data. Call setCharacter and try again.");return this._withDataPromise?this._withDataPromise.then(()=>{if(!this._loadingManager.loadingFailed)return t()}):Promise.resolve().then(t)}_setupListeners(){this.target.addPointerStartListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.startUserStroke(t.getPoint()))}),this.target.addPointerMoveListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.continueUserStroke(t.getPoint()))}),this.target.addPointerEndListener(()=>{var t;null===(t=this._quiz)||void 0===t||t.endUserStroke()})}}return vt._loadingManager=null,vt._loadingOptions=null,vt}();
+//# sourceMappingURL=hanzi-writer.min.js.map
+</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = [
+    { han: '年', py: 'nián', ru: 'год', note: '' },
+    { han: '月', py: 'yuè', ru: 'месяц', note: '' },
+    { han: '日', py: 'rì', ru: 'день / дата', note: '' },
+    { han: '星期', py: 'xīngqī', ru: 'неделя / день недели', note: '' },
+    { han: '点', py: 'diǎn', ru: 'час / часов', note: '' },
+    { han: '分', py: 'fēn', ru: 'минута / минут', note: '' }
+  ];
+
+  var CHAR_DATA = {"年":{"strokes": ["M 383 704 Q 387 722 447 795 Q 457 808 443 824 Q 401 861 373 859 Q 360 856 362 841 Q 371 739 255 617 Q 239 610 206 569 Q 196 553 213 557 Q 232 560 258 578 Q 328 629 374 691 L 383 704 Z", "M 540 678 Q 732 714 742 721 Q 752 730 747 739 Q 740 752 708 761 Q 681 767 571 735 Q 480 714 395 707 Q 386 706 383 704 C 359 698 359 698 374 691 Q 425 666 459 665 Q 469 666 483 668 L 540 678 Z", "M 569 502 Q 576 505 723 521 Q 735 520 744 532 Q 745 545 722 556 Q 683 580 599 554 Q 584 553 570 547 L 513 535 Q 455 525 402 520 Q 371 519 338 513 C 308 508 334 461 363 467 Q 430 480 513 494 L 569 502 Z", "M 338 513 Q 320 523 301 529 Q 288 533 278 527 Q 271 521 278 506 Q 294 481 303 453 Q 310 426 326 323 C 331 293 371 296 368 326 Q 362 386 363 467 C 363 497 363 500 338 513 Z", "M 566 300 Q 683 327 910 303 Q 935 299 941 308 Q 950 321 937 335 Q 864 401 799 379 Q 699 361 566 347 L 511 341 Q 426 337 368 326 L 326 323 Q 295 322 272 317 Q 197 307 86 306 Q 71 306 70 294 Q 69 281 88 266 Q 133 233 171 245 Q 190 252 265 263 Q 421 296 510 297 L 566 300 Z", "M 508 -43 Q 514 -71 521 -81 Q 527 -88 535 -86 Q 550 -77 559 -12 Q 569 78 567 166 Q 566 205 566 300 L 566 347 Q 566 414 569 502 L 570 547 Q 571 580 583 630 Q 587 649 571 659 Q 553 672 540 678 C 514 693 469 694 483 668 Q 483 664 499 640 Q 512 613 513 535 L 513 494 Q 512 425 511 341 L 510 297 Q 498 66 508 -43 Z"], "medians": [[[375, 845], [402, 804], [358, 712], [298, 635], [267, 604], [216, 567]], [[385, 693], [473, 691], [689, 735], [735, 733]], [[345, 510], [379, 494], [665, 542], [733, 534]], [[287, 518], [318, 492], [328, 470], [342, 358], [346, 345], [361, 332]], [[83, 293], [109, 281], [158, 275], [451, 316], [815, 347], [872, 341], [929, 318]], [[490, 668], [536, 641], [544, 630], [531, -76]]], "radStrokes": [1, 4, 5]},"月":{"strokes": ["M 398 390 Q 410 502 412 535 L 414 566 Q 417 717 420 735 C 422 758 422 758 405 766 Q 405 767 404 767 Q 353 791 337 787 Q 316 783 334 760 Q 373 697 357 455 Q 353 356 304 239 Q 271 154 155 37 Q 140 24 137 16 Q 136 9 148 10 Q 164 11 186 26 Q 246 69 281 112 Q 333 173 363 244 Q 382 296 394 361 L 398 390 Z", "M 420 735 Q 429 735 609 769 Q 631 773 637 762 Q 656 713 657 390 Q 657 128 640 101 Q 634 94 612 99 Q 581 105 549 111 Q 527 117 528 107 Q 595 55 633 16 Q 649 -3 665 -9 Q 675 -13 685 -2 Q 730 53 725 113 Q 712 321 709 657 Q 708 721 723 750 Q 736 772 723 783 Q 698 804 658 820 Q 639 827 621 820 Q 569 793 536 785 Q 493 773 405 766 C 375 763 390 730 420 735 Z", "M 412 535 Q 442 529 533 542 Q 587 551 594 554 Q 603 561 599 569 Q 592 579 566 587 Q 538 594 511 583 Q 487 576 462 572 Q 440 568 414 566 C 384 564 382 540 412 535 Z", "M 394 361 Q 428 351 561 374 Q 564 375 568 375 Q 590 379 594 382 Q 603 389 599 397 Q 592 407 566 415 Q 538 421 511 411 Q 484 404 456 397 Q 428 393 398 390 C 368 387 365 368 394 361 Z"], "medians": [[[339, 773], [379, 742], [387, 685], [385, 504], [366, 342], [341, 259], [296, 169], [236, 93], [184, 43], [145, 17]], [[415, 764], [429, 752], [503, 762], [634, 796], [666, 780], [681, 758], [687, 291], [683, 93], [664, 56], [632, 63], [538, 104]], [[417, 542], [430, 550], [535, 566], [588, 564]], [[399, 368], [413, 375], [535, 394], [588, 392]]]},"日":{"strokes": ["M 349 664 Q 348 665 347 666 Q 322 687 292 696 Q 282 697 274 689 Q 270 682 279 670 Q 331 531 294 261 Q 287 216 271 169 Q 262 141 267 118 Q 277 81 291 65 Q 304 50 314 66 Q 324 79 332 102 L 339 137 Q 349 186 350 238 Q 350 316 351 391 L 352 420 Q 353 576 361 626 C 364 652 364 652 349 664 Z", "M 608 120 Q 641 78 665 39 Q 675 18 688 19 Q 707 20 724 59 Q 745 104 740 157 Q 728 310 721 593 Q 720 629 738 654 Q 748 669 738 681 Q 716 703 656 730 Q 635 740 617 729 Q 512 684 349 664 C 319 660 332 620 361 626 Q 410 635 590 672 Q 624 679 640 666 Q 691 615 658 164 Q 657 163 657 159 Q 653 143 640 144 C 621 121 602 128 608 120 Z", "M 351 391 Q 390 378 433 387 Q 493 399 554 411 Q 582 417 587 421 Q 596 428 591 437 Q 584 447 556 455 Q 531 461 450 435 Q 375 423 352 420 C 322 416 322 400 351 391 Z", "M 332 102 Q 345 98 361 100 Q 440 115 608 120 C 638 121 661 122 640 144 Q 633 153 614 166 Q 596 178 561 170 Q 438 146 339 137 C 309 134 303 108 332 102 Z"], "medians": [[[284, 684], [321, 646], [328, 617], [332, 516], [323, 261], [302, 136], [302, 70]], [[359, 660], [374, 648], [388, 650], [635, 703], [668, 687], [690, 665], [699, 450], [699, 159], [685, 105], [688, 37]], [[357, 413], [369, 404], [398, 404], [534, 432], [581, 431]], [[340, 106], [355, 119], [432, 130], [585, 147], [632, 143]]]},"星":{"strokes": ["M 303 760 Q 290 763 287 757 Q 280 750 290 734 Q 326 667 349 555 Q 353 521 374 499 Q 395 477 399 494 Q 400 504 402 516 L 400 542 Q 399 555 396 568 Q 390 590 386 610 L 380 637 Q 367 695 363 719 C 358 749 333 757 303 760 Z", "M 619 544 Q 619 540 621 533 Q 627 517 640 517 Q 655 518 663 533 Q 676 549 703 628 Q 722 683 763 713 Q 784 729 767 747 Q 748 766 696 796 Q 681 805 610 792 Q 574 792 442 769 Q 351 756 303 760 C 273 761 333 715 363 719 Q 370 719 376 720 Q 449 741 619 755 Q 649 756 659 751 Q 669 744 662 712 Q 635 594 624 570 Q 623 570 623 569 C 616 552 616 552 619 544 Z", "M 386 610 Q 390 609 399 610 Q 505 629 582 640 Q 606 644 597 656 Q 587 671 561 676 Q 545 679 380 637 C 351 630 356 612 386 610 Z", "M 402 516 Q 406 516 414 517 Q 532 535 619 544 C 649 547 652 560 623 569 Q 599 582 409 544 Q 405 544 400 542 C 371 534 372 514 402 516 Z", "M 344 371 Q 362 395 379 415 Q 389 425 377 441 Q 337 477 314 475 Q 304 474 304 459 Q 310 384 214 281 Q 208 281 174 243 Q 165 230 180 233 Q 196 234 217 248 Q 284 291 326 347 L 344 371 Z", "M 542 350 Q 602 360 666 368 Q 724 378 733 385 Q 742 392 738 400 Q 732 413 704 421 Q 676 428 646 419 Q 595 406 543 393 L 488 384 Q 419 375 344 371 C 314 369 298 357 326 347 Q 368 329 440 336 Q 462 339 489 342 L 542 350 Z", "M 536 199 Q 545 202 669 215 Q 679 214 688 226 Q 689 238 667 248 Q 630 270 543 245 Q 540 245 538 244 L 487 234 Q 472 233 341 216 Q 313 213 334 196 Q 367 168 395 176 Q 437 185 487 191 L 536 199 Z", "M 532 79 Q 533 142 536 199 L 538 244 Q 539 299 542 350 L 543 393 Q 543 412 546 443 Q 553 462 544 473 Q 519 497 496 508 Q 483 512 474 507 Q 464 503 468 492 Q 487 453 488 384 L 489 342 Q 488 300 487 234 L 487 191 Q 486 140 486 76 C 486 46 531 49 532 79 Z", "M 486 76 Q 407 72 331 58 Q 187 37 127 40 Q 117 41 109 35 Q 100 28 107 17 Q 117 2 173 -29 Q 188 -35 209 -27 Q 444 57 632 44 Q 750 40 918 7 Q 937 3 945 12 Q 952 24 933 41 Q 852 107 812 97 Q 794 94 543 80 Q 537 80 532 79 L 486 76 Z"], "medians": [[[296, 749], [338, 699], [387, 499]], [[320, 756], [368, 740], [624, 776], [683, 769], [712, 731], [685, 672], [641, 537]], [[393, 619], [400, 627], [446, 638], [550, 656], [587, 650]], [[407, 523], [424, 535], [450, 540], [606, 557], [618, 563]], [[317, 462], [330, 446], [338, 422], [316, 380], [260, 304], [184, 242]], [[334, 351], [493, 363], [682, 398], [725, 396]], [[336, 207], [386, 198], [611, 234], [677, 228]], [[477, 497], [492, 488], [515, 455], [510, 103], [493, 84]], [[116, 25], [188, 5], [372, 44], [464, 57], [558, 66], [682, 66], [837, 59], [934, 19]]], "radStrokes": [0, 1, 2, 3]},"期":{"strokes": ["M 479 660 Q 479 661 483 661 Q 558 677 550 694 Q 544 704 520 711 Q 501 715 482 711 L 434 696 Q 385 683 337 671 Q 327 670 317 666 L 267 658 Q 221 652 172 648 Q 141 644 163 628 Q 200 607 267 621 Q 268 621 271 621 L 315 629 Q 372 642 435 652 L 479 660 Z", "M 317 666 Q 320 706 323 720 Q 327 742 314 757 Q 292 776 263 788 Q 250 794 240 788 Q 231 782 237 766 Q 259 714 267 658 L 271 621 Q 274 543 269 310 C 268 280 310 289 310 319 Q 310 370 310 414 L 310 443 Q 310 486 311 521 L 312 554 Q 312 590 315 629 L 317 666 Z", "M 465 350 Q 472 513 479 660 L 482 711 Q 486 754 502 812 Q 505 822 485 837 Q 451 855 428 859 Q 412 863 404 854 Q 397 847 405 832 Q 433 789 433 760 Q 434 729 434 696 L 435 652 Q 435 507 425 342 C 423 312 464 320 465 350 Z", "M 311 521 Q 357 530 393 534 Q 414 538 405 549 Q 395 562 373 565 Q 352 565 312 554 C 283 546 282 515 311 521 Z", "M 310 414 Q 355 423 390 427 Q 409 431 401 442 Q 391 454 370 456 Q 351 457 317 447 Q 313 446 310 443 C 287 424 281 408 310 414 Z", "M 269 310 Q 113 289 78 286 Q 65 285 62 277 Q 58 267 73 255 Q 112 227 153 239 Q 340 296 552 320 Q 568 321 569 329 Q 570 342 553 351 Q 525 366 465 350 L 425 342 Q 358 329 310 319 L 269 310 Z", "M 265 237 Q 255 182 117 71 Q 96 58 122 60 Q 188 67 291 164 Q 318 191 331 202 Q 341 212 339 221 Q 336 234 313 242 Q 286 252 275 250 Q 268 249 265 237 Z", "M 412 223 Q 463 151 483 147 Q 495 146 502 160 Q 505 172 498 190 Q 491 208 468 219 Q 434 241 419 246 Q 412 249 409 239 Q 408 232 412 223 Z", "M 652 334 Q 664 445 665 457 L 667 488 Q 670 644 672 652 C 674 677 674 677 661 683 Q 613 707 597 704 Q 578 700 594 679 Q 631 619 615 395 Q 611 304 565 194 Q 535 116 426 6 Q 413 -7 410 -13 Q 409 -20 420 -19 Q 465 -15 543 76 Q 592 134 620 199 Q 638 247 648 307 L 652 334 Z", "M 672 652 Q 721 664 772 677 Q 793 683 798 672 Q 810 633 819 344 Q 819 106 806 87 Q 802 80 780 85 Q 753 88 727 92 Q 708 96 709 87 Q 767 44 801 10 Q 816 -8 831 -12 Q 841 -16 849 -6 Q 888 55 884 100 Q 847 607 875 661 Q 887 680 875 691 Q 853 710 816 724 Q 797 731 782 724 Q 734 697 661 683 C 632 677 643 645 672 652 Z", "M 665 457 Q 725 469 769 476 Q 791 482 781 493 Q 771 506 746 509 Q 707 512 667 488 C 641 473 636 451 665 457 Z", "M 648 307 Q 651 306 658 307 Q 722 316 771 321 Q 793 325 785 337 Q 775 350 751 355 Q 711 361 652 334 C 625 322 618 310 648 307 Z"], "medians": [[[165, 639], [238, 634], [501, 690], [540, 691]], [[249, 777], [287, 733], [292, 677], [290, 335], [274, 321]], [[416, 845], [449, 819], [461, 806], [462, 796], [447, 375], [442, 360], [430, 350]], [[318, 526], [329, 541], [342, 545], [376, 549], [397, 543]], [[316, 421], [326, 433], [343, 437], [374, 441], [393, 436]], [[73, 273], [113, 263], [140, 265], [435, 325], [533, 338], [558, 332]], [[323, 218], [292, 212], [252, 161], [200, 114], [126, 68]], [[419, 236], [470, 189], [485, 161]], [[599, 691], [636, 661], [643, 608], [643, 466], [634, 349], [622, 286], [590, 190], [541, 106], [481, 36], [417, -12]], [[671, 681], [682, 671], [794, 703], [824, 688], [837, 668], [838, 457], [848, 243], [845, 81], [827, 47], [718, 85]], [[672, 464], [683, 478], [706, 485], [739, 491], [773, 486]], [[653, 313], [666, 324], [733, 337], [775, 331]]], "radStrokes": [8, 9, 10, 11]},"点":{"strokes": ["M 533 507 Q 537 564 541 618 L 543 649 Q 546 728 560 775 Q 563 785 543 800 Q 507 819 482 823 Q 466 826 458 817 Q 451 810 459 794 Q 478 769 479 752 Q 491 637 491 500 C 491 470 531 477 533 507 Z", "M 541 618 Q 547 617 559 618 Q 656 634 728 643 Q 756 647 745 663 Q 733 679 703 685 Q 672 691 543 649 C 514 640 511 620 541 618 Z", "M 379 486 Q 364 492 334 497 Q 321 501 317 495 Q 310 489 319 471 Q 347 413 363 317 Q 366 289 382 269 Q 401 244 408 262 Q 411 271 412 283 L 410 323 L 410 324 Q 397 417 394 449 C 391 479 391 482 379 486 Z", "M 690 349 Q 715 430 750 455 Q 769 474 753 495 Q 675 556 614 530 Q 571 517 533 507 L 491 500 Q 436 491 379 486 C 349 483 364 445 394 449 Q 425 452 612 483 Q 637 487 646 477 Q 655 470 654 450 Q 647 401 638 359 C 632 330 681 320 690 349 Z", "M 412 283 Q 422 282 436 283 Q 521 299 704 308 Q 717 309 719 319 Q 719 328 690 349 L 638 359 Q 634 360 628 358 Q 507 333 410 323 C 380 320 382 284 412 283 Z", "M 260 218 Q 224 154 178 99 Q 151 63 166 27 Q 172 8 196 17 Q 221 32 242 64 Q 272 110 280 152 Q 290 186 286 215 Q 282 225 275 226 Q 266 226 260 218 Z", "M 378 181 Q 394 135 412 89 Q 422 64 439 57 Q 452 50 467 66 Q 474 79 473 103 Q 470 128 447 153 Q 413 193 394 206 Q 385 212 379 201 Q 375 194 378 181 Z", "M 547 196 Q 583 84 614 69 Q 627 62 642 78 Q 649 91 648 118 Q 644 145 619 168 Q 582 211 563 223 Q 553 229 548 216 Q 542 209 547 196 Z", "M 711 213 Q 769 149 835 57 Q 851 33 867 27 Q 876 24 885 35 Q 901 48 892 97 Q 883 160 716 247 Q 706 254 703 240 Q 702 225 711 213 Z"], "medians": [[[471, 807], [509, 778], [517, 765], [514, 533], [497, 509]], [[545, 626], [561, 637], [652, 657], [705, 662], [734, 655]], [[325, 487], [356, 462], [363, 444], [396, 268]], [[387, 482], [408, 470], [548, 490], [629, 509], [660, 506], [700, 474], [671, 381], [646, 365]], [[418, 290], [431, 304], [625, 331], [679, 329], [710, 319]], [[274, 214], [247, 139], [198, 65], [185, 33]], [[390, 194], [435, 118], [448, 78]], [[557, 215], [608, 131], [623, 90]], [[715, 234], [836, 121], [860, 82], [871, 43]]], "radStrokes": [5, 6, 7, 8]},"分":{"strokes": ["M 324 682 Q 328 610 221 489 Q 170 440 94 376 Q 85 372 96 368 Q 144 368 253 455 Q 331 533 390 611 Q 399 623 405 627 Q 414 633 412 643 Q 411 653 399 667 Q 365 701 331 697 Q 322 696 324 682 Z", "M 448 795 Q 506 765 551 690 Q 710 426 782 412 Q 839 412 959 425 Q 984 428 984 434 Q 984 441 960 448 Q 792 500 734 551 Q 662 611 551 774 Q 524 813 479 815 Q 448 816 445 808 Q 441 798 448 795 Z", "M 434 376 Q 510 395 575 405 Q 600 408 604 400 Q 617 378 606 323 Q 584 169 544 104 Q 526 71 498 76 Q 461 88 427 101 Q 402 108 420 85 Q 478 37 507 0 Q 532 -27 555 -3 Q 592 25 617 74 Q 647 132 663 308 Q 669 369 690 401 Q 703 416 697 427 Q 687 440 630 465 Q 608 475 586 460 Q 559 444 456 421 Q 353 396 266 390 Q 245 389 242 379 Q 241 369 268 356 Q 296 337 320 346 Q 354 356 388 364 L 434 376 Z", "M 388 364 Q 388 205 153 38 Q 144 31 151 27 Q 158 24 170 28 Q 228 47 279 83 Q 366 138 437 282 Q 450 304 465 327 Q 474 336 468 347 Q 462 357 434 376 C 410 393 389 394 388 364 Z"], "medians": [[[333, 687], [347, 674], [362, 642], [306, 551], [231, 465], [158, 407], [100, 373]], [[454, 803], [495, 791], [527, 765], [659, 579], [707, 524], [757, 480], [783, 463], [819, 454], [978, 435]], [[251, 378], [303, 368], [607, 435], [626, 429], [646, 410], [634, 299], [609, 167], [591, 110], [565, 64], [541, 41], [523, 39], [420, 94]], [[398, 358], [424, 334], [391, 252], [355, 194], [319, 149], [261, 96], [200, 54], [156, 32]]], "radStrokes": [2, 3]}};
+
+  var HW_OPTS = {
+    width: 256,
+    height: 256,
+    padding: 6,
+    strokeColor: '#2c2620',
+    outlineColor: '#cbbb92',
+    highlightColor: '#6fd0aa',
+    highlightCompleteColor: '#d8b571',
+    drawingColor: '#3f8f70',
+    drawingWidth: 34,
+    strokeAnimationSpeed: 1.1,
+    delayBetweenStrokes: 300,
+    delayBetweenLoops: 1500,
+    charDataLoader: function (chr) { return CHAR_DATA[chr]; }
+  };
+
+  var startScreen = document.getElementById('screen-start');
+  var selectScreen = document.getElementById('screen-select');
+  var charScreen = document.getElementById('screen-char');
+  var cardsBox = document.getElementById('cards');
+  var statusEl = document.getElementById('status');
+  var grid = document.getElementById('grid');
+
+  var writers = [];
+  var cur = null;
+  var mode = 'idle';
+  var stepIdx = 0;
+  var stepTotal = 0;
+  var quizMistakes = 0;
+  var quizNoHints = false;
+
+  function showScreen(node) {
+    var all = [startScreen, selectScreen, charScreen];
+    for (var i = 0; i < all.length; i++) all[i].hidden = (all[i] !== node);
+  }
+
+  function setStatus(text) { statusEl.textContent = text; }
+
+  function strokesOf(chr) { return CHAR_DATA[chr].strokes.length; }
+
+  function strokesLabel(n) {
+    var m = n % 10, h = n % 100;
+    if (m === 1 && h !== 11) return n + ' черта';
+    if (m >= 2 && m <= 4 && (h < 12 || h > 14)) return n + ' черты';
+    return n + ' черт';
+  }
+
+  function stopAll() {
+    for (var i = 0; i < writers.length; i++) {
+      var w = writers[i];
+      try { w.cancelQuiz(); w.pauseAnimation(); } catch (e) {}
+      w.showCharacter({ duration: 0 });
+      w.showOutline({ duration: 0 });
+    }
+  }
+
+  function buildCards() {
+    DATA.forEach(function (item) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'card';
+      var han = document.createElement('span');
+      han.className = 'han';
+      han.textContent = item.han;
+      var py = document.createElement('span');
+      py.className = 'py';
+      py.textContent = item.py;
+      var ru = document.createElement('span');
+      ru.className = 'ru';
+      ru.textContent = item.note ? item.ru + ' (' + item.note + ')' : item.ru;
+      card.appendChild(han);
+      card.appendChild(py);
+      card.appendChild(ru);
+      card.addEventListener('click', function () { openItem(item); });
+      cardsBox.appendChild(card);
+    });
+  }
+
+  function openItem(item) {
+    if (typeof HanziWriter === 'undefined') {
+      setStatus('Ошибка: Hanzi Writer не загружен.');
+      showScreen(charScreen);
+      return;
+    }
+    cur = item;
+    mode = 'idle';
+    stepIdx = 0;
+    quizMistakes = 0;
+    for (var c = 0; c < writers.length; c++) {
+      try { writers[c].cancelQuiz(); writers[c].pauseAnimation(); } catch (e) {}
+    }
+    writers = [];
+    grid.innerHTML = '';
+    var chars = item.han.split('');
+    document.getElementById('char-han').textContent = item.han;
+    document.getElementById('char-py').textContent = item.py;
+    document.getElementById('char-ru').textContent = item.note ? item.ru + ' · ' + item.note : item.ru;
+    for (var i = 0; i < chars.length; i++) {
+      var cell = document.createElement('div');
+      cell.className = 'tzg-cell';
+      var tzg = document.createElement('div');
+      tzg.className = 'tzg';
+      var hw = document.createElement('div');
+      hw.className = 'hw';
+      tzg.appendChild(hw);
+      var lbl = document.createElement('p');
+      lbl.className = 'tzg-label';
+      lbl.textContent = chars[i] + ' — ' + strokesLabel(strokesOf(chars[i]));
+      cell.appendChild(tzg);
+      cell.appendChild(lbl);
+      grid.appendChild(cell);
+      writers.push(HanziWriter.create(hw, chars[i], HW_OPTS));
+    }
+    setStatus('Выберите режим: анимация, пошаговый показ или тренировка.');
+    showScreen(charScreen);
+  }
+
+  document.getElementById('btn-start').addEventListener('click', function () {
+    showScreen(selectScreen);
+  });
+
+  document.getElementById('btn-back').addEventListener('click', function () {
+    stopAll();
+    mode = 'idle';
+    showScreen(selectScreen);
+  });
+
+  document.getElementById('btn-anim').addEventListener('click', function () {
+    if (!cur) return;
+    stopAll();
+    mode = 'anim';
+    for (var i = 0; i < writers.length; i++) writers[i].loopCharacterAnimation();
+    setStatus('Порядок черт повторяется по кругу. «Сброс» — остановить.');
+  });
+
+  document.getElementById('btn-step').addEventListener('click', function () {
+    if (!cur) return;
+    var chars = cur.han.split('');
+    if (mode !== 'step' || stepIdx >= stepTotal) {
+      stopAll();
+      for (var i = 0; i < writers.length; i++) writers[i].hideCharacter({ duration: 0 });
+      stepIdx = 0;
+      stepTotal = 0;
+      for (var j = 0; j < chars.length; j++) stepTotal += strokesOf(chars[j]);
+      mode = 'step';
+    }
+    var w = writers[0];
+    var n = stepIdx;
+    var acc = 0;
+    for (var k = 0; k < chars.length; k++) {
+      var len = strokesOf(chars[k]);
+      if (stepIdx < acc + len) { w = writers[k]; n = stepIdx - acc; break; }
+      acc += len;
+    }
+    w.animateStroke(n);
+    stepIdx += 1;
+    if (stepIdx >= stepTotal) setStatus('Черта ' + stepIdx + ' из ' + stepTotal + ' — всё! Ещё раз — сначала.');
+    else setStatus('Черта ' + stepIdx + ' из ' + stepTotal + '. Нажимайте «По чертам» дальше.');
+  });
+
+  function runQuiz(i) {
+    var chars = cur.han.split('');
+    if (i >= chars.length) {
+      mode = 'idle';
+      setStatus('Отлично! «' + cur.han + '» написано полностью. Ошибок: ' + quizMistakes + '.');
+      return;
+    }
+    if (i > 0) setStatus('Знак ' + (i + 1) + ' из ' + chars.length + ' — ' + chars[i] + '.');
+    writers[i].hideCharacter({ duration: 0 });
+    if (quizNoHints) writers[i].hideOutline({ duration: 0 });
+    else writers[i].showOutline({ duration: 0 });
+    var opts = {
+      onComplete: function (summary) {
+        quizMistakes += summary.totalMistakes;
+        runQuiz(i + 1);
+      }
+    };
+    if (quizNoHints) opts.showHintAfterMisses = false;
+    writers[i].quiz(opts);
+  }
+
+  document.getElementById('btn-quiz').addEventListener('click', function () {
+    if (!cur) return;
+    stopAll();
+    mode = 'quiz';
+    quizMistakes = 0;
+    quizNoHints = document.getElementById('chk-nohints').checked;
+    setStatus(quizNoHints
+      ? 'Обводите черты по порядку — подсказок не будет.'
+      : 'Обводите черты по порядку — мышью или пальцем.');
+    runQuiz(0);
+  });
+
+  document.getElementById('chk-nohints').addEventListener('change', function () {
+    if (mode !== 'quiz' || !cur) return;
+    stopAll();
+    mode = 'quiz';
+    quizMistakes = 0;
+    quizNoHints = this.checked;
+    setStatus(quizNoHints
+      ? 'Тренировка заново — без контура и подсказок.'
+      : 'Тренировка заново — с контуром и подсказками.');
+    runQuiz(0);
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', function () {
+    if (!cur) return;
+    stopAll();
+    mode = 'idle';
+    stepIdx = 0;
+    setStatus('');
+  });
+
+  buildCards();
+  showScreen(startScreen);
+})();
+</script>
+<!-- Hanzi Writer (© David Chanin, ISC License, hanziwriter.org) встроен локально.
+     Данные черт: hanzi-writer-data — шрифт AR PL UKai, Arphic Public License (© Arphic Technology). -->
+</body>
+</html>
