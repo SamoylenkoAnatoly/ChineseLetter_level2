@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дело — Китайский</title>
+<style>
+:root{
+  --bg:#05070d; --panel:rgba(13,20,35,.82); --panel2:rgba(9,14,26,.92);
+  --neon:#00e5ff; --mag:#ff2bd6; --amber:#ffb020; --ok:#2effa8;
+  --text:#d8e8f7; --dim:#7f97b8; --line:#1d3350;
+  --fm:"Consolas","Courier New",monospace;
+  --fh:"KaiTi","STKaiti","SimSun","Microsoft YaHei",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{
+  font-family:var(--fm); color:var(--text); min-height:100vh;
+  background:
+    radial-gradient(900px 420px at 50% -140px, rgba(0,229,255,.14), rgba(0,0,0,0) 65%),
+    radial-gradient(1100px 600px at 88% 115%, rgba(255,43,214,.10), rgba(0,0,0,0) 60%),
+    linear-gradient(rgba(0,229,255,.045) 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(90deg, rgba(0,229,255,.045) 1px, rgba(0,0,0,0) 1px),
+    var(--bg);
+  background-size:auto,auto,46px 46px,46px 46px,auto;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:98;
+  background:repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, rgba(0,0,0,0) 1px 3px);
+}
+#app{max-width:920px;margin:0 auto;padding:10px 14px 40px;position:relative;z-index:1}
+.hidden{display:none!important}
+.screen{display:none;animation:fadeUp .45s ease}
+.screen.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.han{font-family:var(--fh)}
+button{font-family:inherit}
+.btn{
+  background:rgba(0,229,255,.06);color:#bfefff;border:1px solid rgba(0,229,255,.55);
+  padding:9px 20px;letter-spacing:2px;cursor:pointer;font-size:14px;border-radius:3px;
+  box-shadow:0 0 10px rgba(0,229,255,.12), inset 0 0 12px rgba(0,229,255,.05);
+  text-shadow:0 0 8px rgba(0,229,255,.35);
+}
+.btn:hover{background:rgba(0,229,255,.16);border-color:var(--neon);color:#eafcff;box-shadow:0 0 22px rgba(0,229,255,.45)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{font-size:16px;padding:13px 30px;border-color:var(--neon);background:rgba(0,229,255,.12)}
+.btn.small{padding:5px 12px;font-size:12px;letter-spacing:1px}
+.btn:disabled{opacity:.3;cursor:default;box-shadow:none}
+#hud{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:1px solid var(--line);padding:6px 4px 10px;margin-bottom:16px;flex-wrap:wrap;
+}
+.badge{
+  border:1px solid var(--mag);color:#ff9be9;padding:3px 10px;font-weight:700;letter-spacing:2px;
+  font-size:12px;background:rgba(255,43,214,.08);border-radius:3px;
+  text-shadow:0 0 10px rgba(255,43,214,.6);box-shadow:0 0 12px rgba(255,43,214,.25);
+}
+.steps{display:flex;gap:14px}
+.step{position:relative;color:#3d5273;width:30px;height:32px;display:flex;align-items:center;justify-content:center}
+.step svg{width:24px;height:24px}
+.step i{position:absolute;bottom:-9px;left:0;right:0;text-align:center;font-style:normal;font-size:10px;letter-spacing:1px}
+.step.act{color:var(--neon);filter:drop-shadow(0 0 7px rgba(0,229,255,.8))}
+.step.done{color:var(--ok)}
+.step.done::after{content:"✓";position:absolute;top:-6px;right:-6px;font-size:11px;color:var(--ok);text-shadow:0 0 8px rgba(46,255,168,.7)}
+.errs{font-size:13px;color:var(--dim)}
+.errs b{color:#ff9be9;text-shadow:0 0 8px rgba(255,43,214,.5)}
+.stamp{
+  display:inline-block;border:2px solid var(--neon);color:var(--neon);font-weight:700;
+  letter-spacing:2px;padding:5px 14px;transform:rotate(-3deg);border-radius:4px;
+  background:rgba(0,229,255,.07);font-size:15px;animation:stampIn .35s cubic-bezier(.2,2,.4,1);
+  text-shadow:0 0 12px rgba(0,229,255,.8);
+  box-shadow:0 0 18px rgba(0,229,255,.25), inset 0 0 14px rgba(0,229,255,.08);
+}
+.stamp.big{font-size:19px;padding:8px 20px}
+.stamp.huge{font-size:30px;padding:14px 34px;letter-spacing:5px}
+@keyframes stampIn{from{opacity:0;transform:rotate(-3deg) scale(2.2)}to{opacity:1;transform:rotate(-3deg) scale(1)}}
+.mission{font-size:14px;line-height:1.55;color:#a9c2de;margin:0 0 14px}
+.mission b{color:var(--text)}
+.cover{
+  position:relative;background:linear-gradient(165deg,rgba(13,22,40,.93),rgba(8,12,24,.95));
+  border:1px solid var(--line);border-radius:6px;margin-top:26px;padding:44px 34px 40px;
+  box-shadow:0 24px 70px rgba(0,0,0,.8), 0 0 34px rgba(0,229,255,.12), inset 0 0 60px rgba(0,229,255,.04);
+  transform:rotate(-.3deg);
+}
+.cover::before{
+  content:"ДЕЛО · НЕЙРО-АРХИВ";position:absolute;top:-13px;left:26px;background:#0a1322;color:var(--neon);
+  padding:5px 22px;letter-spacing:3px;font-size:12px;font-weight:700;border-radius:3px;
+  border:1px solid rgba(0,229,255,.5);box-shadow:0 0 16px rgba(0,229,255,.3);
+}
+.confidential{
+  display:inline-block;border:1px solid var(--mag);color:#ff9be9;font-weight:700;letter-spacing:3px;
+  padding:2px 12px;font-size:11px;transform:rotate(1.2deg);margin-bottom:18px;background:rgba(255,43,214,.06);
+  text-shadow:0 0 10px rgba(255,43,214,.6);
+}
+.cover h1{font-size:clamp(26px,5vw,44px);letter-spacing:4px;line-height:1.25;margin-bottom:16px;color:#eafcff;animation:glitch 5s infinite steps(1)}
+@keyframes glitch{
+  0%,91%,94%,100%{text-shadow:0 0 18px rgba(0,229,255,.55);transform:none}
+  92%{text-shadow:-3px 0 var(--mag),3px 0 var(--neon);transform:translateX(2px)}
+  93%{text-shadow:3px 0 var(--mag),-3px 0 var(--neon);transform:translateX(-2px)}
+}
+.cover .lead{font-size:14px;line-height:1.6;max-width:640px;color:#a9c2de;margin-bottom:16px}
+.cover-words{
+  font-size:clamp(24px,5vw,38px);color:var(--neon);margin:6px 0 14px;letter-spacing:6px;
+  text-shadow:0 0 18px rgba(0,229,255,.55);
+}
+.cover-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
+.cover-steps span{
+  font-size:11px;letter-spacing:1px;border:1px dashed rgba(0,229,255,.4);color:#9fdcf0;
+  padding:3px 10px;border-radius:3px;background:rgba(0,229,255,.05);
+}
+.stage-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border-bottom:1px dashed var(--line);padding-bottom:10px;margin-bottom:18px;
+}
+.stage-no{font-size:12px;letter-spacing:3px;color:var(--neon)}
+.stage-title h2{font-size:clamp(19px,3.4vw,27px);letter-spacing:3px;color:#eafcff;text-shadow:0 0 14px rgba(0,229,255,.35)}
+.word-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  font-size:15px;padding:3px 9px;border:1px solid var(--line);border-radius:3px;color:var(--dim);
+  background:var(--panel2);font-family:var(--fh);
+}
+.chip.cur{border-color:var(--neon);color:#bff5ff;box-shadow:0 0 12px rgba(0,229,255,.4)}
+.chip.done{opacity:.5;text-decoration:line-through}
+.search-zone{
+  position:relative;height:460px;border-radius:8px;overflow:hidden;cursor:none;touch-action:none;
+  border:1px solid var(--line);background:#04060b;
+  box-shadow:inset 0 0 70px rgba(0,0,0,.95), 0 0 24px rgba(0,229,255,.07);
+}
+.search-zone.done{cursor:auto}
+.paper-sheet{
+  position:absolute;inset:14px;border-radius:4px;
+  background:
+    repeating-linear-gradient(93deg, rgba(0,229,255,.03) 0 2px, rgba(0,0,0,0) 2px 7px),
+    linear-gradient(150deg,rgba(10,18,34,.9),rgba(6,10,20,.95));
+  border:1px solid var(--line);
+  box-shadow:0 0 26px rgba(0,0,0,.7), inset 0 0 40px rgba(0,229,255,.03);
+  display:flex;align-items:center;justify-content:center;
+}
+.glyph-wrap{position:relative;font-family:var(--fh);font-size:clamp(80px,20vw,150px);line-height:1;user-select:none}
+.glyph-wrap .ghost{color:rgba(0,229,255,.05)}
+.glyph-wrap .reveal{
+  position:absolute;inset:0;color:#c8f6ff;clip-path:circle(0px at -100px -100px);
+  text-shadow:0 0 22px rgba(0,229,255,.6);
+}
+.glyph-wrap.found-flash{animation:flashF .8s ease}
+@keyframes flashF{0%{filter:brightness(1)}35%{filter:brightness(2.1)}100%{filter:brightness(1)}}
+.sheet-label{position:absolute;left:12px;bottom:8px;font-size:11px;letter-spacing:2px;color:#3f6d8c}
+.scan-grid{position:absolute;inset:0;display:grid;grid-template-rows:repeat(5,1fr);grid-template-columns:repeat(5,1fr);pointer-events:none}
+.scan-grid i{border:1px solid rgba(0,229,255,.09);transition:background .1s, border-color .1s}
+.scan-grid i.hot{border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.06)}
+.scan-grid i.on{border-color:rgba(0,229,255,.55);background:rgba(0,229,255,.15);box-shadow:inset 0 0 12px rgba(0,229,255,.25)}
+.lens{
+  position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;pointer-events:none;
+  border:3px solid var(--neon);
+  background:radial-gradient(circle at 34% 28%, rgba(0,229,255,.16), rgba(0,0,0,0) 60%);
+  box-shadow:0 0 26px rgba(0,229,255,.5), inset 0 0 20px rgba(0,229,255,.18), 0 14px 30px rgba(0,0,0,.7);
+}
+.search-zone.done .lens{display:none}
+.meter{height:12px;border:1px solid var(--line);border-radius:6px;background:#060a12;margin-top:14px;overflow:hidden}
+.meter-fill{height:100%;width:0;background:linear-gradient(90deg,#0b6f80,var(--neon));box-shadow:0 0 12px rgba(0,229,255,.6);transition:width .18s}
+.meter-label{font-size:12px;letter-spacing:2px;color:var(--dim);margin-top:5px}
+.found-wrap{text-align:center;margin-top:20px}
+.asm{position:relative;padding-bottom:8px}
+.asm-frame{
+  position:relative;width:236px;height:236px;margin:0 auto 26px;border:1px solid rgba(0,229,255,.55);border-radius:4px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,229,255,.05) 0 1px, rgba(0,0,0,0) 1px 26px),
+    repeating-linear-gradient(90deg, rgba(0,229,255,.05) 0 1px, rgba(0,0,0,0) 1px 26px),
+    rgba(8,13,26,.92);
+  box-shadow:0 0 24px rgba(0,229,255,.14), inset 0 0 30px rgba(0,229,255,.05), 0 14px 34px rgba(0,0,0,.7);
+}
+.asm-ghost{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:150px;color:rgba(0,229,255,.42);text-shadow:0 0 24px rgba(0,229,255,.3);
+  transition:color .7s, text-shadow .7s;user-select:none;
+}
+.asm-frame.complete .asm-ghost{color:#eafcff;text-shadow:0 0 30px rgba(0,229,255,.9)}
+.zone{position:absolute;border:2px dashed rgba(0,229,255,.4);border-radius:3px;transition:border-color .2s, background .2s}
+.zone::after{content:attr(data-z);position:absolute;top:2px;left:5px;font-size:9px;letter-spacing:1px;color:rgba(0,229,255,.55)}
+.zone:hover{border-color:var(--neon)}
+.zone.filled{border-style:solid;border-color:rgba(46,255,168,.6);background:rgba(46,255,168,.07)}
+.zone.filled::after{content:""}
+.asm-tray{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;min-height:84px;
+  border-top:1px dashed var(--line);padding-top:18px;
+}
+.tile{
+  width:76px;height:76px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:42px;color:#dffaff;cursor:grab;user-select:none;touch-action:none;
+  background:linear-gradient(160deg,rgba(16,28,50,.95),rgba(9,15,28,.95));border:1px solid rgba(0,229,255,.5);border-radius:4px;
+  box-shadow:0 5px 16px rgba(0,0,0,.6), 0 0 12px rgba(0,229,255,.12);
+}
+.tile.drag{position:absolute;z-index:40;cursor:grabbing;transform:rotate(-3deg) scale(1.06);box-shadow:0 18px 40px rgba(0,0,0,.85), 0 0 24px rgba(0,229,255,.4)}
+.tile.snapped{
+  position:absolute;box-shadow:none;background:transparent;border-color:transparent;
+  font-size:64px;color:#eafcff;text-shadow:0 0 18px rgba(0,229,255,.5);
+}
+.asm-count{text-align:center;font-size:13px;letter-spacing:2px;color:var(--dim);margin-top:16px}
+.asm-stamp{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%) rotate(-7deg);background:rgba(6,10,20,.9)}
+.brk{
+  max-width:520px;margin:8px auto;padding:24px 22px 20px;text-align:center;
+  background:linear-gradient(165deg,rgba(13,22,40,.94),rgba(8,13,26,.95));
+  border:1px solid rgba(0,229,255,.45);border-radius:6px;
+  box-shadow:0 0 26px rgba(0,229,255,.12), 0 16px 40px rgba(0,0,0,.7);
+}
+.brk-char{font-size:96px;line-height:1.1;color:#eafcff;text-shadow:0 0 28px rgba(0,229,255,.65)}
+.brk-py{font-size:15px;color:var(--neon);letter-spacing:2px;margin:4px 0 14px}
+.brk-parts{display:flex;flex-direction:column;gap:8px;margin:0 auto 14px;max-width:400px;text-align:left}
+.brk-part{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:4px;padding:7px 12px;background:rgba(0,229,255,.04)}
+.brk-part .han{font-size:30px;color:#bff5ff;min-width:46px;text-align:center}
+.brk-part .pm{font-size:13.5px;color:#a9c2de;flex:1}
+.brk-part .zn{font-size:10.5px;letter-spacing:1px;color:var(--dim);border:1px dashed rgba(0,229,255,.3);padding:2px 7px;border-radius:3px;white-space:nowrap}
+.stk{
+  max-width:420px;margin:8px auto;padding:26px 20px 22px;text-align:center;
+  background:linear-gradient(165deg,rgba(13,22,40,.94),rgba(8,13,26,.95));
+  border:1px solid rgba(0,229,255,.45);border-radius:6px;
+  box-shadow:0 0 26px rgba(0,229,255,.12), 0 16px 40px rgba(0,0,0,.7);
+}
+.stk-char{position:relative;display:inline-block}
+.stk-cnt{margin-top:10px;font-size:15px;letter-spacing:3px;color:var(--dim)}
+.stk-cnt b{font-size:22px;color:var(--neon);text-shadow:0 0 12px rgba(0,229,255,.6)}
+.stk-fin{opacity:0;pointer-events:none;transition:opacity .35s;margin-top:12px}
+.stk-fin.on{opacity:1;pointer-events:auto}
+.quiz{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:18px 0}
+.opt{font-size:18px;min-width:74px}
+.opt.right{border-color:var(--ok);color:#b6ffdd;box-shadow:0 0 18px rgba(46,255,168,.45);text-shadow:0 0 10px rgba(46,255,168,.6)}
+.opt.wrong{border-color:var(--mag);color:#ff9be9;text-decoration:line-through;opacity:.55}
+.ok-note{margin-top:14px;font-size:15px;color:#9fe8c6;text-align:center;line-height:1.6;text-shadow:0 0 10px rgba(46,255,168,.3)}
+.word-big{
+  font-size:clamp(60px,13vw,96px);text-align:center;color:#eafcff;margin:12px 0 20px;user-select:none;
+  transition:transform .35s, opacity .35s;text-shadow:0 0 34px rgba(0,229,255,.5);
+}
+.word-big.burst{transform:scale(1.5) rotate(4deg);opacity:0}
+.s2-wrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.rad-field{position:relative;flex:1 1 340px;min-height:330px}
+.rad{
+  position:absolute;width:118px;min-height:96px;transform:translate(-50%,-50%) rotate(var(--rot));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:linear-gradient(165deg,rgba(16,28,50,.95),rgba(9,15,28,.95));border:1px solid rgba(0,229,255,.45);border-radius:4px;
+  box-shadow:0 6px 16px rgba(0,0,0,.6), 0 0 12px rgba(0,229,255,.1);cursor:pointer;user-select:none;transition:all .65s cubic-bezier(.2,.9,.3,1.1);
+}
+.rad.pre{left:50%!important;top:42%!important;transform:translate(-50%,-50%) scale(.15);opacity:0}
+.rad .han{font-size:44px;line-height:1.1;color:#dffaff}
+.rad .rad-m{font-size:10.5px;letter-spacing:.5px;color:#9fdcf0;padding:0 4px;text-align:center}
+.rad.sel{outline:2px solid var(--neon);outline-offset:2px;box-shadow:0 0 26px rgba(0,229,255,.5)}
+.rad.done{cursor:default;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.rad.done::after{
+  content:"ПРОВЕРЕНО";font-size:9px;letter-spacing:1px;color:#ff9be9;border:1px solid var(--mag);
+  padding:1px 5px;border-radius:3px;transform:rotate(-4deg);margin-top:2px;background:rgba(255,43,214,.07);
+}
+.mean-col{flex:0 1 260px;display:flex;flex-direction:column;gap:9px}
+.mean{
+  background:var(--panel2);color:#cfe6f7;border:1px solid var(--line);padding:9px 12px;text-align:left;
+  font-size:13.5px;cursor:pointer;border-radius:3px;letter-spacing:.5px;
+}
+.mean:hover{border-color:var(--neon);box-shadow:0 0 12px rgba(0,229,255,.25)}
+.mean.used{opacity:.28;pointer-events:none;text-decoration:line-through}
+.mean.shake{animation:shake .4s}
+.s2-progress{margin-top:14px;font-size:13px;letter-spacing:2px;color:var(--dim)}
+.s2-sum{margin-top:20px;text-align:center;line-height:2}
+.s2-sum .parts{color:#a9c2de;font-size:15px}
+.s2-sum .parts .han{font-size:20px;color:#bff5ff}
+.asm2{
+  max-width:520px;margin:0 auto 16px;padding:12px 10px 14px;
+  background:linear-gradient(165deg,rgba(13,22,40,.94),rgba(8,13,26,.95));
+  border:1px solid rgba(0,229,255,.45);border-radius:6px;
+  box-shadow:0 0 22px rgba(0,229,255,.1), 0 12px 28px rgba(0,0,0,.6);
+}
+.asm2-hint{text-align:center;font-size:10.5px;letter-spacing:2px;color:var(--dim);margin-bottom:10px}
+.asm2-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.asm2-btns{margin-top:12px;text-align:center}
+.asm2-char{
+  position:relative;width:112px;height:112px;border:1px solid rgba(0,229,255,.5);border-radius:4px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,229,255,.04) 0 1px, rgba(0,0,0,0) 1px 24px),
+    repeating-linear-gradient(90deg, rgba(0,229,255,.04) 0 1px, rgba(0,0,0,0) 1px 24px),
+    rgba(8,13,26,.92);
+  transition:box-shadow .3s;
+}
+.asm2-char.complete{box-shadow:0 0 20px rgba(0,229,255,.45)}
+.asm2-ghost{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:84px;color:rgba(0,229,255,.13)}
+.asm2-slot{position:absolute;border:1px dashed rgba(0,229,255,.25);border-radius:3px}
+.asm2-slot.filled{border-color:transparent}
+.asm2-in{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:36px;color:#eafcff;text-shadow:0 0 16px rgba(0,229,255,.6);animation:pop2 .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop2{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .4s}
+.evid-tag{
+  position:relative;width:min(320px,80%);margin:6px auto 8px;
+  background:linear-gradient(165deg,rgba(13,22,40,.94),rgba(8,13,26,.95));border:1px solid rgba(0,229,255,.45);border-radius:6px;
+  padding:26px 18px 16px;text-align:center;box-shadow:0 0 22px rgba(0,229,255,.12), 0 12px 28px rgba(0,0,0,.65);
+}
+.evid-tag::before{
+  content:"";position:absolute;top:-8px;left:50%;margin-left:-11px;width:22px;height:16px;border-radius:8px;
+  border:2px solid rgba(0,229,255,.6);background:#0a1322;box-shadow:0 0 12px rgba(0,229,255,.35);
+}
+.evid-tag .big-han{font-size:64px;color:#eafcff;line-height:1.15;text-shadow:0 0 26px rgba(0,229,255,.5)}
+.listen{margin-top:8px}
+.q-prompt{text-align:center;font-size:15.5px;color:#cfe6f7;margin:20px 0 4px;line-height:1.55}
+.q-note{min-height:30px}
+.board-wrap{overflow-x:auto;padding-bottom:6px}
+.board{
+  position:relative;min-width:640px;height:500px;border-radius:6px;
+  background:
+    radial-gradient(rgba(0,229,255,.07) 1.2px, rgba(0,0,0,0) 1.6px),
+    linear-gradient(160deg,rgba(10,16,30,.96),rgba(6,9,18,.98));
+  background-size:26px 26px,auto;
+  border:1px solid rgba(0,229,255,.5);outline:4px solid rgba(0,229,255,.08);
+  box-shadow:0 0 30px rgba(0,229,255,.1), 0 18px 46px rgba(0,0,0,.8), inset 0 0 60px rgba(0,0,0,.5);
+}
+.board.dense .ev-card{padding:9px 6px 5px;min-width:50px}
+.board.dense .ev-card .ct{font-size:22px}
+.board.dense .ev-card .ctr{font-size:10px;max-width:118px;letter-spacing:0}
+#str{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.strg line{stroke:var(--neon);stroke-width:2.5;stroke-opacity:.9;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(0,229,255,.8))}
+.strg circle{fill:var(--neon)}
+.strg.bad line{stroke:var(--mag);stroke-dasharray:8 7;filter:drop-shadow(0 0 4px rgba(255,43,214,.8))}
+.strg.bad circle{fill:var(--mag)}
+.ev-card{
+  position:absolute;transform:translate(-50%,-50%);cursor:pointer;user-select:none;
+  background:linear-gradient(170deg,rgba(16,28,50,.96),rgba(9,15,28,.96));color:#dffaff;border:1px solid rgba(0,229,255,.5);border-radius:4px;
+  padding:14px 10px 8px;min-width:64px;text-align:center;box-shadow:0 7px 18px rgba(0,0,0,.65), 0 0 10px rgba(0,229,255,.08);
+  transition:opacity .4s, box-shadow .2s, transform .2s;
+}
+.ev-card:hover{transform:translate(-50%,-50%) scale(1.06);z-index:5}
+.ev-card.sel{outline:2px solid var(--neon);box-shadow:0 0 26px rgba(0,229,255,.55)}
+.ev-card .pin{
+  position:absolute;top:-6px;left:50%;margin-left:-5px;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #9ff3ff, #0891b2);box-shadow:0 0 12px rgba(0,229,255,.9);
+}
+.ev-card .ct{font-size:30px;line-height:1.1;display:block;color:#eafcff}
+.ev-card .ctr{font-size:13.5px;letter-spacing:.5px;display:block;max-width:150px;color:#cfe6f7}
+.ev-card .py-s{display:block;font-size:11px;color:#7fd6ea;margin-top:2px}
+.ev-card.merged{animation:stampIn .4s cubic-bezier(.2,2,.4,1)}
+.ev-card.word .ct{font-size:34px;color:#ffffff}
+.ev-card.gone{opacity:0;pointer-events:none}
+.ev-card.closed{cursor:default}
+.ev-card.closed::after{
+  content:"ЗАКРЫТО";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-14deg);
+  border:2px solid var(--ok);color:var(--ok);font-size:12px;font-weight:700;letter-spacing:2px;
+  padding:2px 7px;border-radius:4px;background:rgba(4,12,10,.85);text-shadow:0 0 10px rgba(46,255,168,.7);
+}
+.s4-prog{margin-top:14px;text-align:center;font-size:14px;letter-spacing:2px;color:var(--dim)}
+.s4-prog b{color:#bff5ff;font-size:17px}
+.memo-card{
+  max-width:420px;margin:10px auto;
+  background:linear-gradient(165deg,rgba(13,22,40,.94),rgba(8,13,26,.95));
+  border:1px solid rgba(0,229,255,.45);border-radius:6px;padding:26px 20px 20px;text-align:center;
+  box-shadow:0 0 24px rgba(0,229,255,.12), 0 12px 30px rgba(0,0,0,.65);transition:opacity .35s, transform .35s;
+}
+.memo-card.hide{opacity:0;transform:scale(.85)}
+.memo-card .big-han{font-size:72px;line-height:1.2;color:#eafcff;text-shadow:0 0 28px rgba(0,229,255,.55)}
+.memo-py{font-size:14px;color:#9fdcf0;margin-top:4px}
+.memo-bar{height:9px;border:1px solid rgba(0,229,255,.35);border-radius:5px;margin:14px 4px 6px;overflow:hidden;background:#060a12}
+.memo-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0b6f80,var(--neon));box-shadow:0 0 10px rgba(0,229,255,.6);transition:width 3s linear}
+.memo-tip{font-size:12px;letter-spacing:1.5px;color:var(--dim)}
+.inter-box,.final-box{text-align:center;padding:40px 10px}
+.inter-box p{margin:22px 0 26px;font-size:15px;color:#a9c2de;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.6}
+.code-seal{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  width:190px;height:190px;border:3px double var(--neon);border-radius:50%;color:var(--neon);
+  margin:26px 0 10px;background:rgba(0,229,255,.05);animation:stampIn .5s cubic-bezier(.2,2,.4,1);
+  box-shadow:0 0 34px rgba(0,229,255,.3), inset 0 0 30px rgba(0,229,255,.1);
+}
+.code-seal span{font-size:12px;letter-spacing:3px}
+.code-seal b{font-size:64px;letter-spacing:8px;padding-left:8px;animation:codeGlitch 3.2s infinite steps(1);text-shadow:0 0 22px rgba(0,229,255,.8)}
+@keyframes codeGlitch{
+  0%,87%,92%,100%{text-shadow:0 0 22px rgba(0,229,255,.8);transform:none}
+  88%{text-shadow:-3px 0 var(--mag),3px 0 #7df9ff;transform:translateX(2px)}
+  90%{text-shadow:3px 0 var(--mag),-3px 0 #7df9ff;transform:translateX(-2px)}
+}
+.rating{font-size:15px;color:#a9c2de;margin-bottom:24px}
+.rating b{color:#bff5ff}
+.tbl{
+  margin:0 auto 26px;border-collapse:collapse;background:rgba(10,16,30,.92);
+  color:#cfe6f7;font-size:13px;box-shadow:0 12px 30px rgba(0,0,0,.6), 0 0 18px rgba(0,229,255,.07);max-width:100%;
+}
+.tbl th,.tbl td{border:1px solid var(--line);padding:7px 12px;text-align:left}
+.tbl th{letter-spacing:1.5px;background:rgba(0,229,255,.07);color:#bff5ff}
+.tbl td.h{font-family:var(--fh);font-size:17px;color:#eafcff}
+.tbl .ok{color:var(--ok);font-weight:700;text-shadow:0 0 8px rgba(46,255,168,.5)}
+#toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:rgba(10,16,30,.96);color:#cfe6f7;border:1px solid var(--mag);padding:9px 20px;font-size:13.5px;
+  letter-spacing:1px;border-radius:4px;pointer-events:none;transition:all .3s;z-index:99;
+  box-shadow:0 0 22px rgba(255,43,214,.3), 0 10px 30px rgba(0,0,0,.7);max-width:88%;text-align:center;
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (max-width:560px){
+  #app{padding:10px 8px 32px}
+  .cover{padding:30px 16px 28px}
+  .cover h1{letter-spacing:2px}
+  .search-zone{height:380px}
+  .lens{width:84px;height:84px;margin:-42px 0 0 -42px}
+  .asm-frame{width:196px;height:196px}
+  .asm-ghost{font-size:120px}
+  .tile{width:62px;height:62px;font-size:34px}
+  .tile.snapped{font-size:52px}
+  .brk{padding:16px 12px 14px}
+  .brk-char{font-size:72px}
+  .brk-part .han{font-size:24px;min-width:36px}
+  .rad-field{min-height:300px}
+  .rad{width:92px;min-height:70px}
+  .rad .han{font-size:30px}
+  .mean{font-size:12.5px;padding:8px 10px}
+  .board{height:520px}
+  .ev-card .ct{font-size:24px}
+  .ev-card .ctr{font-size:11px;max-width:100px}
+  .memo-card .big-han{font-size:52px}
+  .code-seal{width:160px;height:160px}
+  .code-seal b{font-size:52px}
+  .stk{padding:14px 10px}
+  .asm2-char{width:92px;height:92px}
+  .asm2-ghost{font-size:68px}
+  .asm2-in{font-size:30px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="hud" class="hidden">
+    <span class="badge" id="caseBadge">ДЕЛО №····</span>
+    <div class="steps" id="hudSteps"></div>
+    <span class="errs">ошибки: <b id="errCount">0</b></span>
+  </header>
+
+  <section id="scr-title" class="screen on">
+    <div class="cover">
+      <div class="confidential" id="caseConf">СЕКРЕТНО · АРХИВ №····</div>
+      <h1 id="covTitle">ДЕЛО О ПЯТИ ПРИВЕТСТВИЯХ</h1>
+      <p class="lead" id="covLead">Ночной город, 03:12. В терминале нейро-архива всплыло дело №····: пять китайских приветствий стёрты из памяти города. Пройди пять этапов расследования: прояви иероглифы сканером-лупой, собери их из элементов, вычисли радикалы и тоны, сцепи улики неоновыми связями и восстанови почерк по памяти. Дело закроет только верный код.</p>
+      <div class="cover-words han" id="covWords">你好 · 谢谢 · 再见 · 对不起 · 没关系</div>
+      <div class="cover-steps">
+        <span>1 · поиск улик</span><span>2 · радикалы</span><span>3 · тоны</span><span>4 · доска расследования</span><span>5 · почерк</span>
+      </div>
+      <button class="btn primary" id="btnStart">НАЧАТЬ РАССЛЕДОВАНИЕ</button>
+    </div>
+  </section>
+
+  <section id="scr-stage1" class="screen">
+    <div class="stage-head">
+      <div class="stage-title"><span class="stage-no">ЭТАП 1 / 5</span><h2>ПОИСК УЛИК</h2></div>
+      <div class="word-chips" id="chips1"></div>
+    </div>
+    <div id="s1body"></div>
+  </section>
+
+  <section id="scr-stage2" class="screen">
+    <div class="stage-head">
+      <div class="stage-title"><span class="stage-no">ЭТАП 2 / 5</span><h2>РАЗБОР ДОКАЗАТЕЛЬСТВ</h2></div>
+      <div class="word-chips" id="chips2"></div>
+    </div>
+    <div id="s2body"></div>
+  </section>
+
+  <section id="scr-stage3" class="screen">
+    <div class="stage-head">
+      <div class="stage-title"><span class="stage-no">ЭТАП 3 / 5</span><h2>ТОН — ГЛАВНАЯ УЛИКА</h2></div>
+      <div class="word-chips" id="chips3"></div>
+    </div>
+    <div id="s3body"></div>
+  </section>
+
+  <section id="scr-stage4" class="screen">
+    <div class="stage-head">
+      <div class="stage-title"><span class="stage-no">ЭТАП 4 / 5</span><h2>ДОСКА РАССЛЕДОВАНИЯ</h2></div>
+      <div class="word-chips" id="chips4"></div>
+    </div>
+    <div id="s4body"></div>
+  </section>
+
+  <section id="scr-stage5" class="screen">
+    <div class="stage-head">
+      <div class="stage-title"><span class="stage-no">ЭТАП 5 / 5</span><h2>ПОЧЕРК ПОДОЗРЕВАЕМОГО</h2></div>
+      <div class="word-chips" id="chips5"></div>
+    </div>
+    <div id="s5body"></div>
+  </section>
+
+  <section id="scr-inter" class="screen">
+    <div class="inter-box">
+      <div class="stamp huge" id="interStamp">ЭТАП ЗАКРЫТ</div>
+      <p id="interText"></p>
+      <button class="btn primary" id="btnInterNext">ДАЛЬШЕ</button>
+    </div>
+  </section>
+
+  <section id="scr-final" class="screen">
+    <div class="final-box">
+      <div class="stamp huge">ДЕЛО ЗАКРЫТО</div>
+      <div><div class="code-seal"><span>КОД ДЕЛА</span><b id="caseCode">····</b></div></div>
+      <p class="rating">Ошибок в деле: <b id="finalErr">0</b> · звание агента: <b id="finalRank"></b></p>
+      <table class="tbl">
+        <tbody id="finalTbl">
+        <tr><th>Этап</th><th>Действие</th><th>Что изучается</th><th></th></tr>
+        </tbody>
+      </table>
+      <button class="btn" id="btnRestart">НАЧАТЬ ЗАНОВО</button>
+    </div>
+  </section>
+
+  <div id="toast"></div>
+  <audio id="wAu" preload="none"></audio>
+</div>
+<noscript>Для игры нужен включённый JavaScript.</noscript>
+<script>
+/**
+ * Hanzi Writer v3.5.0 | https://chanind.github.io/hanzi-writer
+ */
+
+var HanziWriter=function(){"use strict";var t;const e="undefined"==typeof window?global:window,r=e.performance&&(()=>e.performance.now())||(()=>Date.now()),i=e.requestAnimationFrame||(t=>setTimeout(()=>t(r()),1e3/60)),s=e.cancelAnimationFrame||clearTimeout;function o(t){return t[t.length-1]}const n=(t,e)=>t<0?e+t:t;function a(t,e){const r={...t};for(const i in e){const s=t[i],o=e[i];s!==o&&(s&&o&&"object"==typeof s&&"object"==typeof o&&!Array.isArray(o)?r[i]=a(s,o):r[i]=o)}return r}let h=0;function l(){return h++,h}function c(t){return t.reduce((t,e)=>e+t,0)/t.length}function d(t){const e=t.toUpperCase().trim();if(/^#([A-F0-9]{3}){1,2}$/.test(e)){let t=e.substring(1).split("");3===t.length&&(t=[t[0],t[0],t[1],t[1],t[2],t[2]]);const r=""+t.join("");return{r:parseInt(r.slice(0,2),16),g:parseInt(r.slice(2,4),16),b:parseInt(r.slice(4,6),16),a:1}}const r=e.match(/^RGBA?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/);if(r)return{r:parseInt(r[1],10),g:parseInt(r[2],10),b:parseInt(r[3],10),a:parseFloat(r[4]||1,10)};throw new Error("Invalid color: "+t)}function u(t,e){const r={};for(let i=0;i<e;i++)r[i]=t;return r}function _(t,e){const r={};for(let i=0;i<t;i++)r[i]=e(i);return r}const p=(null===(t=e.navigator)||void 0===t?void 0:t.userAgent)||"",g=p.indexOf("MSIE ")>0||p.indexOf("Trident/")>0||p.indexOf("Edge/")>0,k=()=>{};class m{constructor(t,e,r=k){this._mutationChains=[],this._onStateChange=r,this.state={options:{drawingFadeDuration:e.drawingFadeDuration,drawingWidth:e.drawingWidth,drawingColor:d(e.drawingColor),strokeColor:d(e.strokeColor),outlineColor:d(e.outlineColor),radicalColor:d(e.radicalColor||e.strokeColor),highlightColor:d(e.highlightColor)},character:{main:{opacity:e.showCharacter?1:0,strokes:{}},outline:{opacity:e.showOutline?1:0,strokes:{}},highlight:{opacity:1,strokes:{}}},userStrokes:null};for(let e=0;e<t.strokes.length;e++)this.state.character.main.strokes[e]={opacity:1,displayPortion:1},this.state.character.outline.strokes[e]={opacity:1,displayPortion:1},this.state.character.highlight.strokes[e]={opacity:0,displayPortion:1}}overwriteOnStateChange(t){this._onStateChange=t}updateState(t){const e=a(this.state,t);this._onStateChange(e,this.state),this.state=e}run(t,e={}){const r=t.map(t=>t.scope);return this.cancelMutations(r),new Promise(i=>{const s={_isActive:!0,_index:0,_resolve:i,_mutations:t,_loop:e.loop,_scopes:r};this._mutationChains.push(s),this._run(s)})}_run(t){if(!t._isActive)return;const e=t._mutations;if(t._index>=e.length){if(!t._loop)return t._isActive=!1,this._mutationChains=this._mutationChains.filter(e=>e!==t),void t._resolve({canceled:!1});t._index=0}t._mutations[t._index].run(this).then(()=>{t._isActive&&(t._index++,this._run(t))})}_getActiveMutations(){return this._mutationChains.map(t=>t._mutations[t._index])}pauseAll(){this._getActiveMutations().forEach(t=>t.pause())}resumeAll(){this._getActiveMutations().forEach(t=>t.resume())}cancelMutations(t){for(const e of this._mutationChains)for(const r of e._scopes)for(const i of t)(r.startsWith(i)||i.startsWith(r))&&this._cancelMutationChain(e)}cancelAll(){this.cancelMutations([""])}_cancelMutationChain(t){var e;t._isActive=!1;for(let e=t._index;e<t._mutations.length;e++)t._mutations[e].cancel(this);null===(e=t._resolve)||void 0===e||e.call(t,{canceled:!0}),this._mutationChains=this._mutationChains.filter(e=>e!==t)}}const f=(t,e)=>({x:t.x-e.x,y:t.y-e.y}),v=t=>Math.sqrt(Math.pow(t.x,2)+Math.pow(t.y,2)),y=(t,e)=>v(f(t,e)),C=(t,e=1)=>{const r=10*e;return{x:Math.round(r*t.x)/r,y:Math.round(r*t.y)/r}},w=t=>{let e=t[0];return t.slice(1).reduce((t,r)=>{const i=y(r,e);return e=r,t+i},0)},S=(t,e,r)=>{const i=f(e,t),s=r/v(i);return{x:e.x+s*i.x,y:e.y+s*i.y}},P=t=>{const e=((t,e=30)=>{const r=w(t)/(e-1),i=[t[0]],s=o(t),n=t.slice(1);for(let t=0;t<e-2;t++){let t=o(i),e=r,s=!1;for(;!s;){const r=y(t,n[0]);if(r<e)e-=r,t=n.shift();else{const o=S(t,n[0],e-r);i.push(o),s=!0}}}return i.push(s),i})(t),r={x:c(e.map(t=>t.x)),y:c(e.map(t=>t.y))},i=e.map(t=>f(t,r)),s=Math.sqrt(c([Math.pow(i[0].x,2)+Math.pow(i[0].y,2),Math.pow(o(i).x,2)+Math.pow(o(i).y,2)]));return((t,e=.05)=>{const r=t.slice(0,1);for(const i of t.slice(1)){const t=r[r.length-1],s=y(i,t);if(s>e){const o=Math.ceil(s/e),n=s/o;for(let e=0;e<o;e++)r.push(S(i,t,-1*n*(e+1)))}else r.push(i)}return r})(i.map(t=>({x:t.x/s,y:t.y/s})))};function D(t,e=!1){const r=C(t[0]),i=t.slice(1);let s=`M ${r.x} ${r.y}`;return i.forEach(t=>{const e=C(t);s+=` L ${e.x} ${e.y}`}),e&&(s+="Z"),s}const x=(t,e)=>{const r=(t=>{if(t.length<3)return t;const e=[t[0],t[1]];return t.slice(2).forEach(t=>{const r=e.length,i=f(t,e[r-1]),s=f(e[r-1],e[r-2]);i.y*s.x-i.x*s.y==0&&e.pop(),e.push(t)}),e})(t);if(r.length<2)return r;const i=r[1],s=r[0],o=S(i,s,e),n=r.slice(1);return n.unshift(o),n};class M{constructor(t,e,r,i=!1){this.path=t,this.points=e,this.strokeNum=r,this.isInRadical=i}getStartingPoint(){return this.points[0]}getEndingPoint(){return this.points[this.points.length-1]}getLength(){return w(this.points)}getVectors(){let t=this.points[0];return this.points.slice(1).map(e=>{const r=f(e,t);return t=e,r})}getDistance(t){const e=this.points.map(e=>y(e,t));return Math.min(...e)}getAverageDistance(t){return t.reduce((t,e)=>t+this.getDistance(e),0)/t.length}}class R{constructor(t,e){this.symbol=t,this.strokes=e}}function T({radStrokes:t,strokes:e,medians:r}){return e.map((e,i)=>{const s=r[i].map(t=>{const[e,r]=t;return{x:e,y:r}});return new M(e,s,i,(o=i,(null!==(n=null==t?void 0:t.indexOf(o))&&void 0!==n?n:-1)>=0));var o,n})}const[A,O]=[{x:0,y:-124},{x:1024,y:900}],b=O.x-A.x,$=O.y-A.y;class L{constructor(t){const{padding:e,width:r,height:i}=t;this.padding=e,this.width=r,this.height=i;const s=r-2*e,o=i-2*e,n=s/b,a=o/$;this.scale=Math.min(n,a);const h=e+(s-this.scale*b)/2,l=e+(o-this.scale*$)/2;this.xOffset=-1*A.x*this.scale+h,this.yOffset=-1*A.y*this.scale+l}convertExternalPoint(t){return{x:(t.x-this.xOffset)/this.scale,y:(this.height-this.yOffset-t.y)/this.scale}}}const z=(t,e)=>{const r=(t=>{const e=[];let r=t[0];return t.slice(1).forEach(t=>{e.push(f(t,r)),r=t}),e})(t),i=e.getVectors();return c(r.map(t=>{const e=i.map(e=>{return i=t,((r=e).x*i.x+r.y*i.y)/v(r)/v(i);var r,i});return Math.max(...e)}))>0},E=t=>{if(t.length<2)return t;const[e,...r]=t,i=[e];for(const t of r)s=t,o=i[i.length-1],(s.x!==o.x||s.y!==o.y)&&i.push(t);var s,o;return i},W=[Math.PI/16,Math.PI/32,0,-1*Math.PI/32,-1*Math.PI/16],F=(t,e,r)=>{const i=P(t),s=P(e);let o=1/0;return W.forEach(t=>{const e=((t,e)=>{const r=t.length>=e.length?t:e,i=t.length>=e.length?e:t,s=(t,e,s,o)=>{if(0===t&&0===e)return y(r[0],i[0]);if(t>0&&0===e)return Math.max(s[0],y(r[t],i[0]));const n=o[o.length-1];return 0===t&&e>0?Math.max(n,y(r[0],i[e])):Math.max(Math.min(s[e],s[e-1],n),y(r[t],i[e]))};let o=[];for(let t=0;t<r.length;t++){const e=[];for(let r=0;r<i.length;r++)e.push(s(t,r,o,e));o=e}return o[i.length-1]})(i,((t,e)=>t.map(t=>({x:Math.cos(e)*t.x-Math.sin(e)*t.y,y:Math.sin(e)*t.x+Math.cos(e)*t.y})))(s,t));e<o&&(o=e)}),o<=.4*r},H=(t,e,r)=>{const{leniency:i=1,isOutlineVisible:s=!1,checkBackwards:o=!0}=r,n=e.getAverageDistance(t),a=n<=350*(s||e.strokeNum>0?.5:1)*i;if(!a)return{isMatch:!1,avgDist:n,meta:{isStrokeBackwards:!1}};const h=((t,e,r)=>{const i=y(e.getStartingPoint(),t[0]),s=y(e.getEndingPoint(),t[t.length-1]);return i<=250*r&&s<=250*r})(t,e,i),l=z(t,e),c=F(t,e.points,i),d=((t,e,r)=>r*(w(t)+25)/(e.getLength()+25)>=.35)(t,e,i),u=a&&h&&l&&c&&d;if(o&&!u){if(H([...t].reverse(),e,{...r,checkBackwards:!1}).isMatch)return{isMatch:u,avgDist:n,meta:{isStrokeBackwards:!0}}}return{isMatch:u,avgDist:n,meta:{isStrokeBackwards:!1}}};class I{constructor(t,e,r){this.id=t,this.points=[e],this.externalPoints=[r]}appendPoint(t,e){this.points.push(t),this.externalPoints.push(e)}}class B{constructor(t,e,r={}){this._tick=t=>{if(null!==this._startPauseTime)return;const e=Math.min(1,(t-this._startTime-this._pausedDuration)/this._duration);if(1===e)this._renderState.updateState(this._values),this._frameHandle=void 0,this.cancel(this._renderState);else{const t=j(e),r=q(this._startState,this._values,t);this._renderState.updateState(r),this._frameHandle=i(this._tick)}},this.scope=t,this._valuesOrCallable=e,this._duration=r.duration||0,this._force=r.force,this._pausedDuration=0,this._startPauseTime=null}run(t){return this._values||this._inflateValues(t),0===this._duration&&t.updateState(this._values),0===this._duration||N(t.state,this._values)?Promise.resolve():(this._renderState=t,this._startState=t.state,this._startTime=performance.now(),this._frameHandle=i(this._tick),new Promise(t=>{this._resolve=t}))}_inflateValues(t){let e=this._valuesOrCallable;"function"==typeof this._valuesOrCallable&&(e=this._valuesOrCallable(t.state)),this._values=function(t,e){const r=t.split("."),i={};let s=i;for(let t=0;t<r.length;t++){const i=t===r.length-1?e:{};s[r[t]]=i,s=i}return i}(this.scope,e)}pause(){null===this._startPauseTime&&(this._frameHandle&&s(this._frameHandle),this._startPauseTime=performance.now())}resume(){null!==this._startPauseTime&&(this._frameHandle=i(this._tick),this._pausedDuration+=performance.now()-this._startPauseTime,this._startPauseTime=null)}cancel(t){var e;null===(e=this._resolve)||void 0===e||e.call(this),this._resolve=void 0,s(this._frameHandle||-1),this._frameHandle=void 0,this._force&&(this._values||this._inflateValues(t),t.updateState(this._values))}}function q(t,e,r){const i={};for(const s in e){const o=e[s],n=null==t?void 0:t[s];i[s]="number"==typeof n&&"number"==typeof o&&o>=0?r*(o-n)+n:q(n,o,r)}return i}function N(t,e){for(const r in e){const i=e[r],s=null==t?void 0:t[r];if(i>=0){if(i!==s)return!1}else if(!N(s,i))return!1}return!0}B.Delay=class{constructor(t){this._duration=t,this._startTime=null,this._paused=!1,this.scope="delay."+t}run(){return this._startTime=r(),this._runningPromise=new Promise(t=>{this._resolve=t,this._timeout=setTimeout(()=>this.cancel(),this._duration)}),this._runningPromise}pause(){if(this._paused)return;const t=performance.now()-(this._startTime||0);this._duration=Math.max(0,this._duration-t),clearTimeout(this._timeout),this._paused=!0}resume(){this._paused&&(this._startTime=performance.now(),this._timeout=setTimeout(()=>this.cancel(),this._duration),this._paused=!1)}cancel(){clearTimeout(this._timeout),this._resolve&&this._resolve(),this._resolve=void 0}};const j=t=>-Math.cos(t*Math.PI)/2+.5,U=(t,e,r)=>[new B(`character.${t}.strokes`,u({opacity:1,displayPortion:1},e.strokes.length),{duration:r,force:!0})],V=(t,e,r)=>[new B("character."+t,{opacity:1,strokes:u({opacity:1,displayPortion:1},e.strokes.length)},{duration:r,force:!0})],Q=(t,e,r)=>[new B(`character.${t}.opacity`,0,{duration:r,force:!0}),...U(t,e,0)],G=(t,e,r)=>[new B("options."+t,e,{duration:r})],X=(t,e,r)=>{const i=t.strokeNum,s=(t.getLength()+600)/(3*r);return[new B("options.highlightColor",e),new B("character.highlight",{opacity:1,strokes:{[i]:{displayPortion:0,opacity:0}}}),new B("character.highlight.strokes."+i,{displayPortion:1,opacity:1},{duration:s}),new B(`character.highlight.strokes.${i}.opacity`,0,{duration:s,force:!0})]},K=(t,e,r)=>{const i=e.strokeNum,s=(e.getLength()+600)/(3*r);return[new B("character."+t,{opacity:1,strokes:{[i]:{displayPortion:0,opacity:1}}}),new B(`character.${t}.strokes.${i}.displayPortion`,1,{duration:s})]},Y=(t,e,r,i,s)=>{let o=Q(t,e,r);return o=o.concat(U(t,e,0)),o.push(new B("character."+t,{opacity:1,strokes:u({opacity:0},e.strokes.length)},{force:!0})),e.strokes.forEach((e,r)=>{r>0&&o.push(new B.Delay(s)),o=o.concat(K(t,e,i))}),o},J=(t,e)=>[new B(`userStrokes.${t}.opacity`,0,{duration:e}),new B("userStrokes."+t,null,{force:!0})];class Z{constructor(t,e,r){this._currentStrokeIndex=0,this._mistakesOnStroke=0,this._totalMistakes=0,this._character=t,this._renderState=e,this._isActive=!1,this._positioner=r}startQuiz(t){this._isActive=!0,this._options=t;const e=n(t.quizStartStrokeNum,this._character.strokes.length);return this._currentStrokeIndex=Math.min(e,this._character.strokes.length-1),this._mistakesOnStroke=0,this._totalMistakes=0,this._renderState.run((r=this._character,i=t.strokeFadeDuration,s=this._currentStrokeIndex,[...Q("main",r,i),new B("character.highlight",{opacity:1,strokes:u({opacity:0},r.strokes.length)},{force:!0}),new B("character.main",{opacity:1,strokes:_(r.strokes.length,t=>({opacity:t<s?1:0}))},{force:!0})]));var r,i,s}startUserStroke(t){if(!this._isActive)return null;if(this._userStroke)return this.endUserStroke();const e=this._positioner.convertExternalPoint(t),r=l();return this._userStroke=new I(r,e,t),this._renderState.run(((t,e)=>[new B("quiz.activeUserStrokeId",t,{force:!0}),new B("userStrokes."+t,{points:[e],opacity:1},{force:!0})])(r,e))}continueUserStroke(t){if(!this._userStroke)return Promise.resolve();const e=this._positioner.convertExternalPoint(t);this._userStroke.appendPoint(e,t);const r=this._userStroke.points.slice(0);return this._renderState.run((i=this._userStroke.id,[new B(`userStrokes.${i}.points`,r,{force:!0})]));var i}setPositioner(t){this._positioner=t}endUserStroke(){var t;if(!this._userStroke)return;if(this._renderState.run(J(this._userStroke.id,null!==(t=this._options.drawingFadeDuration)&&void 0!==t?t:300)),1===this._userStroke.points.length)return void(this._userStroke=void 0);const{acceptBackwardsStrokes:e,markStrokeCorrectAfterMisses:r}=this._options,i=this._getCurrentStroke(),{isMatch:s,meta:o}=function(t,e,r,i={}){const s=e.strokes,o=E(t.points);if(o.length<2)return{isMatch:!1,meta:{isStrokeBackwards:!1}};const{isMatch:n,meta:a,avgDist:h}=H(o,s[r],i);if(!n)return{isMatch:n,meta:a};const l=s.slice(r+1);let c=h;for(let t=0;t<l.length;t++){const{isMatch:e,avgDist:r}=H(o,l[t],{...i,checkBackwards:!1});e&&r<c&&(c=r)}if(c<h){const t=.6*(c+h)/(2*h),{isMatch:e,meta:n}=H(o,s[r],{...i,leniency:(i.leniency||1)*t});return{isMatch:e,meta:n}}return{isMatch:n,meta:a}}(this._userStroke,this._character,this._currentStrokeIndex,{isOutlineVisible:this._renderState.state.character.outline.opacity>0,leniency:this._options.leniency}),n=r&&this._mistakesOnStroke+1>=r;if(s||n||o.isStrokeBackwards&&e)this._handleSuccess(o);else{this._handleFailure(o);const{showHintAfterMisses:t,highlightColor:e,strokeHighlightSpeed:r}=this._options;!1!==t&&this._mistakesOnStroke>=t&&this._renderState.run(X(i,d(e),r))}this._userStroke=void 0}cancel(){this._isActive=!1,this._userStroke&&this._renderState.run(J(this._userStroke.id,this._options.drawingFadeDuration))}_getStrokeData({isCorrect:t,meta:e}){return{character:this._character.symbol,strokeNum:this._currentStrokeIndex,mistakesOnStroke:this._mistakesOnStroke,totalMistakes:this._totalMistakes,strokesRemaining:this._character.strokes.length-this._currentStrokeIndex-(t?1:0),drawnPath:(r=this._userStroke,{pathString:D(r.externalPoints),points:r.points.map(t=>C(t))}),isBackwards:e.isStrokeBackwards};var r}_handleSuccess(t){if(!this._options)return;const{strokes:e,symbol:r}=this._character,{onCorrectStroke:i,onComplete:s,highlightOnComplete:o,strokeFadeDuration:n,highlightCompleteColor:a,highlightColor:h,strokeHighlightDuration:l}=this._options;null==i||i({...this._getStrokeData({isCorrect:!0,meta:t})});let c=(u="main",_=this._currentStrokeIndex,[new B(`character.${u}.strokes.${_}`,{displayPortion:1,opacity:1},{duration:n,force:!0})]);var u,_;this._mistakesOnStroke=0,this._currentStrokeIndex+=1;this._currentStrokeIndex===e.length&&(this._isActive=!1,null==s||s({character:r,totalMistakes:this._totalMistakes}),o&&(c=c.concat(((t,e,r)=>[new B("options.highlightColor",e),...Q("highlight",t),...V("highlight",t,r/2),...Q("highlight",t,r/2)])(this._character,d(a||h),2*(l||0))))),this._renderState.run(c)}_handleFailure(t){var e,r;this._mistakesOnStroke+=1,this._totalMistakes+=1,null===(e=(r=this._options).onMistake)||void 0===e||e.call(r,this._getStrokeData({isCorrect:!1,meta:t}))}_getCurrentStroke(){return this._character.strokes[this._currentStrokeIndex]}}function tt(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function et(t,e,r){t.setAttributeNS(null,e,r)}function rt(t,e){Object.keys(e).forEach(r=>et(t,r,e[r]))}function it(t){var e;null==t||null===(e=t.parentNode)||void 0===e||e.removeChild(t)}class st{constructor(t){this.stroke=t,this._pathLength=t.getLength()+st.STROKE_WIDTH/2}_getStrokeDashoffset(t){return.999*this._pathLength*(1-t)}_getColor({strokeColor:t,radicalColor:e}){return e&&this.stroke.isInRadical?e:t}}st.STROKE_WIDTH=200;class ot extends st{constructor(t){super(t),this._oldProps=void 0}mount(t){this._animationPath=tt("path"),this._clip=tt("clipPath"),this._strokePath=tt("path");const e="mask-"+l();et(this._clip,"id",e),et(this._strokePath,"d",this.stroke.path),this._animationPath.style.opacity="0",et(this._animationPath,"clip-path",function(t){let e="";return window.location&&window.location.href&&(e=window.location.href.replace(/#[^#]*$/,"").replace(/"/gi,"%22")),`url("${e}#${t}")`}(e));const r=x(this.stroke.points,100);return et(this._animationPath,"d",D(r)),rt(this._animationPath,{stroke:"#FFFFFF","stroke-width":200..toString(),fill:"none","stroke-linecap":"round","stroke-linejoin":"miter","stroke-dasharray":`${this._pathLength},${this._pathLength}`}),this._clip.appendChild(this._strokePath),t.defs.appendChild(this._clip),t.svg.appendChild(this._animationPath),this}render(t){var e,r;if(t===this._oldProps||!this._animationPath)return;t.displayPortion!==(null===(e=this._oldProps)||void 0===e?void 0:e.displayPortion)&&(this._animationPath.style.strokeDashoffset=this._getStrokeDashoffset(t.displayPortion).toString());const i=this._getColor(t);if(!this._oldProps||i!==this._getColor(this._oldProps)){const{r:t,g:e,b:r,a:s}=i;rt(this._animationPath,{stroke:`rgba(${t},${e},${r},${s})`})}t.opacity!==(null===(r=this._oldProps)||void 0===r?void 0:r.opacity)&&(this._animationPath.style.opacity=t.opacity.toString()),this._oldProps=t}}class nt{constructor(t){this._oldProps=void 0,this._strokeRenderers=t.strokes.map(t=>new ot(t))}mount(t){const e=t.createSubRenderTarget();this._group=e.svg,this._strokeRenderers.forEach(t=>{t.mount(e)})}render(t){var e,r;if(t===this._oldProps||!this._group)return;const{opacity:i,strokes:s,strokeColor:o,radicalColor:n=null}=t;var a;i!==(null===(e=this._oldProps)||void 0===e?void 0:e.opacity)&&(this._group.style.opacity=i.toString(),g||(0===i?this._group.style.display="none":0===(null===(a=this._oldProps)||void 0===a?void 0:a.opacity)&&this._group.style.removeProperty("display")));const h=!this._oldProps||o!==this._oldProps.strokeColor||n!==this._oldProps.radicalColor;if(h||s!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokes))for(let t=0;t<this._strokeRenderers.length;t++){var l;!h&&null!==(l=this._oldProps)&&void 0!==l&&l.strokes&&s[t]===this._oldProps.strokes[t]||this._strokeRenderers[t].render({strokeColor:o,radicalColor:n,opacity:s[t].opacity,displayPortion:s[t].displayPortion})}this._oldProps=t}}class at{constructor(){this._oldProps=void 0}mount(t){this._path=tt("path"),t.svg.appendChild(this._path)}render(t){var e,r,i,s;if(this._path&&t!==this._oldProps){if(t.strokeColor!==(null===(e=this._oldProps)||void 0===e?void 0:e.strokeColor)||t.strokeWidth!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokeWidth)){const{r:e,g:r,b:i,a:s}=t.strokeColor;rt(this._path,{fill:"none",stroke:`rgba(${e},${r},${i},${s})`,"stroke-width":t.strokeWidth.toString(),"stroke-linecap":"round","stroke-linejoin":"round"})}t.opacity!==(null===(i=this._oldProps)||void 0===i?void 0:i.opacity)&&et(this._path,"opacity",t.opacity.toString()),t.points!==(null===(s=this._oldProps)||void 0===s?void 0:s.points)&&et(this._path,"d",D(t.points)),this._oldProps=t}}destroy(){it(this._path)}}class ht{constructor(t){this.node=t}addPointerStartListener(t){this.node.addEventListener("mousedown",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchstart",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerMoveListener(t){this.node.addEventListener("mousemove",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchmove",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerEndListener(t){document.addEventListener("mouseup",t),document.addEventListener("touchend",t)}getBoundingClientRect(){return this.node.getBoundingClientRect()}updateDimensions(t,e){this.node.setAttribute("width",""+t),this.node.setAttribute("height",""+e)}_eventify(t,e){return{getPoint:()=>e.call(this,t),preventDefault:()=>t.preventDefault()}}_getMousePoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.clientX-e,y:t.clientY-r}}_getTouchPoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.touches[0].clientX-e,y:t.touches[0].clientY-r}}}class lt extends ht{constructor(t,e){super(t),this.svg=t,this.defs=e,"createSVGPoint"in t&&(this._pt=t.createSVGPoint())}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("SVG"===s||"G"===s)return i;{const t=tt("svg");return i.appendChild(t),t}})();rt(o,{width:e,height:r});const n=tt("defs");return o.appendChild(n),new lt(o,n)}createSubRenderTarget(){const t=tt("g");return this.svg.appendChild(t),new lt(t,this.defs)}_getMousePoint(t){if(this._pt&&(this._pt.x=t.clientX,this._pt.y=t.clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getMousePoint.call(this,t)}_getTouchPoint(t){if(this._pt&&(this._pt.x=t.touches[0].clientX,this._pt.y=t.touches[0].clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getTouchPoint(t)}}var ct={HanziWriterRenderer:class{constructor(t,e){this._character=t,this._positioner=e,this._mainCharRenderer=new nt(t),this._outlineCharRenderer=new nt(t),this._highlightCharRenderer=new nt(t),this._userStrokeRenderers={}}mount(t){const e=t.createSubRenderTarget(),r=e.svg,{xOffset:i,yOffset:s,height:o,scale:n}=this._positioner;et(r,"transform",`translate(${i}, ${o-s}) scale(${n}, ${-1*n})`),this._outlineCharRenderer.mount(e),this._mainCharRenderer.mount(e),this._highlightCharRenderer.mount(e),this._positionedTarget=e}render(t){const{main:e,outline:r,highlight:i}=t.character,{outlineColor:s,radicalColor:o,highlightColor:n,strokeColor:a,drawingWidth:h,drawingColor:l}=t.options;this._outlineCharRenderer.render({opacity:r.opacity,strokes:r.strokes,strokeColor:s}),this._mainCharRenderer.render({opacity:e.opacity,strokes:e.strokes,strokeColor:a,radicalColor:o}),this._highlightCharRenderer.render({opacity:i.opacity,strokes:i.strokes,strokeColor:n});const c=t.userStrokes||{};for(const t in this._userStrokeRenderers){var d;if(!c[t])null===(d=this._userStrokeRenderers[t])||void 0===d||d.destroy(),delete this._userStrokeRenderers[t]}for(const t in c){const e=c[t];if(!e)continue;const r={strokeWidth:h,strokeColor:l,...e};(()=>{if(this._userStrokeRenderers[t])return this._userStrokeRenderers[t];const e=new at;return e.mount(this._positionedTarget),this._userStrokeRenderers[t]=e,e})().render(r)}}destroy(){it(this._positionedTarget.svg),this._positionedTarget.defs.innerHTML=""}},createRenderTarget:lt.init};const dt=(t,e)=>{t.beginPath();const r=e[0],i=e.slice(1);t.moveTo(r.x,r.y);for(const e of i)t.lineTo(e.x,e.y);t.stroke()};class ut extends st{constructor(t,e=!0){super(t),e&&Path2D?this._path2D=new Path2D(this.stroke.path):this._pathCmd=(t=>{const e=t.split(/(^|\s+)(?=[A-Z])/).filter(t=>" "!==t),r=[t=>t.beginPath()];for(const t of e){const[e,...i]=t.split(/\s+/),s=i.map(t=>parseFloat(t));"M"===e?r.push(t=>t.moveTo(...s)):"L"===e?r.push(t=>t.lineTo(...s)):"C"===e?r.push(t=>t.bezierCurveTo(...s)):"Q"===e&&r.push(t=>t.quadraticCurveTo(...s))}return t=>r.forEach(e=>e(t))})(this.stroke.path),this._extendedMaskPoints=x(this.stroke.points,st.STROKE_WIDTH/2)}render(t,e){if(e.opacity<.05)return;var r;(t.save(),this._path2D)?t.clip(this._path2D):(null===(r=this._pathCmd)||void 0===r||r.call(this,t),t.globalAlpha=0,t.stroke(),t.clip());const{r:i,g:s,b:o,a:n}=this._getColor(e),a=1===n?`rgb(${i},${s},${o})`:`rgb(${i},${s},${o},${n})`,h=this._getStrokeDashoffset(e.displayPortion);t.globalAlpha=e.opacity,t.strokeStyle=a,t.fillStyle=a,t.lineWidth=st.STROKE_WIDTH,t.lineCap="round",t.lineJoin="round",t.setLineDash([this._pathLength,this._pathLength],h),t.lineDashOffset=h,dt(t,this._extendedMaskPoints),t.restore()}}class _t{constructor(t){this._strokeRenderers=t.strokes.map(t=>new ut(t))}render(t,e){if(e.opacity<.05)return;const{opacity:r,strokeColor:i,radicalColor:s,strokes:o}=e;for(let e=0;e<this._strokeRenderers.length;e++)this._strokeRenderers[e].render(t,{strokeColor:i,radicalColor:s,opacity:o[e].opacity*r,displayPortion:o[e].displayPortion||0})}}function pt(t,e){if(e.opacity<.05)return;const{opacity:r,strokeWidth:i,strokeColor:s,points:o}=e,{r:n,g:a,b:h,a:l}=s;t.save(),t.globalAlpha=r,t.lineWidth=i,t.strokeStyle=`rgba(${n},${a},${h},${l})`,t.lineCap="round",t.lineJoin="round",dt(t,o),t.restore()}class gt extends ht{constructor(t){super(t)}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("CANVAS"===s)return i;const t=document.createElement("canvas");return i.appendChild(t),t})();return o.setAttribute("width",e),o.setAttribute("height",r),new gt(o)}getContext(){return this.node.getContext("2d")}}var kt={HanziWriterRenderer:class{constructor(t,e){this.destroy=k,this._character=t,this._positioner=e,this._mainCharRenderer=new _t(t),this._outlineCharRenderer=new _t(t),this._highlightCharRenderer=new _t(t)}mount(t){this._target=t}_animationFrame(t){const{width:e,height:r,scale:i,xOffset:s,yOffset:o}=this._positioner,n=this._target.getContext();n.clearRect(0,0,e,r),n.save(),n.translate(s,r-o),n.transform(1,0,0,-1,0,0),n.scale(i,i),t(n),n.restore(),n.draw&&n.draw()}render(t){const{outline:e,main:r,highlight:i}=t.character,{outlineColor:s,strokeColor:o,radicalColor:n,highlightColor:a,drawingColor:h,drawingWidth:l}=t.options;this._animationFrame(c=>{this._outlineCharRenderer.render(c,{opacity:e.opacity,strokes:e.strokes,strokeColor:s}),this._mainCharRenderer.render(c,{opacity:r.opacity,strokes:r.strokes,strokeColor:o,radicalColor:n}),this._highlightCharRenderer.render(c,{opacity:i.opacity,strokes:i.strokes,strokeColor:a});const d=t.userStrokes||{};for(const t in d){const e=d[t];if(e){pt(c,{strokeWidth:l,strokeColor:h,...e})}}})}},createRenderTarget:gt.init};const mt={charDataLoader:(t,e,r)=>{const i=new XMLHttpRequest;i.overrideMimeType&&i.overrideMimeType("application/json"),i.open("GET",(t=>`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${t}.json`)(t),!0),i.onerror=t=>{r(i,t)},i.onreadystatechange=()=>{4===i.readyState&&(200===i.status?e(JSON.parse(i.responseText)):0!==i.status&&r&&r(i))},i.send(null)},onLoadCharDataError:null,onLoadCharDataSuccess:null,showOutline:!0,showCharacter:!0,renderer:"svg",width:0,height:0,padding:20,strokeAnimationSpeed:1,strokeFadeDuration:400,strokeHighlightDuration:200,strokeHighlightSpeed:2,delayBetweenStrokes:1e3,delayBetweenLoops:2e3,strokeColor:"#555",radicalColor:null,highlightColor:"#AAF",outlineColor:"#DDD",drawingColor:"#333",leniency:1,showHintAfterMisses:3,highlightOnComplete:!0,highlightCompleteColor:null,markStrokeCorrectAfterMisses:!1,acceptBackwardsStrokes:!1,quizStartStrokeNum:0,drawingFadeDuration:300,drawingWidth:4,strokeWidth:2,outlineWidth:2,rendererOverride:{}};class ft{constructor(t){this._loadCounter=0,this._isLoading=!1,this.loadingFailed=!1,this._options=t}_debouncedLoad(t,e){const r=t=>{var r;e===this._loadCounter&&(null===(r=this._resolve)||void 0===r||r.call(this,t))},i=t=>{var r;e===this._loadCounter&&(null===(r=this._reject)||void 0===r||r.call(this,t))},s=this._options.charDataLoader(t,r,i);s&&("then"in s?s.then(r).catch(i):r(s))}_setupLoadingPromise(){return new Promise((t,e)=>{this._resolve=t,this._reject=e}).then(t=>{var e,r;return this._isLoading=!1,null===(e=(r=this._options).onLoadCharDataSuccess)||void 0===e||e.call(r,t),t}).catch(t=>{if(this._isLoading=!1,this.loadingFailed=!0,this._options.onLoadCharDataError)return void this._options.onLoadCharDataError(t);if(t instanceof Error)throw t;const e=new Error("Failed to load char data for "+this._loadingChar);throw e.reason=t,e})}loadCharData(t){this._loadingChar=t;const e=this._setupLoadingPromise();return this.loadingFailed=!1,this._isLoading=!0,this._loadCounter++,this._debouncedLoad(t,this._loadCounter),e}}class vt{constructor(t,e={}){const{HanziWriterRenderer:r,createRenderTarget:i}="canvas"===e.renderer?kt:ct,s=e.rendererOverride||{};this._renderer={HanziWriterRenderer:s.HanziWriterRenderer||r,createRenderTarget:s.createRenderTarget||i},this.target=this._renderer.createRenderTarget(t,e.width,e.height),this._options=this._assignOptions(e),this._loadingManager=new ft(this._options),this._setupListeners()}static create(t,e,r){const i=new vt(t,r);return i.setCharacter(e),i}static loadCharacterData(t,e={}){const r=(()=>{const{_loadingManager:r,_loadingOptions:i}=vt;return(null==r?void 0:r._loadingChar)===t&&i===e?r:new ft({...mt,...e})})();return vt._loadingManager=r,vt._loadingOptions=e,r.loadCharData(t)}static getScalingTransform(t,e,r=0){const i=new L({width:t,height:e,padding:r});return{x:i.xOffset,y:i.yOffset,scale:i.scale,transform:(s=`\n        translate(${i.xOffset}, ${i.height-i.yOffset})\n        scale(${i.scale}, ${-1*i.scale})\n      `,s.replace(/^\s+/,"").replace(/\s+$/,"")).replace(/\s+/g," ")};var s}showCharacter(t={}){return this._options.showCharacter=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(V("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideCharacter(t={}){return this._options.showCharacter=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Q("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateCharacter(t={}){return this.cancelQuiz(),this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Y("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateStroke(t,e={}){return this.cancelQuiz(),this._withData(()=>{var r;return null===(r=this._renderState)||void 0===r?void 0:r.run(((t,e,r,i)=>{const s=e.strokes[r];return[new B("character."+t,r=>{const i=r.character[t],s={opacity:1,strokes:{}};for(let t=0;t<e.strokes.length;t++)s.strokes[t]={opacity:i.opacity*i.strokes[t].opacity};return s}),...K(t,s,i)]})("main",this._character,n(t,this._character.strokes.length),this._options.strokeAnimationSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}highlightStroke(t,e={}){return this._withData(()=>{var r,i;if(this._character&&this._renderState)return this._renderState.run(X((r=this._character.strokes,i=t,r[n(i,r.length)]),d(this._options.highlightColor),this._options.strokeHighlightSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}async loopCharacterAnimation(){return this.cancelQuiz(),this._withData(()=>this._renderState.run(((t,e,r,i,s,o)=>{const n=Y(t,e,r,i,s);return n.push(new B.Delay(o)),n})("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes,this._options.delayBetweenLoops),{loop:!0}))}pauseAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.pauseAll()})}resumeAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.resumeAll()})}showOutline(t={}){return this._options.showOutline=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(V("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideOutline(t={}){return this._options.showOutline=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Q("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}updateDimensions({width:t,height:e,padding:r}){if(void 0!==t&&(this._options.width=t),void 0!==e&&(this._options.height=e),void 0!==r&&(this._options.padding=r),this.target.updateDimensions(this._options.width,this._options.height),this._character&&this._renderState&&this._hanziWriterRenderer&&this._positioner){this._hanziWriterRenderer.destroy();const t=this._initAndMountHanziWriterRenderer(this._character);this._renderState.overwriteOnStateChange(e=>t.render(e)),t.render(this._renderState.state),this._quiz&&this._quiz.setPositioner(this._positioner)}}updateColor(t,e,r={}){var i;let s=[];const o=d((()=>"radicalColor"!==t||e?e:this._options.strokeColor)());this._options[t]=e;const n=null!==(i=r.duration)&&void 0!==i?i:this._options.strokeFadeDuration;return s=s.concat(G(t,o,n)),"radicalColor"!==t||e||(s=s.concat(G(t,null,0))),this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.run(s).then(t=>{var e;return null===(e=r.onComplete)||void 0===e||e.call(r,t),t})})}quiz(t={}){return this._withData(async()=>{this._character&&this._renderState&&this._positioner&&(this.cancelQuiz(),this._quiz=new Z(this._character,this._renderState,this._positioner),this._options={...this._options,...t},this._quiz.startQuiz(this._options))})}cancelQuiz(){this._quiz&&(this._quiz.cancel(),this._quiz=void 0)}setCharacter(t){return this.cancelQuiz(),this._char=t,this._hanziWriterRenderer&&this._hanziWriterRenderer.destroy(),this._renderState&&this._renderState.cancelAll(),this._hanziWriterRenderer=null,this._withDataPromise=this._loadingManager.loadCharData(t).then(e=>{if(!e||this._loadingManager.loadingFailed)return;this._character=function(t,e){const r=T(e);return new R(t,r)}(t,e),this._renderState=new m(this._character,this._options,t=>r.render(t));const r=this._initAndMountHanziWriterRenderer(this._character);r.render(this._renderState.state)}),this._withDataPromise}_initAndMountHanziWriterRenderer(t){const{width:e,height:r,padding:i}=this._options;this._positioner=new L({width:e,height:r,padding:i});const s=new this._renderer.HanziWriterRenderer(t,this._positioner);return s.mount(this.target),this._hanziWriterRenderer=s,s}async getCharacterData(){if(!this._char)throw new Error("setCharacter() must be called before calling getCharacterData()");return await this._withData(()=>this._character)}_assignOptions(t){const e={...mt,...t};return t.strokeAnimationDuration&&!t.strokeAnimationSpeed&&(e.strokeAnimationSpeed=500/t.strokeAnimationDuration),t.strokeHighlightDuration&&!t.strokeHighlightSpeed&&(e.strokeHighlightSpeed=500/e.strokeHighlightDuration),t.highlightCompleteColor||(e.highlightCompleteColor=e.highlightColor),this._fillWidthAndHeight(e)}_fillWidthAndHeight(t){const e={...t};if(e.width&&!e.height)e.height=e.width;else if(e.height&&!e.width)e.width=e.height;else if(!e.width&&!e.height){const{width:t,height:r}=this.target.getBoundingClientRect(),i=Math.min(t,r);e.width=i,e.height=i}return e}_withData(t){if(this._loadingManager.loadingFailed)throw Error("Failed to load character data. Call setCharacter and try again.");return this._withDataPromise?this._withDataPromise.then(()=>{if(!this._loadingManager.loadingFailed)return t()}):Promise.resolve().then(t)}_setupListeners(){this.target.addPointerStartListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.startUserStroke(t.getPoint()))}),this.target.addPointerMoveListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.continueUserStroke(t.getPoint()))}),this.target.addPointerEndListener(()=>{var t;null===(t=this._quiz)||void 0===t||t.endUserStroke()})}}return vt._loadingManager=null,vt._loadingOptions=null,vt}();
+//# sourceMappingURL=hanzi-writer.min.js.map
+
+</script>
+<script>
+var STROKE_DATA={"我":{"strokes":["M 350 571 Q 380 593 449 614 Q 465 615 468 623 Q 471 633 458 643 Q 439 656 396 668 Q 381 674 370 672 Q 363 668 363 657 Q 364 621 200 527 Q 196 518 201 516 Q 213 516 290 546 Q 303 550 316 556 L 350 571 Z","M 584 466 Q 666 485 734 497 Q 746 496 754 511 Q 755 524 729 533 Q 693 554 622 527 Q 598 520 575 511 L 537 499 Q 518 495 500 488 Q 442 472 386 457 L 337 446 Q 327 446 179 416 Q 148 409 173 392 Q 212 365 241 376 Q 287 389 339 404 L 387 416 Q 460 438 545 457 L 584 466 Z","M 386 457 Q 387 493 398 517 Q 405 535 390 548 Q 371 564 350 571 C 323 583 303 583 316 556 Q 315 556 316 555 Q 338 519 337 478 Q 337 462 337 446 L 339 404 Q 340 343 339 289 L 338 241 Q 337 180 334 133 Q 333 115 323 109 Q 317 105 250 119 Q 238 122 239 114 Q 240 108 249 100 Q 309 42 328 6 Q 341 -10 357 3 Q 390 36 390 126 Q 387 169 387 265 L 387 306 Q 387 355 387 416 L 386 457 Z","M 339 289 Q 254 261 161 229 Q 139 222 101 221 Q 86 220 85 207 Q 84 192 94 184 Q 119 166 157 147 Q 169 144 182 154 Q 239 199 338 241 L 387 265 Q 477 314 484 318 Q 499 327 498 337 Q 492 343 479 340 Q 434 324 387 306 L 339 289 Z","M 635 195 Q 690 75 797 -14 Q 876 -62 898 -47 Q 920 -37 914 3 Q 905 34 899 152 Q 900 174 894 178 Q 890 179 884 160 Q 857 75 838 60 Q 823 56 785 88 Q 710 155 670 226 L 644 279 Q 599 381 584 466 L 575 511 Q 547 659 576 752 Q 586 779 543 805 Q 509 827 489 825 Q 470 824 479 795 Q 503 752 507 707 Q 517 601 537 499 L 545 457 Q 573 334 612 245 L 635 195 Z","M 612 245 Q 558 197 452 138 Q 442 132 448 128 Q 455 124 468 126 Q 523 135 574 160 Q 608 175 635 195 L 670 226 Q 706 260 747 317 Q 762 336 778 354 Q 788 361 785 374 Q 781 386 753 410 Q 734 428 723 428 Q 708 427 707 411 Q 701 354 644 279 L 612 245 Z","M 687 669 Q 718 648 754 623 Q 770 613 786 615 Q 798 618 801 632 Q 802 648 789 678 Q 780 697 746 708 Q 665 726 651 715 Q 647 711 651 697 Q 655 687 687 669 Z"],"medians":[[[458,627],[392,631],[336,588],[274,552],[258,550],[253,542],[220,530],[212,532],[203,522]],[[174,404],[215,398],[241,402],[672,514],[742,512]],[[323,556],[351,542],[365,522],[361,116],[340,67],[246,113]],[[100,206],[124,195],[163,189],[492,334]],[[492,807],[537,760],[538,627],[569,435],[612,299],[676,170],[717,112],[779,48],[817,22],[859,12],[880,78],[891,140],[886,147],[894,173]],[[723,412],[737,365],[664,259],[594,198],[489,142],[454,132]],[[657,710],[750,668],[781,634]]],"radStrokes":[1,4,5,6]},"你":{"strokes":["M 272 567 Q 306 613 342 669 Q 370 718 395 743 Q 405 753 400 769 Q 396 782 365 808 Q 337 827 316 828 Q 297 827 305 802 Q 318 769 306 741 Q 267 647 207 560 Q 150 476 72 385 Q 60 375 58 367 Q 54 355 70 358 Q 82 359 109 384 Q 155 421 213 493 Q 226 509 241 527 L 272 567 Z","M 241 527 Q 262 506 258 375 Q 258 374 258 370 Q 254 253 221 135 Q 215 114 224 80 Q 236 44 248 32 Q 267 16 279 44 Q 294 86 294 134 Q 303 420 314 485 Q 321 515 295 543 Q 289 549 272 567 C 251 589 227 553 241 527 Z","M 521 560 Q 561 621 602 708 Q 620 751 638 773 Q 645 786 639 799 Q 633 811 602 830 Q 572 846 554 843 Q 535 839 546 817 Q 561 795 552 757 Q 513 619 407 448 Q 398 436 397 430 Q 394 418 409 423 Q 439 432 503 532 L 521 560 Z","M 503 532 Q 527 510 555 520 Q 795 608 782 549 Q 783 543 743 468 Q 736 458 741 453 Q 745 447 756 459 Q 852 532 894 549 Q 904 552 905 561 Q 906 574 876 592 Q 852 605 828 621 Q 800 637 783 630 Q 686 590 521 560 C 492 555 479 550 503 532 Z","M 568 72 Q 531 81 494 91 Q 482 94 483 86 Q 484 79 494 71 Q 569 7 596 -33 Q 611 -49 626 -36 Q 659 -3 661 82 Q 655 149 655 345 Q 656 382 667 407 Q 676 426 659 439 Q 634 461 604 470 Q 585 477 577 469 Q 571 462 582 447 Q 619 384 603 127 Q 597 82 589 74 Q 582 67 568 72 Z","M 444 320 Q 419 262 385 208 Q 364 180 381 144 Q 388 128 409 139 Q 460 181 468 264 Q 472 295 467 319 Q 463 328 456 328 Q 449 327 444 320 Z","M 738 307 Q 789 249 847 168 Q 860 146 876 139 Q 885 138 893 146 Q 908 159 900 204 Q 891 264 743 338 Q 734 345 731 332 Q 728 319 738 307 Z"],"medians":[[[317,812],[342,786],[353,759],[303,663],[249,577],[181,485],[93,386],[68,367]],[[273,558],[274,525],[285,495],[284,441],[273,243],[256,123],[260,41]],[[556,828],[574,817],[595,783],[584,746],[539,640],[481,531],[428,453],[406,431]],[[513,532],[704,585],[796,597],[813,585],[827,563],[798,519],[746,460]],[[586,463],[615,438],[632,412],[627,73],[616,41],[604,30],[558,47],[490,85]],[[455,316],[437,243],[397,151]],[[742,326],[812,265],[856,216],[871,190],[878,154]]],"radStrokes":[0,1]},"他":{"strokes":["M 250 530 Q 287 585 330 658 Q 354 707 377 731 Q 386 743 381 756 Q 377 769 346 791 Q 318 809 299 808 Q 280 805 289 783 Q 305 752 293 724 Q 236 568 86 372 Q 76 362 74 354 Q 71 344 85 346 Q 118 355 224 495 L 250 530 Z","M 224 495 Q 243 435 245 429 Q 244 428 245 425 Q 251 260 220 131 Q 208 80 242 41 Q 243 38 246 36 Q 262 20 274 46 Q 289 86 288 131 Q 284 393 292 451 Q 299 478 290 488 Q 266 513 250 530 C 229 552 215 524 224 495 Z","M 468 401 Q 507 423 573 456 L 618 479 Q 672 507 742 542 Q 760 549 765 539 Q 772 526 760 488 Q 745 436 725 372 Q 715 330 687 344 Q 668 353 650 360 Q 637 364 638 356 Q 642 344 698 279 Q 717 251 737 272 Q 777 312 791 377 Q 806 434 820 491 Q 830 527 860 557 Q 873 573 858 585 Q 839 598 789 608 Q 770 612 756 599 Q 726 571 668 540 Q 646 528 621 515 L 576 493 Q 477 451 475 448 L 423 426 Q 368 405 333 393 Q 320 392 319 381 Q 318 374 361 362 Q 385 355 422 376 L 468 401 Z","M 573 456 Q 567 368 560 302 Q 560 274 567 252 Q 573 240 582 246 Q 600 261 610 381 Q 613 432 618 479 L 621 515 Q 633 689 644 729 Q 654 748 641 761 Q 626 777 598 791 Q 576 801 552 792 Q 540 785 554 767 Q 581 713 581 592 Q 580 547 576 493 L 573 456 Z","M 960 171 Q 944 223 938 313 Q 937 329 930 334 Q 921 340 917 319 Q 898 210 880 191 Q 838 143 661 143 Q 564 147 523 164 Q 487 183 480 207 Q 453 273 468 401 L 475 448 Q 479 479 489 498 Q 501 529 482 546 Q 431 583 416 579 Q 401 573 408 556 Q 427 519 424 463 Q 423 444 423 426 L 422 376 Q 421 240 432 203 Q 444 157 478 133 Q 548 82 789 95 Q 898 102 941 126 Q 972 139 960 171 Z"],"medians":[[[300,793],[317,780],[338,747],[308,679],[201,496],[136,410],[83,355]],[[250,521],[267,436],[266,292],[252,106],[258,46]],[[326,383],[378,384],[429,404],[756,569],[782,572],[804,560],[768,406],[739,327],[715,309],[677,329],[645,356]],[[562,780],[583,769],[606,740],[603,552],[576,254]],[[420,566],[442,543],[457,515],[441,364],[444,266],[453,212],[473,171],[509,143],[601,121],[710,117],[817,126],[895,150],[916,163],[927,326]]],"radStrokes":[0,1]},"她":{"strokes":["M 272 447 Q 296 538 315 631 Q 322 676 340 700 Q 352 722 344 733 Q 331 751 285 776 Q 266 786 250 778 Q 238 771 248 756 Q 284 708 230 436 L 221 393 Q 211 329 184 282 Q 175 260 196 244 Q 239 223 277 195 L 314 167 Q 342 145 379 112 Q 395 99 404 98 Q 411 99 417 109 Q 423 119 416 149 Q 409 183 340 213 L 298 232 Q 276 244 245 256 Q 226 265 226 283 Q 245 344 262 408 L 272 447 Z","M 277 195 Q 267 182 258 167 Q 231 130 182 95 Q 170 86 154 76 Q 139 66 124 55 Q 111 46 123 44 Q 136 43 170 55 Q 221 76 259 109 Q 293 137 314 167 L 340 213 Q 374 283 383 327 Q 398 411 416 445 Q 426 461 410 471 Q 367 507 340 498 Q 327 494 333 480 Q 337 473 339 464 L 343 437 Q 343 332 298 232 L 277 195 Z","M 339 464 Q 306 457 272 447 L 230 436 Q 170 423 106 408 Q 87 404 56 406 Q 44 405 42 396 Q 39 384 47 376 Q 68 360 96 341 Q 106 338 117 345 Q 174 381 221 393 L 262 408 Q 298 421 336 435 Q 337 436 343 437 C 372 446 368 470 339 464 Z","M 533 363 Q 564 381 621 408 L 667 432 Q 712 456 770 483 Q 789 490 795 478 Q 801 468 762 304 Q 755 270 732 281 Q 713 293 693 303 Q 680 307 682 300 Q 685 288 735 215 Q 754 187 774 208 Q 814 248 828 312 Q 841 372 852 432 Q 862 469 891 500 Q 904 516 887 528 Q 868 540 817 549 Q 798 553 784 539 Q 759 515 707 489 Q 689 482 672 471 L 626 449 Q 545 415 542 412 L 486 390 Q 443 374 414 365 Q 401 364 399 353 Q 398 346 441 333 Q 463 327 484 335 L 533 363 Z","M 621 408 Q 614 338 605 285 Q 604 254 611 233 Q 615 220 626 226 Q 650 247 655 326 Q 661 380 667 432 L 672 471 Q 688 664 707 730 Q 717 749 705 763 Q 690 779 661 795 Q 639 805 614 798 Q 601 791 615 773 Q 636 727 638 678 Q 639 581 626 449 L 621 408 Z","M 960 105 Q 941 162 931 257 Q 930 273 921 278 Q 914 282 910 263 Q 897 143 880 122 Q 844 83 693 85 Q 611 89 576 105 Q 546 121 540 143 Q 513 212 533 363 L 542 412 Q 545 431 552 446 Q 565 476 546 493 Q 495 532 480 528 Q 465 522 472 505 Q 484 480 486 390 L 484 335 Q 480 178 492 140 Q 502 100 531 76 Q 591 30 805 34 Q 902 37 941 57 Q 972 73 960 105 Z"],"medians":[[[257,766],[281,749],[302,717],[265,505],[205,268],[225,247],[373,159],[392,136],[402,110]],[[342,487],[363,473],[378,449],[361,342],[343,278],[317,218],[283,163],[242,119],[185,77],[127,49]],[[55,393],[104,375],[166,399],[327,446],[334,456]],[[406,354],[434,351],[478,360],[784,509],[810,513],[834,500],[800,326],[777,263],[757,244],[735,256],[688,300]],[[622,786],[637,779],[661,754],[669,742],[669,726],[653,484],[620,233]],[[484,515],[519,465],[504,323],[510,162],[527,116],[548,93],[600,72],[690,60],[834,65],[893,82],[916,95],[920,270]]],"radStrokes":[0,1,2]},"它":{"strokes":["M 468 784 Q 499 757 533 726 Q 549 711 567 712 Q 579 713 584 728 Q 590 746 579 779 Q 567 815 461 839 Q 443 843 436 839 Q 430 835 432 820 Q 436 807 468 784 Z","M 254 613 L 254 614 Q 241 638 228 646 Q 209 661 208 633 Q 214 594 155 514 Q 128 505 159 434 Q 160 431 163 427 Q 179 400 199 430 Q 217 458 229 502 Q 241 547 252 576 C 261 599 261 599 254 613 Z","M 252 576 Q 274 567 328 582 Q 427 612 644 646 Q 720 658 740 655 Q 761 645 760 636 Q 760 635 717 543 Q 710 530 717 525 Q 724 521 741 533 Q 801 581 851 599 Q 893 615 891 625 Q 890 635 813 690 Q 788 708 714 692 Q 555 668 254 613 C 224 608 222 580 252 576 Z","M 397 261 Q 448 279 646 361 Q 671 373 699 376 Q 724 380 719 401 Q 710 423 688 446 Q 667 468 653 469 Q 640 472 639 456 Q 636 420 513 350 Q 458 319 398 285 C 372 270 369 251 397 261 Z","M 374 69 Q 398 35 445 19 Q 503 0 633 3 Q 831 12 852 46 Q 859 59 849 80 Q 827 134 811 217 Q 805 236 796 240 Q 789 244 784 223 Q 754 105 739 94 Q 730 84 697 76 Q 589 54 521 57 Q 440 63 407 109 Q 391 139 397 261 L 398 285 Q 404 379 416 426 Q 423 448 399 464 Q 353 498 340 491 Q 327 484 337 466 Q 353 427 350 355 Q 349 300 348 236 Q 345 116 374 69 Z"],"medians":[[[443,830],[544,767],[564,732]],[[218,639],[231,608],[229,596],[183,486],[179,431]],[[259,582],[274,595],[433,628],[746,677],[784,665],[808,634],[722,532]],[[650,459],[664,412],[544,341],[409,279],[399,267]],[[345,479],[382,433],[371,225],[378,124],[398,79],[424,58],[477,37],[582,30],[695,40],[771,61],[793,75],[795,231]]],"radStrokes":[0,1,2]},"您":{"strokes":["M 288 599 Q 319 636 354 684 Q 379 723 401 741 Q 411 751 407 764 Q 404 777 378 800 Q 354 819 336 821 Q 317 820 324 798 Q 351 717 116 465 Q 106 456 104 450 Q 100 440 113 441 Q 149 445 240 546 Q 252 559 266 573 L 288 599 Z","M 266 573 Q 278 561 279 490 Q 279 429 263 368 Q 259 352 266 324 Q 276 296 285 286 Q 300 273 309 295 Q 322 329 321 367 Q 322 499 328 529 Q 335 551 326 560 Q 302 588 288 599 C 265 619 251 599 266 573 Z","M 499 670 Q 518 697 539 730 Q 552 755 565 768 Q 572 777 568 788 Q 564 798 540 815 Q 518 828 502 828 Q 486 827 494 808 Q 509 780 457 679 Q 432 633 396 582 Q 389 573 387 568 Q 384 558 396 561 Q 414 564 487 653 L 499 670 Z","M 487 653 Q 488 652 490 649 Q 512 628 537 637 Q 607 664 687 680 Q 727 690 741 686 Q 754 677 752 669 Q 752 666 720 604 Q 713 594 717 588 Q 721 584 732 594 Q 820 652 860 665 Q 869 666 870 674 Q 871 687 843 702 Q 821 715 799 730 Q 772 745 758 738 Q 661 698 499 670 C 474 666 474 666 487 653 Z","M 560 376 Q 532 380 505 383 Q 495 384 495 379 Q 496 373 506 367 Q 567 319 592 289 Q 605 276 617 288 Q 647 321 642 405 Q 630 528 646 569 Q 653 585 639 597 Q 617 615 592 624 Q 576 630 570 623 Q 564 617 574 604 Q 601 556 593 403 Q 590 387 581 379 Q 574 372 560 376 Z","M 470 511 Q 443 465 409 426 Q 388 402 399 368 Q 403 352 424 361 Q 472 385 485 458 Q 494 486 490 508 Q 487 515 482 517 Q 475 517 470 511 Z","M 684 499 Q 730 456 786 393 Q 799 374 814 371 Q 821 370 829 378 Q 839 391 829 430 Q 820 478 685 528 Q 676 532 675 521 Q 674 509 684 499 Z","M 246 224 Q 218 160 178 103 Q 154 72 173 34 Q 180 15 202 27 Q 226 43 242 76 Q 267 122 270 163 Q 277 197 270 223 Q 266 232 259 233 Q 250 232 246 224 Z","M 338 199 Q 359 88 442 33 Q 524 -18 740 -20 Q 788 -14 827 3 Q 854 15 855 31 Q 859 41 817 66 Q 753 112 703 164 Q 688 180 684 172 Q 681 165 687 150 Q 702 117 714 83 Q 718 64 713 55 Q 706 45 668 43 Q 502 39 429 103 Q 396 131 382 181 Q 375 206 362 211 Q 349 218 340 215 Q 334 212 338 199 Z","M 490 234 Q 538 170 564 158 Q 577 154 587 165 Q 594 175 593 192 Q 584 234 505 268 Q 492 274 482 271 Q 476 271 477 259 Q 478 249 490 234 Z","M 771 243 Q 808 212 849 172 Q 862 159 880 158 Q 890 159 897 173 Q 901 188 893 219 Q 887 244 849 265 Q 810 281 767 294 Q 751 298 744 295 Q 738 291 740 278 Q 744 266 771 243 Z"],"medians":[[[335,807],[355,784],[362,757],[328,693],[219,549],[143,472],[113,450]],[[288,591],[290,569],[303,542],[291,351],[295,295]],[[502,816],[514,808],[529,784],[519,751],[453,636],[394,568]],[[494,655],[538,657],[739,708],[770,706],[794,682],[779,657],[720,592]],[[578,617],[616,574],[615,376],[598,342],[570,348],[501,378]],[[480,507],[448,428],[414,372]],[[685,517],[788,438],[815,388]],[[258,221],[244,159],[224,111],[200,73],[190,39]],[[345,208],[358,191],[391,113],[450,57],[521,29],[611,15],[708,14],[742,23],[764,39],[744,87],[689,167]],[[488,261],[558,200],[571,178]],[[750,287],[839,231],[858,212],[877,176]]],"radStrokes":[7,8,9,10]},"们":{"strokes":["M 207 513 Q 259 577 317 669 Q 342 718 367 741 Q 377 751 372 766 Q 368 779 337 803 Q 309 822 290 822 Q 271 821 279 797 Q 292 766 281 739 Q 244 648 188 563 Q 133 481 59 392 Q 49 382 46 375 Q 42 363 57 366 Q 91 370 187 488 L 207 513 Z","M 187 488 L 188 486 Q 192 470 199 458 Q 229 395 206 220 Q 199 169 185 115 Q 170 66 207 18 Q 208 15 212 12 Q 231 -4 243 24 Q 258 66 258 114 Q 261 361 270 417 Q 277 445 267 456 Q 249 478 235 492 Q 223 505 207 513 C 181 529 178 516 187 488 Z","M 448 683 Q 499 613 528 609 Q 541 608 549 627 Q 550 640 542 662 Q 532 680 508 690 Q 469 709 453 712 Q 443 713 442 702 Q 441 693 448 683 Z","M 354 604 Q 376 553 377 491 Q 383 263 346 141 Q 330 84 364 45 Q 376 30 386 45 Q 419 84 419 234 Q 419 495 432 571 Q 433 590 417 600 Q 395 619 366 628 Q 356 631 350 622 Q 346 615 354 604 Z","M 592 673 Q 576 674 580 664 Q 586 651 607 641 Q 620 632 643 636 Q 685 649 735 662 Q 757 663 767 650 Q 780 643 785 580 Q 798 369 786 129 Q 786 95 772 84 Q 756 71 669 91 Q 653 92 654 83 Q 655 76 669 71 Q 745 26 786 -10 Q 808 -29 820 -26 Q 833 -23 843 6 Q 858 52 855 117 Q 839 445 840 567 Q 841 606 853 629 Q 866 650 856 661 Q 846 677 800 701 Q 782 711 711 692 Q 603 674 592 673 Z"],"medians":[[[290,807],[307,792],[326,757],[279,662],[165,491],[112,427],[55,375]],[[209,505],[212,483],[241,428],[236,241],[218,74],[224,21]],[[455,699],[510,655],[528,627]],[[361,617],[399,572],[401,523],[396,269],[391,199],[374,104],[375,49]],[[589,664],[644,658],[746,682],[787,674],[816,645],[812,594],[821,127],[815,75],[801,43],[752,51],[662,83]]],"radStrokes":[0,1]}};
+var LESSON={"code":"less1","caseNo":7101,"title":"ДЕЛО О МЕСТОИМЕНИЯХ","topic":"одиннадцать местоимений","audio":"../../audio/Местоимения/","chars":{"我":{"parts":[{"g":"扌","zone":"left","m":"рука"},{"g":"戈","zone":"right","m":"копьё"}]},"你":{"parts":[{"g":"亻","zone":"left","m":"человек"},{"g":"尔","zone":"right","m":"«ты» (звуковая подсказка)"}]},"他":{"parts":[{"g":"亻","zone":"left","m":"человек"},{"g":"也","zone":"right","m":"тоже, и"}]},"她":{"parts":[{"g":"女","zone":"left","m":"женщина"},{"g":"也","zone":"right","m":"тоже, и"}]},"它":{"parts":[{"g":"宀","zone":"top","m":"крыша"},{"g":"匕","zone":"bottom","m":"ложка"}]},"您":{"parts":[{"g":"你","zone":"top","m":"«ты»"},{"g":"心","zone":"bottom","m":"сердце"}]},"们":{"parts":[{"g":"亻","zone":"left","m":"человек"},{"g":"门","zone":"right","m":"ворота"}]}},"words":[{"zh":"我","pinyin":"wǒ","spoken":"wǒ","translation":"я","q1":{"p":"Выбери верное чтение слова:","o":["wǒ","wō","wó","wò"]},"q2":{"p":"Какой тон у слога «wǒ» в слове «我»?","o":["3-й тон","1-й тон","2-й тон","4-й тон"]}},{"zh":"你","pinyin":"nǐ","spoken":"nǐ","translation":"ты","q1":{"p":"Выбери верное чтение слова:","o":["nǐ","ní","nī","nì"]},"q2":{"p":"Какой тон у слога «nǐ» в слове «你»?","o":["3-й тон","1-й тон","2-й тон","4-й тон"]}},{"zh":"他","pinyin":"tā","spoken":"tā","translation":"он","q1":{"p":"Выбери верное чтение слова:","o":["tā","tá","tà","tǎ"]},"q2":{"p":"Какой тон у слога «tā» в слове «他»?","o":["1-й тон","2-й тон","3-й тон","4-й тон"]}},{"zh":"她","pinyin":"tā","spoken":"tā","translation":"она","q1":{"p":"Выбери верное чтение слова:","o":["tā","tǎ","tà","tá"]},"q2":{"p":"Какой тон у слога «tā» в слове «她»?","o":["1-й тон","2-й тон","3-й тон","4-й тон"]}},{"zh":"它","pinyin":"tā","spoken":"tā","translation":"оно","q1":{"p":"Выбери верное чтение слова:","o":["tā","tà","tǎ","tá"]},"q2":{"p":"Какой тон у слога «tā» в слове «它»?","o":["1-й тон","2-й тон","3-й тон","4-й тон"]}},{"zh":"您","pinyin":"nín","spoken":"nín","translation":"Вы (вежливо)","q1":{"p":"Выбери верное чтение слова:","o":["nín","nīn","nǐn","nìn"]},"q2":{"p":"Какой тон у слога «nín» в слове «您»?","o":["2-й тон","1-й тон","3-й тон","4-й тон"]}},{"zh":"我们","pinyin":"wǒ men","spoken":"wǒ men","translation":"мы","q1":{"p":"Выбери верное чтение (нужный слог — нейтральный тон):","o":["wǒ men","wō men","wó men","wò men"]},"q2":{"p":"Какой слог в «我们» произносится нейтральным тоном?","o":["второй — men","первый — wǒ","все с тонами","никакой"]}},{"zh":"你们","pinyin":"nǐ men","spoken":"nǐ men","translation":"вы","q1":{"p":"Выбери верное чтение (нужный слог — нейтральный тон):","o":["nǐ men","ní men","nì men","nī men"]},"q2":{"p":"Какой слог в «你们» произносится нейтральным тоном?","o":["второй — men","первый — nǐ","все с тонами","никакой"]}},{"zh":"他们","pinyin":"tā men","spoken":"tā men","translation":"они (мужчины или смешанная группа)","q1":{"p":"Выбери верное чтение (нужный слог — нейтральный тон):","o":["tā men","tǎ men","tà men","tá men"]},"q2":{"p":"Какой слог в «他们» произносится нейтральным тоном?","o":["второй — men","первый — tā","все с тонами","никакой"]}},{"zh":"她们","pinyin":"tā men","spoken":"tā men","translation":"они (женщины)","q1":{"p":"Выбери верное чтение (нужный слог — нейтральный тон):","o":["tā men","tá men","tǎ men","tà men"]},"q2":{"p":"Какой слог в «她们» произносится нейтральным тоном?","o":["второй — men","первый — tā","все с тонами","никакой"]}},{"zh":"它们","pinyin":"tā men","spoken":"tā men","translation":"они (предметы и животные)","q1":{"p":"Выбери верное чтение (нужный слог — нейтральный тон):","o":["tā men","tǎ men","tà men","tá men"]},"q2":{"p":"Какой слог в «它们» произносится нейтральным тоном?","o":["второй — men","первый — tā","все с тонами","никакой"]}}]};
+</script>
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+
+var WORDS=(function(){
+ var W=[];
+ (LESSON.words||[]).forEach(function(wd){
+  var chars=wd.zh.split('').map(function(c){
+   var d=(LESSON.chars||{})[c];
+   return {c:c,parts:(d&&d.parts&&d.parts.length)?d.parts:[{g:c,zone:'mid',m:'цельный знак'}]};
+  });
+  var seen={},rads=[];
+  chars.forEach(function(ch){ch.parts.forEach(function(p){if(!seen[p.g]){seen[p.g]=1;rads.push({r:p.g,m:p.m})}})});
+  var q=chars[0],mx=-1;
+  chars.forEach(function(ch){
+   var st=(window.STROKE_DATA&&STROKE_DATA[ch.c]&&STROKE_DATA[ch.c].strokes?STROKE_DATA[ch.c].strokes.length:7);
+   if(st>mx){mx=st;q=ch}
+  });
+  var st=(window.STROKE_DATA&&STROKE_DATA[q.c]&&STROKE_DATA[q.c].strokes?STROKE_DATA[q.c].strokes.length:(mx>0?mx:7));
+  var o=[st-2,st-1,st,st+1].filter(function(v){return v>=1});
+  var nx=st+1;while(o.length<4){if(o.indexOf(nx)<0)o.push(nx);nx++}
+  W.push({zh:wd.zh,pinyin:wd.pinyin,spoken:wd.spoken||wd.pinyin,translation:wd.translation,
+   chars:chars,quiz:{c:q.c,st:st,opts:o},radicals:rads,q1:wd.q1,q2:wd.q2});
+ });
+ return W;
+})();
+
+function buildPairs(){
+ var pairs=[];
+ WORDS.forEach(function(w){
+  var z=w.zh;
+  if(z.length===2)pairs.push([z.charAt(0),z.charAt(1),z]);
+  else if(z.length===3){pairs.push([z.charAt(0),z.charAt(1),z.substr(0,2)]);pairs.push([z.substr(0,2),z.charAt(2),z])}
+ });
+ return pairs;
+}
+function buildLayout(){
+ var items=[],han=[],tr=[],i;
+ WORDS.forEach(function(w){for(i=0;i<w.zh.length;i++)han.push({t:w.zh.charAt(i),han:true})});
+ WORDS.forEach(function(w){tr.push({t:w.translation,han:false})});
+ var seed=1234567;
+ function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
+ var cols=han.length>14?7:5,rows=Math.ceil(han.length/cols)||1;
+ han.forEach(function(c,i){
+  var col=i%cols,row=Math.floor(i/cols);
+  c.x=Math.round((col+0.5+(rnd()-0.5)*0.4)/cols*1000)/10;
+  c.y=Math.round((row+0.5+(rnd()-0.5)*0.55)/rows*740)/10;
+ });
+ var tc=Math.min(4,tr.length||1),trRows=Math.ceil(tr.length/tc)||1;
+ tr.forEach(function(c,i){
+  var col=i%tc,row=Math.floor(i/tc);
+  c.x=Math.round((col+0.5)/tc*1000)/10;
+  c.y=Math.round(76+(row+0.5+(rnd()-0.5)*0.5)/trRows*230)/10;
+ });
+ items=han.concat(tr);
+ items.rows=rows;items.trRows=trRows;
+ return items;
+}
+
+var PAIRS4=[["你","好","你好"],["谢","谢","谢谢"],["再","见","再见"],["对","不","对不"],["对不","起","对不起"],["没","关","没关"],["没关","系","没关系"]];
+var LAYOUT4=[
+ {t:"你",x:10,y:18},{t:"好",x:25,y:9},{t:"谢",x:7,y:48},{t:"谢",x:19,y:67},
+ {t:"再",x:40,y:15},{t:"见",x:55,y:8},{t:"对",x:70,y:12},{t:"不",x:84,y:21},{t:"起",x:90,y:45},
+ {t:"没",x:9,y:87},{t:"关",x:27,y:93},{t:"系",x:42,y:87},
+ {t:"Привет!",x:50,y:44},{t:"Спасибо!",x:66,y:58},{t:"До свидания!",x:82,y:82},
+ {t:"Извините!",x:58,y:76},{t:"Ничего страшного!",x:33,y:52}
+];
+var SLOTS2=[{x:10,y:12},{x:62,y:10},{x:24,y:38},{x:74,y:36},{x:8,y:64},{x:60,y:62},{x:30,y:88},{x:76,y:88}];
+var DECOYS=["口","日","十","大","月","山","手","王"];
+var HINTS=["Хм, улика не сходится. Осмотрись внимательнее.","Так дело не раскроем, сыщик.","Смотри на форму и на смысл.","Неверная нить. Попробуй ещё раз.","Коньяк не поможет — только внимание."];
+var NAMES=["","Поиск улик","Разбор доказательств","Тон — главная улика","Доска расследования","Почерк подозреваемого"];
+
+var S={stage:0,word:0,errors:0};
+var stagesDone=[false,false,false,false,false];
+var s1={charIdx:0};
+var s4={closed:0,sel:null};
+
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function hint(){return HINTS[Math.floor(Math.random()*HINTS.length)]}
+function addErr(){S.errors++;$('#errCount').textContent=S.errors}
+function toast(t){var el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('on')},1700)}
+function showScreen(id){$$('.screen').forEach(function(s){s.classList.remove('on')});$('#'+id).classList.add('on');window.scrollTo(0,0)}
+function chipsHtml(cur,done){return WORDS.map(function(w,i){return '<span class="chip '+(i<done?'done':(i===cur?'cur':''))+'">'+w.zh+'</span>'}).join('')}
+function refreshChips(id,cur,done){$(id).innerHTML=chipsHtml(cur==null?S.word:cur,done==null?S.word:done)}
+
+var AC=null;
+function sfx(k){
+ try{
+  AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended')AC.resume();
+  var t=AC.currentTime;
+  var play=function(f0,f1,d,type,v,dl){
+   var o=AC.createOscillator(),g=AC.createGain();
+   o.type=type||'sine';o.frequency.setValueAtTime(f0,t+dl);
+   if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dl+d);
+   g.gain.setValueAtTime(v||.12,t+dl);g.gain.exponentialRampToValueAtTime(.0001,t+dl+d);
+   o.connect(g);g.connect(AC.destination);o.start(t+dl);o.stop(t+dl+d+.02);
+  };
+  if(k==='click')play(520,null,.06,'triangle',.07,0);
+  else if(k==='ok'){play(523,null,.09,'sine',.11,0);play(784,null,.13,'sine',.11,.09)}
+   else if(k==='err')play(180,120,.22,'sawtooth',.09,0);
+   else if(k==='stamp')play(300,60,.18,'sine',.18,0);
+   else if(k==='tick')play(1250,880,.05,'square',.045,0);
+   else if(k==='win'){[523,659,784,1046].forEach(function(f,i){play(f,null,.16,'sine',.11,i*.13)})}
+  }catch(e){}
+ }
+
+function makeHW(id,ch,extra){
+ var opts={
+  width:220,height:220,padding:6,strokeAnimationSpeed:2.4,delayBetweenStrokes:140,
+  strokeColor:'#8be9ff',outlineColor:'rgba(0,229,255,.2)',
+  drawingColor:'#2effa8',highlightColor:'#ffb020',radicalColor:'#ff2bd6',
+  showCharacter:true,showOutline:true,
+  charDataLoader:function(c,onLoad){if(window.STROKE_DATA&&STROKE_DATA[c])onLoad(STROKE_DATA[c])}
+ };
+ var k;for(k in extra)opts[k]=extra[k];
+ return HanziWriter.create(id,ch,opts);
+}
+function hwSize(max){return Math.min(max,Math.max(180,(window.innerWidth||420)-56))}
+
+var ICONS=[
+ '<svg viewBox="0 0 24 24" fill="none"><circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="2"/><line x1="14.5" y1="14.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>',
+ '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="1"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>',
+ '<svg viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6l-5 4H4z" fill="currentColor"/><path d="M16.5 9c1.7 1.7 1.7 4.3 0 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+ '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17c4-9 14 8 18-7"/><circle cx="3" cy="17" r="1.6" fill="currentColor"/><circle cx="21" cy="10" r="1.6" fill="currentColor"/></svg>',
+ '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1z"/><line x1="14" y1="7" x2="17" y2="10"/></svg>'
+];
+function buildHud(){
+ $('#hudSteps').innerHTML=ICONS.map(function(svg,i){
+  return '<span class="step '+(stagesDone[i]?'done':(S.stage===i+1?'act':''))+'" title="Этап '+(i+1)+'">'+svg+'<i>'+(i+1)+'</i></span>';
+ }).join('');
+}
+
+function startStage(n){
+ S.stage=n;S.word=0;
+ $('#hud').classList.remove('hidden');
+ buildHud();showScreen('scr-stage'+n);
+ [stage1Start,stage2Start,stage3Start,stage4Start,stage5Start][n-1]();
+}
+function nextWord(n){
+ S.word++;
+ if(S.word>=WORDS.length)interShow(n);
+ else [null,stage1Word,stage2Word,stage3Word,null,stage5Word][n]();
+}
+function interShow(n){
+ stagesDone[n-1]=true;buildHud();sfx('stamp');
+ $('#interStamp').textContent='ЭТАП '+n+' ЗАКРЫТ';
+ if(n<5)$('#interText').textContent='Отличная работа, агент. Впереди — этап '+(n+1)+': «'+NAMES[n+1]+'».';
+ else $('#interText').textContent='Все пять этапов пройдены, все улики собраны. Пора подвести итоги и закрыть дело номер '+(LESSON.caseNo||7123)+'.';
+ $('#btnInterNext').textContent=n<5?'К ЭТАПУ '+(n+1):'ЗАКРЫТЬ ДЕЛО';
+ showScreen('scr-inter');
+}
+$('#btnInterNext').addEventListener('click',function(){
+ var n=stagesDone.lastIndexOf(true)+1;
+ sfx('click');
+ if(n<5)startStage(n+1);else showFinal();
+});
+function rank(){return S.errors===0?'ЛЕГЕНДА СЫСКА':(S.errors<=5?'СТАРШИЙ ИНСПЕКТОР':(S.errors<=12?'ДЕТЕКТИВ':'СТАЖЁР СЫСКА'))}
+function showFinal(){
+ stagesDone=[true,true,true,true,true];buildHud();
+ $('#finalErr').textContent=S.errors;
+ $('#finalRank').textContent=rank();
+ var w0=(WORDS[0]&&WORDS[0].zh)||'';
+ $('#finalTbl').innerHTML=
+  '<tr><th>Этап</th><th>Действие</th><th>Что изучается</th><th></th></tr>'+
+  '<tr><td>1</td><td class="h">Проявить и собрать '+w0+'</td><td>Черты, порядок черт</td><td class="ok">✓</td></tr>'+
+  '<tr><td>2</td><td class="h">Разложить на радикалы</td><td>Части иероглифов, значения</td><td class="ok">✓</td></tr>'+
+  '<tr><td>3</td><td class="h">Чтение и тоны</td><td>Пиньинь, тоны, нейтральный тон</td><td class="ok">✓</td></tr>'+
+  '<tr><td>4</td><td class="h">Собрать слова из знаков</td><td>Словообразование, перевод</td><td class="ok">✓</td></tr>'+
+  '<tr><td>5</td><td class="h">Написать иероглифы</td><td>Письмо, память</td><td class="ok">✓</td></tr>';
+ showScreen('scr-final');sfx('win');
+}
+$('#btnRestart').addEventListener('click',function(){location.reload()});
+$('#btnStart').addEventListener('click',function(){sfx('click');startStage(1)});
+
+function stage1Start(){stage1Word()}
+function stage1Word(){
+ var w=WORDS[S.word];
+ refreshChips('#chips1');
+ var gridHtml='',gi;
+ for(gi=0;gi<25;gi++)gridHtml+='<i></i>';
+ $('#s1body').innerHTML=
+  '<p class="mission">Сканер дела '+(S.word+1)+' из 5. Где-то на листе зашифровано слово <b class="han">'+w.zh+'</b>. Веди луч лупы по секторам и задерживайся на каждом — след проявляется неохотно.</p>'+
+  '<div class="search-zone" id="sz">'+
+   '<div class="paper-sheet">'+
+    '<div class="glyph-wrap" id="gw"><div class="ghost">'+w.zh+'</div><div class="reveal" id="rv">'+w.zh+'</div><div class="scan-grid" id="sgrid">'+gridHtml+'</div></div>'+
+    '<div class="sheet-label">ЛИСТ ДЕЛА · СКАНЕР УФ · ПРОЯВКА</div>'+
+   '</div>'+
+   '<div class="lens" id="lens"></div>'+
+  '</div>'+
+  '<div class="meter"><div class="meter-fill" id="mf"></div></div>'+
+  '<div class="meter-label">ПРОЯВЛЕНИЕ УЛИКИ: <b id="mpct">0%</b> · ДЕРЖИ ЛУПУ НА СЕКТОРЕ</div>';
+ initSearch(w);
+}
+function initSearch(w){
+ var sz=$('#sz'),rv=$('#rv'),lens=$('#lens'),gw=$('#gw'),mf=$('#mf'),mpct=$('#mpct');
+ var cellEls=Array.prototype.slice.call($('#sgrid').children);
+ var cells=[],i;
+ for(i=0;i<25;i++)cells.push(0);
+ var doneFlag=false,px=-9999,py=-9999;
+ function nearestCell(){
+  var gwr=gw.getBoundingClientRect();
+  if(px<gwr.left||px>gwr.right||py<gwr.top||py>gwr.bottom)return -1;
+  var cx=Math.min(4,Math.max(0,Math.floor((px-gwr.left)/gwr.width*5)));
+  var cy=Math.min(4,Math.max(0,Math.floor((py-gwr.top)/gwr.height*5)));
+  return cy*5+cx;
+ }
+ function move(e){
+  if(doneFlag)return;
+  var r=sz.getBoundingClientRect();
+  var x=e.clientX-r.left,y=e.clientY-r.top;
+  px=e.clientX;py=e.clientY;
+  lens.style.transform='translate('+x+'px,'+y+'px)';
+  var gr=rv.getBoundingClientRect();
+  rv.style.clipPath='circle(40px at '+(e.clientX-gr.left)+'px '+(e.clientY-gr.top)+'px)';
+ }
+ function tick(){
+  var ci=nearestCell(),j;
+  for(j=0;j<25;j++){
+   cellEls[j].classList[j===ci?'add':'remove']('hot');
+   if(j!==ci&&cells[j]<1)cellEls[j].style.background='';
+  }
+  if(ci>=0&&cells[ci]<1){
+   cells[ci]=Math.min(1,cells[ci]+0.25);
+   if(cells[ci]>=1){
+    cellEls[ci].classList.add('on');cellEls[ci].style.background='';
+    sfx('tick');
+   }else{
+    cellEls[ci].style.background='rgba(0,229,255,'+(0.03+cells[ci]*0.1)+')';
+   }
+  }
+  var s=0;
+  for(j=0;j<25;j++)s+=Math.min(1,cells[j]);
+  var p=s/25;
+  mf.style.width=Math.min(100,p/0.8*100)+'%';
+  mpct.textContent=Math.round(p*100)+'%';
+  if(p>=0.8){doneFlag=true;found()}
+ }
+ function found(){
+  clearInterval(tickIv);
+  sz.removeEventListener('pointermove',move);sz.removeEventListener('pointerdown',move);
+  sz.classList.add('done');sfx('ok');
+  for(var j=0;j<25;j++)cellEls[j].classList.remove('hot');
+  mf.style.width='100%';mpct.textContent='100%';
+  rv.style.transition='clip-path .7s ease';
+  rv.style.clipPath='circle(160% at '+(rv.offsetWidth/2)+'px '+(rv.offsetHeight/2)+'px)';
+  gw.classList.add('found-flash');
+  $('#s1body').insertAdjacentHTML('beforeend','<div class="found-wrap"><div class="stamp big">УЛИКА НАЙДЕНА: '+w.zh+'</div></div>');
+  setTimeout(function(){stage1Assemble(w)},1400);
+ }
+ var tickIv=setInterval(tick,50);
+ sz.addEventListener('pointermove',move);
+ sz.addEventListener('pointerdown',move);
+}
+
+function stage1Assemble(w){s1.charIdx=0;stage1Char(w)}
+function zoneStyle(o,i,n){var s=100/n;return o==='h'?('left:'+(i*s)+'%;top:0;width:'+s+'%;height:100%'):('top:'+(i*s)+'%;left:0;height:'+s+'%;width:100%')}
+var ZONE_LBL={left:'ЛЕВЫЙ',right:'ПРАВЫЙ',mid:'ЦЕНТР',top:'ВЕРХНИЙ',bottom:'НИЖНИЙ'};
+var ZONE_LBL_LC={left:'левый отсек',right:'правый отсек',mid:'центр',top:'верхний отсек',bottom:'нижний отсек'};
+function stage1Char(w){
+ var ch=w.chars[s1.charIdx];
+ var orient=ch.parts.some(function(p){return p.zone==='left'||p.zone==='right'})?'h':'v';
+ var order=orient==='h'?['left','mid','right']:['top','mid','bottom'];
+ var zones=order.slice(0,ch.parts.length);
+ var decoys=shuffle(DECOYS.filter(function(d){return !ch.parts.some(function(p){return p.g===d})})).slice(0,ch.parts.length>2?1:2);
+ var tiles=shuffle(ch.parts.map(function(p){return p.g}).concat(decoys));
+ $('#s1body').innerHTML=
+  '<p class="mission">Улика <b class="han">'+w.zh+'</b> проявлена. Собери иероглиф <b class="han">'+ch.c+'</b>: эталон подсвечен в рамке — перетащи каждый блок в свой отсек. Лишние блоки — ловушка киллера.</p>'+
+  '<div class="asm" id="asm">'+
+   '<div class="asm-frame" id="asmFrame">'+
+    '<div class="asm-ghost">'+ch.c+'</div>'+
+    ch.parts.map(function(p,i){return '<div class="zone" data-g="'+p.g+'" data-z="'+ZONE_LBL[p.zone]+'" style="'+zoneStyle(orient,i,zones.length)+'"></div>'}).join('')+
+   '</div>'+
+   '<div class="asm-tray" id="asmTray">'+tiles.map(function(t){return '<div class="tile" data-g="'+t+'">'+t+'</div>'}).join('')+'</div>'+
+  '</div>'+
+  '<div class="asm-count">СОБРАНО ЭЛЕМЕНТОВ: <b id="asmCnt">0</b> / '+ch.parts.length+'</div>';
+ bindTiles(w,ch);
+}
+function bindTiles(w,ch){
+ var snapped=0;
+ $$('#asmTray .tile').forEach(function(tile){
+  tile.addEventListener('pointerdown',function(e){
+   if(tile.classList.contains('snapped'))return;
+   e.preventDefault();
+   var asm=$('#asm'),ar=asm.getBoundingClientRect(),r=tile.getBoundingClientRect();
+   var ox=e.clientX-r.left,oy=e.clientY-r.top;
+   tile.style.left=(r.left-ar.left)+'px';tile.style.top=(r.top-ar.top)+'px';
+   tile.classList.add('drag');
+   try{tile.setPointerCapture(e.pointerId)}catch(er){}
+   sfx('click');
+   function mv(ev){
+    var ar2=asm.getBoundingClientRect();
+    tile.style.left=(ev.clientX-ar2.left-ox)+'px';
+    tile.style.top=(ev.clientY-ar2.top-oy)+'px';
+   }
+   function up(ev){
+    tile.removeEventListener('pointermove',mv);tile.removeEventListener('pointerup',up);tile.removeEventListener('pointercancel',up);
+    var tr=tile.getBoundingClientRect();
+    var cx=tr.left+tr.width/2,cy=tr.top+tr.height/2,hit=null;
+    $$('#asmFrame .zone').forEach(function(z){
+     var zr=z.getBoundingClientRect();
+     if(cx>=zr.left&&cx<=zr.right&&cy>=zr.top&&cy<=zr.bottom)hit=z;
+    });
+    if(hit&&hit.dataset.g===tile.dataset.g){
+     hit.appendChild(tile);
+     tile.classList.remove('drag');tile.classList.add('snapped');
+     tile.style.left='50%';tile.style.top='50%';tile.style.transform='translate(-50%,-50%)';
+     hit.classList.add('filled');sfx('ok');
+     snapped++;$('#asmCnt').textContent=snapped;
+     if(snapped===ch.parts.length)charDone(w,ch);
+    }else{
+     tile.classList.remove('drag');tile.style.left='';tile.style.top='';tile.style.transform='';
+     if(hit){addErr();sfx('err');toast('Не тот отсек, сыщик.');}
+    }
+   }
+   tile.addEventListener('pointermove',mv);
+   tile.addEventListener('pointerup',up);
+   tile.addEventListener('pointercancel',up);
+  });
+ });
+}
+function charDone(w,ch){
+ sfx('stamp');
+ var f=$('#asmFrame');
+ f.classList.add('complete');
+ f.insertAdjacentHTML('beforeend','<div class="stamp asm-stamp">СОБРАНО</div>');
+ s1.charIdx++;
+ setTimeout(function(){showBreakdown(w,ch)},1100);
+}
+function showBreakdown(w,ch){
+ var syl=w.pinyin.split(' ')[Math.min(s1.charIdx-1,w.pinyin.split(' ').length-1)]||w.pinyin;
+ $('#s1body').innerHTML=
+  '<p class="mission">Улика подшита к делу. Изучи разбор элемента — такие детали раскрывают дела.</p>'+
+  '<div class="brk">'+
+   '<div class="han brk-char">'+ch.c+'</div>'+
+   '<div class="brk-py">'+syl+' · из слова '+w.zh+' «'+w.translation+'»</div>'+
+   '<div class="brk-parts">'+
+    ch.parts.map(function(p){return '<div class="brk-part"><span class="han">'+p.g+'</span><span class="pm">'+p.m+'</span><span class="zn">'+ZONE_LBL_LC[p.zone]+'</span></div>'}).join('')+
+   '</div>'+
+   '<button class="btn primary" id="brkNext">ДАЛЬШЕ</button>'+
+  '</div>';
+ $('#brkNext').addEventListener('click',function(){
+  sfx('click');
+  if(s1.charIdx<w.chars.length)stage1Char(w);
+  else stage1Quiz(w);
+ });
+}
+function stage1Quiz(w){
+ var q=w.quiz;
+ var opts=shuffle(q.opts);
+ $('#s1body').innerHTML=
+  '<p class="mission">Последний штрих, агент. Сколько <b>черт</b> в иероглифе <b class="han" style="font-size:64px;color:#c8f6ff">'+q.c+'</b>?</p>'+
+  '<div class="quiz" id="qz">'+opts.map(function(o){return '<button class="btn opt" data-v="'+o+'">'+o+'</button>'}).join('')+'</div>'+
+  '<div class="q-note" id="qzn"></div>';
+ $('#qz').addEventListener('click',function(e){
+  var b=e.target.closest('.opt');
+  if(!b||b.disabled)return;
+  if(+b.dataset.v===q.st){
+   b.classList.add('right');sfx('ok');
+   $$('#qz .opt').forEach(function(x){x.disabled=true});
+   $('#qzn').innerHTML='<span class="ok-note">Верно! Запускаю почерковедческую экспертизу…</span>';
+   setTimeout(function(){strokeShow(w)},900);
+  }else{
+   b.disabled=true;b.classList.add('wrong');
+   addErr();sfx('err');toast('Считай черты внимательнее.');
+  }
+ });
+}
+function strokeShow(w){
+ var q=w.quiz,N=q.st,asz=hwSize(220);
+ $('#s1body').innerHTML=
+  '<p class="mission">Почерковедческая экспертиза: сканер выписывает черты в правильном порядке — следи внимательно.</p>'+
+  '<div class="stk">'+
+   '<div id="hwA" style="width:'+asz+'px;height:'+asz+'px;margin:0 auto"></div>'+
+   '<div class="stk-cnt" id="hwALbl">ПРОЯВЛЯЮ ЧЕРТЫ ПО ПОРЯДКУ…</div>'+
+   '<div class="stk-fin" id="stkF"><div class="stamp big">'+N+' ЧЕРТ ПОДТВЕРЖДЕНО</div><div style="margin-top:14px"><button class="btn primary" id="stkNext">ДАЛЬШЕ</button></div></div>'+
+  '</div>';
+ function finish(){
+  $('#stkF').classList.add('on');sfx('stamp');
+  $('#stkNext').addEventListener('click',function(){sfx('click');nextWord(1)});
+ }
+ try{
+  var wr=makeHW('hwA',q.c,{});
+  wr.hideCharacter();
+  wr.animateCharacter({onComplete:finish});
+ }catch(e){finish()}
+}
+
+function stage2Start(){stage2Word()}
+function stage2Word(){
+ var w=WORDS[S.word];
+ refreshChips('#chips2');
+ $('#s2body').innerHTML=
+  '<p class="mission">Дело '+(S.word+1)+' из 5. Слово <b class="han">'+w.zh+'</b> («'+w.translation+'»). Вскрой его — иероглифы рассыплются на радикалы, а ты свяжешь каждый со значением.</p>'+
+  '<div id="s2s"><div class="word-big han" id="s2w">'+w.zh+'</div><div style="text-align:center"><button class="btn primary" id="s2b">ВСКРЫТЬ ДЕЛО</button></div></div>';
+ $('#s2b').addEventListener('click',function(){breakWord(w)});
+}
+function breakWord(w){
+  $('#s2w').classList.add('burst');
+  $('#s2b').disabled=true;sfx('stamp');
+  var rads=w.radicals;
+  var asm2='<div class="asm2"><div class="asm2-hint">УЛИКА СОБИРАЕТСЯ — СВЯЖИ КАЖДУЮ ЧАСТЬ СО ЗНАЧЕНИЕМ</div><div class="asm2-row" id="asm2row">'+
+   w.chars.map(function(ch){
+    var orient=ch.parts.some(function(p){return p.zone==='left'||p.zone==='right'})?'h':'v';
+    return '<div class="asm2-char"><div class="han asm2-ghost">'+ch.c+'</div>'+
+     ch.parts.map(function(p,zi){return '<div class="asm2-slot" data-g="'+p.g+'" style="'+zoneStyle(orient,zi,ch.parts.length)+'"></div>'}).join('')+
+    '</div>';
+   }).join('')+
+  '</div><div class="asm2-btns" id="asm2btns"></div></div>';
+  setTimeout(function(){
+   $('#s2s').innerHTML=
+    asm2+
+    '<div class="s2-wrap">'+
+    '<div class="rad-field" id="rf">'+
+     rads.map(function(r,i){
+      return '<div class="rad pre" data-r="'+r.r+'" style="left:'+SLOTS2[i].x+'%;top:'+SLOTS2[i].y+'%;--rot:'+(Math.random()*8-4).toFixed(1)+'deg"><span class="han">'+r.r+'</span></div>';
+     }).join('')+
+    '</div>'+
+    '<div class="mean-col" id="mc">'+
+     shuffle(rads).map(function(r){return '<button class="mean" data-r="'+r.r+'">'+r.m+'</button>'}).join('')+
+    '</div>'+
+   '</div>'+
+   '<div class="s2-progress">НАЙДЕНО ПАР: <b id="pairCnt">0</b> / '+rads.length+'</div>';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+   $$('#rf .rad').forEach(function(el){el.classList.remove('pre')});
+  })});
+  bindMatch(w,rads);
+ },380);
+}
+function fillAsm2(g){
+ var slots=$$('#asm2row .asm2-slot').filter(function(s){return s.dataset.g===g&&!s.classList.contains('filled')});
+ if(!slots.length)return;
+ slots.forEach(function(slot){
+  slot.classList.add('filled');
+  slot.innerHTML='<span class="han asm2-in">'+g+'</span>';
+  var box=slot.parentElement;
+  var inBox=box.querySelectorAll('.asm2-slot'),doneIn=box.querySelectorAll('.asm2-slot.filled');
+  if(inBox.length&&inBox.length===doneIn.length&&!box.classList.contains('complete')){
+   box.classList.add('complete');sfx('tick');
+  }
+ });
+}
+function bindMatch(w,rads){
+ var sel=null,cnt=0;
+ $('#rf').addEventListener('click',function(e){
+  var c=e.target.closest('.rad');
+  if(!c||c.classList.contains('done'))return;
+  $$('#rf .rad').forEach(function(x){x.classList.remove('sel')});
+  c.classList.add('sel');sel=c;sfx('click');
+ });
+ $('#mc').addEventListener('click',function(e){
+  var b=e.target.closest('.mean');
+  if(!b||b.disabled)return;
+  if(!sel){toast('Сначала выбери радикал на поле.');return}
+  if(b.dataset.r===sel.dataset.r){
+   b.disabled=true;b.classList.add('used');
+   var r=rads.filter(function(x){return x.r===sel.dataset.r})[0];
+    sel.classList.remove('sel');sel.classList.add('done');
+    sel.insertAdjacentHTML('beforeend','<span class="rad-m">'+r.m+'</span>');
+    fillAsm2(sel.dataset.r);
+    sel=null;sfx('ok');
+   cnt++;$('#pairCnt').textContent=cnt;
+   if(cnt===rads.length)s2Done(w,rads);
+  }else{
+   b.classList.add('shake');setTimeout(function(){b.classList.remove('shake')},420);
+   addErr();sfx('err');toast(hint());
+  }
+ });
+}
+function s2Done(w,rads){
+ sfx('win');
+ setTimeout(function(){
+  $('#asm2btns').innerHTML=
+   '<div class="s2-sum"><div class="stamp">РАЗОБРАНО</div>'+
+   '<div class="parts han">'+w.zh+' «'+w.translation+'» = '+rads.map(function(r){return r.r}).join(' + ')+'</div>'+
+   '<div style="margin-top:12px"><button class="btn primary" id="s2next">ДАЛЬШЕ</button></div></div>';
+  var ab=$('#asm2btns');
+  if(ab&&ab.scrollIntoView)try{ab.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}
+  $('#s2next').addEventListener('click',function(){sfx('click');nextWord(2)});
+ },600);
+}
+
+function stage3Start(){stage3Word()}
+function stage3Word(){
+ var w=WORDS[S.word];
+ refreshChips('#chips3');
+ $('#s3body').innerHTML=
+  '<p class="mission">Допрос свидетеля '+(S.word+1)+' из 5. Бирка с уликой перед тобой. Тон — главная улика: не перепутай.</p>'+
+  '<div class="evid-tag"><div class="han big-han">'+w.zh+'</div><button class="btn small listen" id="lsn">ПРОСЛУШАТЬ</button></div>'+
+  '<div id="q3"></div>';
+  $('#lsn').addEventListener('click',function(){
+   var au=$('#wAu');
+   if(!au)return;
+   try{
+    au.pause();
+    au.src=encodeURI(LESSON.audio+w.zh+'.mp3');
+    var p=au.play();
+    if(p&&p.catch)p.catch(function(){toast('Аудиофайл не найден: '+w.zh+'.mp3')});
+   }catch(e){toast('Озвучка в этом браузере недоступна.')}
+  });
+ q3q(w,1);
+}
+function q3q(w,sub){
+ var q=sub===1?w.q1:w.q2;
+ var opts=shuffle(q.o.map(function(t,i){return {t:t,ok:i===0}}));
+ $('#q3').innerHTML=
+  '<p class="q-prompt">'+q.p+'</p>'+
+  '<div class="quiz">'+opts.map(function(o){return '<button class="btn opt" data-ok="'+(o.ok?1:0)+'">'+o.t+'</button>'}).join('')+'</div>'+
+  '<div class="q-note" id="q3n"></div>';
+ $('#q3 .quiz').addEventListener('click',function(e){
+  var b=e.target.closest('.opt');
+  if(!b||b.disabled)return;
+  if(b.dataset.ok==='1'){
+   b.classList.add('right');sfx('ok');
+   $$('#q3 .opt').forEach(function(x){x.disabled=true});
+   $('#q3n').innerHTML=sub===1
+    ?'<span class="ok-note">Точно! '+w.zh+' — '+w.pinyin+(w.spoken!==w.pinyin?' (в речи: '+w.spoken+')':'')+' — «'+w.translation+'»</span>'
+    :'<span class="ok-note">Верно! Вопрос о тоне снят.</span>';
+   setTimeout(function(){sub===1?q3q(w,2):nextWord(3)},1400);
+  }else{
+   b.disabled=true;b.classList.add('wrong');
+   addErr();sfx('err');toast(hint());
+  }
+ });
+}
+
+var NS='http://www.w3.org/2000/svg';
+function stage4Start(){
+ s4.closed=0;s4.sel=null;
+ refreshChips('#chips4',-1,0);
+ s4.pairs=buildPairs();
+ var lay=buildLayout();
+ var total=WORDS.length;
+ var needH=Math.max(520,lay.rows*132+lay.trRows*112);
+ var dense=(lay.length>22)?' dense':'';
+ $('#s4body').innerHTML=
+  '<p class="mission">Голодоска нейро-архива. Кликни две карточки: если улики складываются — неоновая связь их свяжет. Соедини иероглифы в слова, а затем слова с их переводами. '+total+' закрытых слов — этап сдан.</p>'+
+  '<div class="board-wrap"><div class="board'+dense+'" id="board" style="height:'+needH+'px">'+
+   '<svg id="str" viewBox="0 0 1000 500" preserveAspectRatio="none" style="height:'+needH+'px"></svg>'+
+   lay.map(function(c,i){
+    var han=/[\u4e00-\u9fff]/.test(c.t);
+    return '<div class="ev-card" data-i="'+i+'" data-t="'+c.t+'" data-x="'+c.x+'" data-y="'+(c.y*500/needH)+'" style="left:'+c.x+'%;top:'+c.y+'%">'+
+     '<span class="pin"></span>'+(han?'<span class="ct han">'+c.t+'</span>':'<span class="ctr">'+c.t+'</span>')+
+    '</div>';
+   }).join('')+
+  '</div></div>'+
+  '<div class="s4-prog">ЗАКРЫТО СЛОВ: <b id="s4cnt">0</b> / '+total+'</div>';
+ $('#board').addEventListener('click',onBoardClick);
+}
+function onBoardClick(e){
+ var c=e.target.closest('.ev-card');
+ if(!c||c.classList.contains('gone')||c.classList.contains('closed'))return;
+ if(!s4.sel){s4.sel=c;c.classList.add('sel');sfx('click');return}
+ if(s4.sel===c){c.classList.remove('sel');s4.sel=null;return}
+ var a=s4.sel;s4.sel=null;
+ a.classList.remove('sel');
+ link4(a,c);
+}
+function drawStr(a,b,cls){
+ var x1=+a.dataset.x*10,y1=+a.dataset.y*5,x2=+b.dataset.x*10,y2=+b.dataset.y*5;
+ var g=document.createElementNS(NS,'g');
+ g.setAttribute('class','strg '+(cls||''));
+ g.innerHTML='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" vector-effect="non-scaling-stroke"/>'+
+  '<circle cx="'+x1+'" cy="'+y1+'" r="7"/><circle cx="'+x2+'" cy="'+y2+'" r="7"/>';
+ $('#str').appendChild(g);
+ if(cls==='bad')setTimeout(function(){g.remove()},650);
+ return g;
+}
+function link4(a,b){
+ var at=a.dataset.t,bt=b.dataset.t;
+ var pr=null;
+ s4.pairs.forEach(function(p){if((p[0]===at&&p[1]===bt)||(p[0]===bt&&p[1]===at))pr=p});
+ if(pr){drawStr(a,b,'good');merge4(a,b,pr[2]);return}
+ var wa=null,wb=null;
+ WORDS.forEach(function(w){
+  if(w.zh===at&&bt===w.translation)wa=w;
+  if(w.zh===bt&&at===w.translation)wb=w;
+ });
+ if(wa){close4(a,b,wa);return}
+ if(wb){close4(b,a,wb);return}
+ drawStr(a,b,'bad');addErr();sfx('err');toast(hint());
+}
+function merge4(a,b,res){
+ [a,b].forEach(function(el){el.classList.add('gone')});
+ var x=Math.round((+a.dataset.x+ +b.dataset.x)/2),y=Math.round((+a.dataset.y+ +b.dataset.y)/2);
+ var fw=null;
+ WORDS.forEach(function(w){if(w.zh===res)fw=w});
+ var div=document.createElement('div');
+ div.className='ev-card merged'+(fw?' word':'');
+ div.dataset.t=res;div.dataset.x=x;div.dataset.y=y;
+ div.style.left=x+'%';div.style.top=y+'%';
+ div.innerHTML='<span class="pin"></span><span class="ct han">'+res+'</span>'+(fw?'<span class="py-s">'+fw.pinyin+'</span>':'');
+ $('#board').appendChild(div);
+ sfx('ok');
+}
+function close4(wc,tc,w){
+ drawStr(wc,tc,'good');
+ wc.classList.add('closed');wc.dataset.closed='1';
+ tc.classList.add('gone');
+  sfx('stamp');s4.closed++;
+  $('#s4cnt').textContent=s4.closed;
+  refreshChips('#chips4',-1,s4.closed);
+  if(s4.closed>=WORDS.length){
+  sfx('win');
+  setTimeout(function(){interShow(4)},1300);
+ }
+}
+
+function stage5Start(){stage5Word()}
+function stage5Word(){
+ var w=WORDS[S.word];
+ refreshChips('#chips5');
+ $('#s5body').innerHTML=
+  '<p class="mission">Финальный допрос '+(S.word+1)+' из 5. Сначала — запомни начертание, затем — обведи черты сам: сканер примет только верный порядок.</p>'+
+  '<div class="memo-card" id="memo">'+
+   '<div class="han big-han">'+w.zh+'</div>'+
+   '<div class="memo-py">'+w.pinyin+' · '+w.translation+'</div>'+
+   '<div class="memo-bar"><i id="mbi"></i></div>'+
+   '<div class="memo-tip">ЗАПОМНИ НАЧЕРТАНИЕ — 3 СЕКУНДЫ</div>'+
+  '</div>';
+ requestAnimationFrame(function(){requestAnimationFrame(function(){
+  var b=$('#mbi');if(b)b.style.width='0%';
+ })});
+ setTimeout(function(){showWrite(w)},3100);
+}
+function showWrite(w){
+ var m=$('#memo');
+ if(m)m.classList.add('hide');
+ setTimeout(function(){hwQuiz(w,0)},360);
+}
+function hwQuiz(w,idx){
+ var ch=w.chars[idx].c;
+ var st=(window.STROKE_DATA&&STROKE_DATA[ch]&&STROKE_DATA[ch].strokes?STROKE_DATA[ch].strokes.length:7),qsz=hwSize(240);
+ $('#s5body').innerHTML=
+  '<p class="mission">Пиши по чертам: обведи иероглиф <b class="han">'+ch+'</b> — знак '+(idx+1)+' из '+w.chars.length+'. Верная черта фиксируется, неверная — ошибка. После трёх промахов сканер подсветит нужную черту.</p>'+
+  '<div class="stk">'+
+   '<div id="hwQ" style="width:'+qsz+'px;height:'+qsz+'px;margin:0 auto"></div>'+
+   '<div class="stk-cnt">ИЕРОГЛИФ '+(idx+1)+'/'+w.chars.length+' · ЧЕРТА <b id="hwQk">0</b> / '+st+'</div>'+
+   '<div class="stk-fin" id="hwQfin"><div class="stamp big">ИЕРОГЛИФ ПРОЙДЕН</div></div>'+
+  '</div>';
+ function next(){
+  if(idx+1<w.chars.length)setTimeout(function(){hwQuiz(w,idx+1)},1050);
+  else setTimeout(function(){nextWord(5)},1050);
+ }
+ try{
+  var wr=makeHW('hwQ',ch,{width:240,height:240,showCharacter:false,showOutline:true,leniency:1.15,showHintAfterMisses:3,drawingWidth:26});
+  wr.quiz({
+   onCorrectStroke:function(o){$('#hwQk').textContent=o.strokeNum+1;sfx('tick')},
+   onMistake:function(o){addErr();sfx('err');toast('Не та черта — попробуй ещё.')},
+   onComplete:function(res){
+    $('#hwQfin').classList.add('on');sfx('ok');next();
+   }
+  });
+ }catch(e){next()}
+}
+
+var cn=LESSON.caseNo||7123;
+var rN=Math.floor(1000+Math.random()*9000);
+$('#caseBadge').textContent='ДЕЛО №'+(Math.floor(1000+Math.random()*9000));
+$('#caseConf').textContent='СЕКРЕТНО · АРХИВ №'+rN;
+$('#caseCode').textContent=cn;
+document.title='Дело №'+(Math.floor(1000+Math.random()*9000))+' — '+(LESSON.title||'китайский');
+$('#covTitle').textContent=LESSON.title||'ДЕЛО О КИТАЙСКИХ СЛОВАХ';
+$('#covLead').textContent='Ночной город, 03:12. В терминале нейро-архива всплыло дело №'+rN+': '+(LESSON.topic||'китайские слова')+' стёрты из памяти города. Пройди пять этапов расследования: прояви иероглифы сканером-лупой, собери их из элементов, вычисли радикалы и тоны, сцепи улики неоновыми связями и восстанови почерк по памяти. Дело закроет только верный код.';
+$('#covWords').textContent=WORDS.map(function(w){return w.zh}).join(' · ');
+
+buildHud();
+})();
+</script>
+</body>
+</html>
