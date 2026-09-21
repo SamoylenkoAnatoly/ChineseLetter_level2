@@ -136,10 +136,10 @@ button{font-family:inherit}
   box-shadow:0 0 26px rgba(0,0,0,.7), inset 0 0 40px rgba(0,229,255,.03);
   display:flex;align-items:center;justify-content:center;
 }
-.glyph-wrap{position:relative;font-family:var(--fh);font-size:clamp(80px,20vw,150px);line-height:1;user-select:none}
+.glyph-wrap{position:relative;font-family:var(--fh);line-height:1;user-select:none;width:min(84%,400px);height:min(86%,400px);aspect-ratio:1/1;white-space:nowrap;display:flex;align-items:center;justify-content:center}
 .glyph-wrap .ghost{color:rgba(0,229,255,.05)}
 .glyph-wrap .reveal{
-  position:absolute;inset:0;color:#c8f6ff;clip-path:circle(0px at -100px -100px);
+  display:flex;align-items:center;justify-content:center;position:absolute;inset:0;color:#c8f6ff;clip-path:circle(0px at -100px -100px);
   text-shadow:0 0 22px rgba(0,229,255,.6);
 }
 .glyph-wrap.found-flash{animation:flashF .8s ease}
@@ -150,7 +150,7 @@ button{font-family:inherit}
 .scan-grid i.hot{border-color:rgba(0,229,255,.4);background:rgba(0,229,255,.06)}
 .scan-grid i.on{border-color:rgba(0,229,255,.55);background:rgba(0,229,255,.15);box-shadow:inset 0 0 12px rgba(0,229,255,.25)}
 .lens{
-  position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;pointer-events:none;
+  position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;pointer-events:none;
   border:3px solid var(--neon);
   background:radial-gradient(circle at 34% 28%, rgba(0,229,255,.16), rgba(0,0,0,0) 60%);
   box-shadow:0 0 26px rgba(0,229,255,.5), inset 0 0 20px rgba(0,229,255,.18), 0 14px 30px rgba(0,0,0,.7);
@@ -577,14 +577,6 @@ function buildLayout(){
  return items;
 }
 
-var PAIRS4=[["你","好","你好"],["谢","谢","谢谢"],["再","见","再见"],["对","不","对不"],["对不","起","对不起"],["没","关","没关"],["没关","系","没关系"]];
-var LAYOUT4=[
- {t:"你",x:10,y:18},{t:"好",x:25,y:9},{t:"谢",x:7,y:48},{t:"谢",x:19,y:67},
- {t:"再",x:40,y:15},{t:"见",x:55,y:8},{t:"对",x:70,y:12},{t:"不",x:84,y:21},{t:"起",x:90,y:45},
- {t:"没",x:9,y:87},{t:"关",x:27,y:93},{t:"系",x:42,y:87},
- {t:"Привет!",x:50,y:44},{t:"Спасибо!",x:66,y:58},{t:"До свидания!",x:82,y:82},
- {t:"Извините!",x:58,y:76},{t:"Ничего страшного!",x:33,y:52}
-];
 var SLOTS2=[{x:10,y:12},{x:62,y:10},{x:24,y:38},{x:74,y:36},{x:8,y:64},{x:60,y:62},{x:30,y:88},{x:76,y:88}];
 var DECOYS=["口","日","十","大","月","山","手","王"];
 var HINTS=["Хм, улика не сходится. Осмотрись внимательнее.","Так дело не раскроем, сыщик.","Смотри на форму и на смысл.","Неверная нить. Попробуй ещё раз.","Коньяк не поможет — только внимание."];
@@ -714,6 +706,13 @@ function stage1Word(){
 }
 function initSearch(w){
  var sz=$('#sz'),rv=$('#rv'),lens=$('#lens'),gw=$('#gw'),mf=$('#mf'),mpct=$('#mpct');
+ var rad=40;
+ function fitGlyph(){var r=gw.getBoundingClientRect();var m=Math.min(r.width,r.height);var n=Math.max(1,w.zh.length);gw.style.fontSize=Math.floor(m/(n*1.08))+'px';rad=Math.max(34,Math.floor(m*.17))}
+ fitGlyph();
+ if(window.__fitGw)window.removeEventListener('resize',window.__fitGw);
+ window.__fitGw=fitGlyph;window.addEventListener('resize',fitGlyph);
+ lens.style.transform='translate(-200px,-200px)';
+
  var cellEls=Array.prototype.slice.call($('#sgrid').children);
  var cells=[],i;
  for(i=0;i<25;i++)cells.push(0);
@@ -732,7 +731,7 @@ function initSearch(w){
   px=e.clientX;py=e.clientY;
   lens.style.transform='translate('+x+'px,'+y+'px)';
   var gr=rv.getBoundingClientRect();
-  rv.style.clipPath='circle(40px at '+(e.clientX-gr.left)+'px '+(e.clientY-gr.top)+'px)';
+  rv.style.clipPath='circle('+rad+'px at '+(e.clientX-gr.left)+'px '+(e.clientY-gr.top)+'px)';
  }
  function tick(){
   var ci=nearestCell(),j;
