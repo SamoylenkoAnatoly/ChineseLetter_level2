@@ -500,18 +500,9 @@
     return shuffle(list);
   }
   function corruptPhrase(ph) {
-    var idx = Math.floor(Math.random() * 2);
-    var orig, bad, i;
-    if (idx === 0) {
-      var od = [];
-      for (i = 0; i < DAYS.length; i++) { if (DAYS[i].hz !== ph.day.hz) od.push(DAYS[i].hz); }
-      orig = ph.day.hz; bad = pick(od);
-    } else {
-      var op = [];
-      for (i = 0; i < PERIODS.length; i++) { if (PERIODS[i].hz !== ph.per.hz) op.push(PERIODS[i].hz); }
-      orig = ph.per.hz; bad = pick(op);
-    }
-    return { badIdx: idx, origHz: orig, badHz: bad };
+    var op = [];
+    for (var i = 0; i < PERIODS.length; i++) { if (PERIODS[i].hz !== ph.per.hz) op.push(PERIODS[i].hz); }
+    return { badIdx: 1, origHz: ph.per.hz, badHz: pick(op) };
   }
 
   /* ---------- DOM ---------- */
@@ -790,6 +781,10 @@
     var bs = poolsEl.getElementsByTagName('button');
     for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
   }
+  function disableDayPool() {
+    var bs = tilesDay.getElementsByTagName('button');
+    for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
+  }
 
   /* ---------- Экраны, HUD ---------- */
   function show(name) {
@@ -836,16 +831,16 @@
       setFb('Поставь солнце в нужную часть дня и собери фразу из двух плиток: день → часть суток. Стрелки ← → тоже двигают солнце.', '');
     } else if (cur.type === 'B') {
       tCap.textContent = '◆ режим: исправь ошибку';
-      tRu.textContent = 'небо верно — фраза нет';
-      tSub.innerHTML = 'тапни неверную плитку, затем выбери замену';
+      tRu.textContent = 'день верен — часть суток нет';
+      tSub.innerHTML = 'солнце и день верны — исправь вторую плитку';
       cur.cor = corruptPhrase(ph);
-      var seq = [expDay, expPer];
-      seq[cur.cor.badIdx] = { cat: ['day', 'per'][cur.cor.badIdx], hz: cur.cor.badHz };
+      var seq = [expDay, { cat: 'per', hz: cur.cor.badHz }];
       setSlots(seq);
       renderSlots();
       syncPoolDisabled();
+      disableDayPool();
       setHour(pick(ph.per.nums));
-      setFb('Солнце стоит в верной части дня. Найди неверную плитку и замени её правильной.', '');
+      setFb('Солнце и день верны. Замени часть суток так, чтобы фраза совпала с положением солнца.', '');
     } else {
       tCap.textContent = '◆ режим: перевод';
       tRu.textContent = 'прочитай время и фразу';
@@ -886,6 +881,11 @@
     if (cur.type === 'A') {
       if (slots[i]) { slots[i] = null; renderSlots(); syncPoolDisabled(); sfxTick(); }
     } else if (cur.type === 'B') {
+      if (i === 0) {
+        setFb('День верен — менять его не нужно. Исправь вторую плитку (часть суток).', 'bad');
+        sfxBad();
+        return;
+      }
       selSlot = (selSlot === i ? -1 : i);
       renderSlots(); sfxTick();
     }
@@ -906,6 +906,7 @@
       slots[free] = { cat: cat, hz: hz };
       renderSlots(); syncPoolDisabled(); sfxTick();
     } else if (cur.type === 'B') {
+      if (cat === 'day') { setFb('День верен — подбери часть суток по положению солнца.', 'bad'); return; }
       if (selSlot < 0) { setFb('Сначала тапни плитку в слоте, которую считаешь ошибкой.', 'bad'); sfxBad(); return; }
       if (hz === slots[selSlot].hz) { selSlot = -1; renderSlots(); return; }
       if (selSlot === cur.cor.badIdx && hz === cur.cor.origHz) {
