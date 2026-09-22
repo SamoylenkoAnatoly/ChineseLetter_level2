@@ -79,7 +79,7 @@ button:focus-visible{outline:3px dashed var(--cyan);outline-offset:2px}
 #taskRu{font-size:20px;font-weight:700;letter-spacing:2px;color:var(--amb);text-shadow:2px 2px 0 #050310;text-transform:uppercase;margin:2px 0 2px}
 #passLbl{font-size:10px;font-weight:700;letter-spacing:2px;margin:0 0 6px}
 #cards{display:flex;gap:12px;justify-content:center}
-.cellbox{position:relative;width:var(--cs,138px);height:var(--cs,138px);border:3px solid var(--line);background:var(--panel2);box-shadow:4px 4px 0 #050310,inset 0 0 0 2px var(--lineD);display:flex;align-items:center;justify-content:center;touch-action:none}
+.cellbox{position:relative;width:var(--cs,180px);height:var(--cs,180px);border:3px solid var(--line);background:var(--panel2);box-shadow:4px 4px 0 #050310,inset 0 0 0 2px var(--lineD);display:flex;align-items:center;justify-content:center;touch-action:none}
 .cellbox::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,transparent calc(50% - 1px),rgba(127,212,255,.14) calc(50% - 1px),rgba(127,212,255,.14) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(to bottom,transparent calc(50% - 1px),rgba(127,212,255,.14) calc(50% - 1px),rgba(127,212,255,.14) calc(50% + 1px),transparent calc(50% + 1px));pointer-events:none;z-index:2}
 .cellbox.ok{border-color:var(--mint);animation:pop .3s}
 @keyframes pop{45%{transform:scale(1.12)}}
@@ -384,7 +384,7 @@ function cardSize(){
  try{cw=$("cards").clientWidth||0;}catch(e){}
  if(!cw){cw=Math.min(window.innerWidth||444,444)-28;}
  var s=Math.floor((cw-14)/2);
- return Math.max(104,Math.min(138,s));
+ return Math.max(120,Math.min(180,s));
 }
 function drawOpts(traced){
  var sz=cardSize();
