@@ -58,6 +58,7 @@ button:focus-visible{outline:3px dashed var(--cyan);outline-offset:2px}
 .pxbtn.gr{background:var(--mint);color:#04231a;box-shadow:0 5px 0 var(--mintD),inset 0 -3px 0 rgba(0,0,0,.2)}
 .pxbtn.gr:active{box-shadow:0 1px 0 var(--mintD),inset 0 -3px 0 rgba(0,0,0,.2)}
 .arena-wrap{position:relative;width:100%;flex:1 1 auto;min-height:120px;display:flex;align-items:center;justify-content:center}
+.arena-wrap.slim{flex:0 0 auto;min-height:0}
 #arena{display:block;width:auto;height:100%;max-width:100%;image-rendering:crisp-edges;image-rendering:pixelated;background:#07051a;border:3px solid var(--lineD);box-shadow:inset 0 0 0 2px #050310}
 #scr-over{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:rgba(7,4,18,.93);text-align:center;padding:12px}
 #scr-over.on{display:flex}
@@ -93,7 +94,7 @@ button:focus-visible{outline:3px dashed var(--cyan);outline-offset:2px}
 #msg{min-height:19px;font-size:11.5px;font-weight:700;letter-spacing:1px;text-align:center;margin:4px 0 6px}
 #nextRow{min-height:44px;display:flex;justify-content:center;align-items:center}
 h2.pt{font-size:19px;letter-spacing:3px;color:var(--mint);text-shadow:2px 2px 0 var(--mintD),4px 4px 0 #050310;margin:16px 0 6px;text-align:center}
-#fw{width:100%;height:auto;image-rendering:crisp-edges;image-rendering:pixelated;border:3px solid var(--lineD);background:#07051a;display:block;margin:12px 0 10px}
+#fw{width:100%;max-width:370px;height:auto;image-rendering:crisp-edges;image-rendering:pixelated;border:3px solid var(--lineD);background:#07051a;display:block;margin:12px auto 10px}
 .codelbl{font-size:10px;letter-spacing:3px;color:var(--dim)}
 .code{font-size:47px;font-weight:700;letter-spacing:13px;padding-left:13px;color:var(--mint);text-shadow:3px 3px 0 var(--mintD),6px 6px 0 rgba(5,3,16,.6);margin:4px 0 8px}
 #stats{font-size:10.5px;line-height:1.9;color:var(--dim);text-align:center;margin-bottom:14px}
@@ -145,7 +146,7 @@ h2.pt{font-size:19px;letter-spacing:3px;color:var(--mint);text-shadow:2px 2px 0 
   </div>
   <div id="ribbon"></div>
 
-  <div class="arena-wrap">
+  <div class="arena-wrap" id="arenaBox">
     <canvas id="arena" width="144" height="96"></canvas>
     <div id="scr-over">
       <h2>БАЗА ПАЛА</h2>
@@ -578,6 +579,9 @@ function finalOn(){
 }
 function show(id){
  ["scr-start","scr-game","scr-final"].forEach(function(s){$(s).classList.toggle("on",s===id);});
+ var aw=$("arenaBox");
+ aw.classList.toggle("slim",id!=="scr-game");
+ aw.style.height=id==="scr-final"?"120px":(id==="scr-start"?"200px":"");
 }
 $("startBtn").addEventListener("click",function(){
  ensureAudio();
@@ -634,6 +638,7 @@ function fwStep(now){
 }
 
 buildRibbon();
+show("scr-start");
 var last=performance.now();
 function loop(now){
  var dt=Math.min(.05,(now-last)/1000);last=now;
