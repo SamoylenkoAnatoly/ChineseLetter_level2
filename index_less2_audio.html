@@ -14,6 +14,7 @@ body{background:#0d1013;display:flex;justify-content:center;font-family:'Courier
 #scene{width:100%;height:auto;image-rendering:pixelated;border:3px solid var(--edge);background:#14171c}
 .screen{display:none;flex-direction:column;gap:11px;flex:1;justify-content:center}
 .screen.on{display:flex}
+#sGame.on{justify-content:flex-start;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 h1{font-size:clamp(20px,6vw,32px);letter-spacing:5px;color:var(--amber);text-align:center;text-shadow:3px 3px 0 #3a2c0a}
 .cn{font-size:clamp(16px,4.5vw,24px);letter-spacing:10px;color:var(--lcd);text-align:center;font-family:'Microsoft YaHei','SimHei',sans-serif;text-shadow:0 0 12px rgba(141,255,176,.5)}
 .rules{color:var(--dim);text-align:center;font-size:13px;line-height:1.7;letter-spacing:1px}
@@ -35,7 +36,16 @@ h1{font-size:clamp(20px,6vw,32px);letter-spacing:5px;color:var(--amber);text-ali
 #cards.o3{grid-template-columns:repeat(3,1fr)}
 #cards.o4{grid-template-columns:repeat(4,1fr)}
 #cards.o5{grid-template-columns:repeat(5,1fr)}
-@media(max-width:520px){#cards.o4,#cards.o5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){#cards.o4,#cards.o5{grid-template-columns:repeat(2,1fr)}
+#app{padding:8px;gap:6px}
+#scene{max-height:26vh;object-fit:contain;background:#14171c}
+#cards{gap:6px}
+.card{min-height:54px;padding:7px 2px;border-width:2px}
+.han{font-size:18px}
+.key{top:2px;left:3px}
+.btn{padding:10px 12px;font-size:14px}
+#hud,#stageinfo{padding:4px 8px}
+#feedback{font-size:12px;min-height:18px}}
 .card{position:relative;cursor:pointer;user-select:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:linear-gradient(#4a525d,#333a43);color:var(--ink);border:3px solid #14171a;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 0 var(--dark);min-height:78px;padding:10px 4px}
 .card:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 0 var(--dark)}
 .key{position:absolute;top:3px;left:4px;font-size:10px;font-weight:700;color:#0d1013;background:var(--amber);border:1px solid #14171a;padding:0 3px;letter-spacing:0}
@@ -109,7 +119,7 @@ const active=[];for(let i=0;i<=s;i++)active.push.apply(active,POOL[i]);
 const seq=shuffle(POOL[s].slice());
 if(seq[0]===last&&seq.length>1){for(let j=1;j<seq.length;j++){if(seq[j]!==last){const t=seq[0];seq[0]=seq[j];seq[j]=t;break}}}
 last=seq[seq.length-1];
-plan.push({words:seq,options:shuffle(active.slice())})}
+plan.push({words:seq,pool:active.slice()})}
 return plan}
 const SC={stage:0,q:0,mode:'start',plates:[],press:null,fall:null,errT:0,pop:0};
 function sceneSet(o){for(const k in o)SC[k]=o[k]}
@@ -265,12 +275,13 @@ function updateHud(){let h='';for(let i=0;i<3;i++)h+='<span'+(G&&i<G.lives?'':' 
 gearsEl.forEach(function(r,i){r.classList.toggle('on',SC.mode==='win'||(G&&i<G.stage))})}
 function newGame(){R=mulberry32((Date.now()&0xffff)^ri(9999));G={stage:0,qi:0,lives:3,mastered:{},plan:buildPlan()};lock=false;show('game');updateHud();ask()}
 function ask(){const st=G.plan[G.stage];curWord=st.words[G.qi];lock=false;
+const opts=shuffle([curWord].concat(shuffle(st.pool.filter(function(x){return x!==curWord})).slice(0,OPT_N[G.stage]-1)));
 stageNameEl.textContent=STAGES[G.stage].label;
 roundNameEl.textContent='ДЕТАЛЬ '+(G.qi+1)+'/'+STAGE_N[G.stage];
 cardsEl.innerHTML='';
 cardsEl.className='o'+OPT_N[G.stage];
-sceneSet({stage:G.stage,q:G.qi,mode:'play',plates:st.options.slice(),press:null,fall:null,errT:0});
-st.options.forEach(function(w,i){
+sceneSet({stage:G.stage,q:G.qi,mode:'play',plates:opts.slice(),press:null,fall:null,errT:0});
+opts.forEach(function(w,i){
 const b=document.createElement('button');b.className='card';b.type='button';
 const key=document.createElement('span');key.className='key';key.textContent=(i+1)%10;
 const hs=document.createElement('span');hs.className='han';hs.textContent=w;
@@ -280,13 +291,12 @@ cardsEl.appendChild(b)});
 setFB(STAGES[G.stage].hint,'');updateHud();
 setTimeout(function(){playWord(curWord)},400)}
 function answer(w,btn){if(lock)return;if(btn.classList.contains('bad')||btn.classList.contains('good'))return;
-const st=G.plan[G.stage];
 if(w===curWord){lock=true;btn.classList.add('good');G.mastered[w]=1;sGood();
-SC.press={i:st.options.indexOf(curWord),t:0};
+SC.press={i:SC.plates.indexOf(curWord),t:0};
 setFB(curWord+' — '+WORDS[curWord]+' · '+pick(GOODFLAVOR),'good');updateHud();
 setTimeout(function(){G.qi++;if(G.qi>=STAGE_N[G.stage]){G.qi=0;G.stage++;if(G.stage>3){winGame();return}}ask()},1300)}
 else{G.lives--;sBad();btn.classList.add('bad');updateHud();
-SC.fall={i:st.options.indexOf(w),t:0};SC.errT=1;
+SC.fall={i:SC.plates.indexOf(w),t:0};SC.errT=1;
 if(G.lives<=0){lock=true;setFB('ПРЕСС ПЕРЕГРЕЛСЯ...','bad');setTimeout(loseGame,1100)}
 else{setFB(pick(BADMSG)+' · ЖИЗНИ: '+G.lives,'bad');setTimeout(function(){if(curWord&&!lock)playWord(curWord)},700)}}}
 function winGame(){sceneSet({mode:'win'});updateHud();show('win');sWin();sparks(75,20,24,'#ffd76a')}
