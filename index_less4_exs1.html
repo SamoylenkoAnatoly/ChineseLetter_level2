@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{background:#07080f;display:flex;align-items:center;justify-content:center;padding:6px;font-family:"Courier New",monospace;color:#e8e8f4;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-#app{width:100%;max-width:446px;position:relative;background:#141a30;border:4px solid #262e57;box-shadow:0 0 0 3px #0a0d1c,0 14px 40px rgba(0,0,0,.65),inset 0 0 0 3px #0a0d1c;padding:9px}
+#app{width:100%;max-width:720px;position:relative;background:#141a30;border:4px solid #262e57;box-shadow:0 0 0 3px #0a0d1c,0 14px 40px rgba(0,0,0,.65),inset 0 0 0 3px #0a0d1c;padding:10px}
 #app::before{content:"";position:absolute;inset:0;z-index:59;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(4,6,14,.5));animation:flick 6s infinite}
 #app::after{content:"";position:absolute;inset:0;z-index:60;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(4,6,14,.18) 0 1px,transparent 1px 3px)}
 @keyframes flick{0%,100%{opacity:1}50%{opacity:.87}}
@@ -40,22 +40,22 @@ body{background:#07080f;display:flex;align-items:center;justify-content:center;p
 h2.pt{font-size:20px;letter-spacing:3px;color:#5ad7ff;text-shadow:2px 2px 0 #123a54,4px 4px 0 #1b1030;margin-bottom:8px;text-align:center}
 .interTxt{font-size:11.5px;color:#9aa3d0;margin-bottom:16px;text-align:center;line-height:1.6}
 #prompt{margin-top:8px;font-size:11px;letter-spacing:3px;color:#8f98c9;text-align:center}
-#ruWord{font-size:23px;font-weight:700;letter-spacing:1px;color:#ffd83d;margin:4px 0 10px;text-shadow:2px 2px 0 #231336;text-align:center}
+#ruWord{font-size:27px;font-weight:700;letter-spacing:1px;color:#ffd83d;margin:5px 0 10px;text-shadow:2px 2px 0 #231336;text-align:center}
 #slots{display:flex;gap:10px;justify-content:center;margin-bottom:10px}
-.slot{width:56px;height:56px;border:3px dashed #3a4375;background:#111731;display:flex;align-items:center;justify-content:center;font-family:var(--zh);font-size:28px;cursor:pointer}
+.slot{width:70px;height:70px;border:3px dashed #3a4375;background:#111731;display:flex;align-items:center;justify-content:center;font-family:var(--zh);font-size:34px;cursor:pointer}
 .slot.fill{border-style:solid;border-color:#ffd83d;background:#1d2547}
 .slot.ok{border:3px solid #2fbd75;background:#0f2b1d;color:#58ffa6;animation:pop .3s}
 @keyframes pop{45%{transform:scale(1.18)}}
 #slots.shake{animation:shk .45s}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-#pool{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:48px}
-.tile{width:46px;height:46px;font-family:var(--zh);font-size:23px;font-weight:700;color:#171b30;background:#c9d0ef;border:none;cursor:pointer;box-shadow:0 4px 0 #0e1226,inset 2px 2px 0 rgba(255,255,255,.5),inset -2px -2px 0 rgba(20,25,60,.35)}
+#pool{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;min-height:58px}
+.tile{width:58px;height:58px;font-family:var(--zh);font-size:30px;font-weight:700;color:#171b30;background:#c9d0ef;border:none;cursor:pointer;box-shadow:0 4px 0 #0e1226,inset 2px 2px 0 rgba(255,255,255,.5),inset -2px -2px 0 rgba(20,25,60,.35)}
 .tile:hover{transform:translateY(-2px)}
 .tile:active{transform:translateY(2px);box-shadow:0 2px 0 #0e1226,inset 2px 2px 0 rgba(255,255,255,.5),inset -2px -2px 0 rgba(20,25,60,.35)}
 .tile.used{opacity:.16;transform:none;pointer-events:none}
 #mini{display:none;font-family:var(--zh);font-size:14px;color:#6d76a8;letter-spacing:4px;margin:-4px 0 8px;text-align:center}
 #wgrid{display:none;gap:10px;justify-content:center;margin-bottom:8px}
-.wcard{width:188px;height:188px;background:#111731;border:3px dashed #3a4375;display:flex;align-items:center;justify-content:center}
+.wcard{width:210px;height:210px;background:#111731;border:3px dashed #3a4375;display:flex;align-items:center;justify-content:center}
 .wcard.ok{border:3px solid #2fbd75;animation:pop .3s}
 #wtool{display:none;gap:8px;justify-content:center;margin-bottom:6px}
 #wtool button{font-family:inherit;font-weight:700;letter-spacing:1px;font-size:11px;color:#ffd83d;background:#20264a;border:2px solid #3a4375;padding:5px 10px;cursor:pointer;box-shadow:0 3px 0 #0e1226}
@@ -235,7 +235,7 @@ $('resetBtn').addEventListener('click',function(){S.click();restartDraw();});
 function showTiles(on){if(on){$('slots').style.display='';$('pool').style.display='';$('hint').style.display='';$('wgrid').style.display='none';$('wtool').style.display='none';$('mini').style.display='none';}else{$('slots').style.display='none';$('pool').style.display='none';$('hint').style.display='none';$('wgrid').style.display='flex';$('wtool').style.display='flex';$('mini').style.display='block';}}
 function setupTiles(w,nd){var set={},others,items,i;showTiles(true);for(i=0;i<w.zh.length;i++)set[w.zh.charAt(i)]=1;others=shuffle(ALLCH.filter(function(c){return !set[c];})).slice(0,nd);items=shuffle(w.zh.split('').map(function(c){return {c:c};}).concat(others.map(function(c){return {c:c};})));slotsState=[null,null];renderPool(items);renderSlots();msg('СОБЕРИ СЛОВО ↓','#8f98c9');}
 var writers=[null,null],cardState=[{done:false,got:0},{done:false,got:0}],strokeTot=0,lastSwish=0,hintBusy=false;
-function drawOpts(){return {width:182,height:182,padding:6,showOutline:false,showCharacter:false,showCharacterAfterComplete:true,showHintAfterMisses:3,leniency:1.05,strokeColor:'#58ffa6',outlineColor:'#3a4375',highlightColor:'#5ad7ff',drawingColor:'#ffd83d',drawingWidth:6,charDataLoader:function(ch,onLoad){onLoad(HZDATA[ch]);}};}
+function drawOpts(){return {width:204,height:204,padding:6,showOutline:false,showCharacter:false,showCharacterAfterComplete:true,showHintAfterMisses:3,leniency:1.05,strokeColor:'#58ffa6',outlineColor:'#3a4375',highlightColor:'#5ad7ff',drawingColor:'#ffd83d',drawingWidth:6,charDataLoader:function(ch,onLoad){onLoad(HZDATA[ch]);}};}
 function qOpts(ch,ci){return {onCorrectStroke:function(){if(!cardState[ci].done){cardState[ci].got++;S.blip();drawMsg();}},onMistake:function(){S.miss();},onComplete:function(){cardOk(ci);}};}
 function drawMsg(){var g=cardState[0].got+cardState[1].got;msg('ПИШИ ПО ПАМЯТИ · ЧЕРТЫ: '+g+'/'+strokeTot,'#8f98c9');}
 function cardOk(ci){var w;if(cardState[ci].done)return;cardState[ci].done=true;$('hw'+ci).classList.add('ok');if(cardState[0].done&&cardState[1].done){w=order[idx];wordDone(w);}else{msg('ЗНАК ГОТОВ · ДОПИШИ ВТОРОЙ ↓','#8f98c9');}}
