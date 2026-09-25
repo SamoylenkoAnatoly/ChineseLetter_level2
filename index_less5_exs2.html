@@ -455,7 +455,7 @@ var CV=$("cv"),VX=CV.getContext("2d");
 var U=2,W=480,H=208;
 var FLOOR=82;
 var STARS=[],si;
-for(si=0;si<36;si++)STARS.push({x:66+((si*17)%44),y:9+((si*29)%30)});
+for(si=0;si<36;si++)STARS.push({x:60+((si*17)%60),y:6+((si*29)%48)});
 function R(x,y,w,h,c){VX.fillStyle=c;VX.fillRect(x,y,w,h)}
 function burstAt(x,y,n,cols){
   for(var i=0;i<n;i++)PARTS.push({x:x,y:y,vx:(Math.random()-0.5)*90,vy:-30-Math.random()*80,l:0.7+Math.random()*0.5,c:pk(cols)});
@@ -502,7 +502,7 @@ function drawFloor(t){
   R(0,FLOOR*U,W,1,"#9c6a3e");
 }
 function drawWindow(t){
-  var wx0=64*U,wx1=112*U,wy0=6*U,wy1=56*U,r=(wx1-wx0)/2;
+  var wx0=58*U,wx1=122*U,wy0=4*U,wy1=68*U,r=(wx1-wx0)/2;
   VX.save();
   VX.beginPath();
   VX.moveTo(wx0,wy1);
@@ -562,7 +562,7 @@ function drawWindow(t){
   R(wx0-8,wy1,(wx1-wx0)+16,2,"#6f6a9e");
 }
 function drawWinLight(){
-  var wx0=64*U,wx1=112*U,wy1=56*U;
+  var wx0=58*U,wx1=122*U,wy1=68*U;
   var day=SKIES[stage].day;
   VX.fillStyle=day?"rgba(255,214,140,.07)":"rgba(150,170,255,.05)";
   VX.beginPath();
