@@ -3,64 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Мастерская хитрого волшебника · Числа</title>
+<title>Мастерская хитрого волшебника · Вежливые слова</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#0f0802;--tower1:#33230b;--tower2:#140d04;
---panel:#241a08;--panel2:#2d2009;--line:#8a6a2a;--line2:#5a4315;
---parch:#e8d5a9;--parchink:#4a3018;--parchline:#a8804a;
---gold:#ffd76a;--goldD:#8a5a10;--ink:#fff4e0;--dim:#c2a878;
---grn:#5aff7a;--red:#ff4d5e;--orng:#ff9a5e;--mag:#8ad8ff;--amb:#ffb45e;
+--bg:#031310;--tower1:#103a32;--tower2:#071e1a;
+--panel:#0f2a24;--panel2:#14332c;--line:#2f8f78;--line2:#1e5c4d;
+--parch:#dcf2e4;--parchink:#123b31;--parchline:#3f9c7d;
+--gold:#6ff2c8;--goldD:#17795f;--ink:#eafff6;--dim:#7db8a4;
+--grn:#5aff7a;--red:#ff4d5e;--orng:#ff9a5e;--mag:#8ad8ff;--amb:#35d9a8;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);font-family:'Rubik','Microsoft YaHei','SimSun',sans-serif;color:var(--ink);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:manipulation;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
 #stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-#game{position:relative;width:min(100%,800px);height:min(100%,700px);background:linear-gradient(180deg,var(--tower1) 0%,var(--tower2) 70%);border:4px solid var(--line2);box-shadow:0 0 0 4px #0a0602,8px 8px 0 rgba(10,6,2,.8),inset 0 0 60px rgba(150,110,40,.35);overflow:hidden}
+#game{position:relative;width:min(100%,800px);height:min(100%,700px);background:linear-gradient(180deg,var(--tower1) 0%,var(--tower2) 70%);border:4px solid var(--line2);box-shadow:0 0 0 4px #02100d,8px 8px 0 rgba(2,16,13,.8),inset 0 0 60px rgba(40,180,140,.28);overflow:hidden}
 #stars{position:absolute;inset:0;z-index:0;pointer-events:none}
 .st{position:absolute;width:2px;height:2px;background:#fff;opacity:.7;animation:tw 3s steps(2) infinite}
 @keyframes tw{50%{opacity:.15}}
-.moon{position:absolute;top:26px;right:36px;width:40px;height:40px;border-radius:50%;background:var(--amb);box-shadow:inset -8px -5px 0 #b3671e,0 0 22px rgba(255,170,80,.5);z-index:0}
+.moon{position:absolute;top:26px;right:36px;width:40px;height:40px;border-radius:50%;background:var(--amb);box-shadow:inset -8px -5px 0 #1f8a6c,0 0 22px rgba(80,240,190,.45);z-index:0}
 .moon::after{content:'';position:absolute;left:13px;top:-5px;width:36px;height:36px;border-radius:50%;background:var(--tower1)}
-.bricks{position:absolute;left:0;right:0;bottom:0;height:22px;background:repeating-linear-gradient(90deg,#3a2a10 0 26px,#2c1f0b 26px 52px);border-top:3px solid #5a4315;z-index:0;opacity:.55}
+.bricks{position:absolute;left:0;right:0;bottom:0;height:22px;background:repeating-linear-gradient(90deg,#15473a 0 26px,#0e352b 26px 52px);border-top:3px solid #1e5c4d;z-index:0;opacity:.55}
 .scr{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:5;overflow-y:auto}
 .scr.on{display:flex}
 .wiz{image-rendering:pixelated;width:108px;height:126px;flex:none}
 .wiz.bob{animation:bob 1.6s steps(2) infinite}
 @keyframes bob{50%{transform:translateY(-5px)}}
-.hanzi-logo{font-size:42px;color:var(--amb);text-shadow:4px 4px 0 #5a3a10,0 0 30px rgba(255,180,94,.45);letter-spacing:6px}
+.hanzi-logo{font-size:42px;color:var(--amb);text-shadow:4px 4px 0 #0d3a2e,0 0 30px rgba(80,240,190,.45);letter-spacing:6px}
 .ttl{font-size:19px;letter-spacing:3px;margin-top:6px;color:var(--ink);text-shadow:3px 3px 0 #0f0a03}
 .start-scene{display:flex;align-items:center;gap:14px;margin:16px 0 8px;max-width:92%}
-.bubble{position:relative;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);padding:12px 16px;font-size:14px;line-height:1.55;box-shadow:4px 4px 0 rgba(15,8,2,.75)}
+.bubble{position:relative;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);padding:12px 16px;font-size:14px;line-height:1.55;box-shadow:4px 4px 0 rgba(2,16,13,.75)}
 .bubble::before{content:'';position:absolute;left:-14px;top:30px;width:0;height:0;border:7px solid transparent;border-right-color:var(--parchline)}
 .rules{display:flex;gap:10px;margin:8px 0 6px;flex-wrap:wrap;justify-content:center}
-.rc{width:180px;background:var(--panel);border:3px solid var(--line2);box-shadow:3px 3px 0 rgba(15,8,2,.7);padding:9px 10px;text-align:center}
+.rc{width:180px;background:var(--panel);border:3px solid var(--line2);box-shadow:3px 3px 0 rgba(2,16,13,.7);padding:9px 10px;text-align:center}
 .rc b{display:block;font-size:13px;letter-spacing:2px;margin-bottom:5px}
 .rc span{font-size:10.5px;color:var(--dim);line-height:1.5;display:block}
 .r-build b{color:var(--amb)}.r-decoy b{color:var(--orng)}.r-miss b{color:var(--mag)}.r-rec b{color:var(--grn)}.r-chaos b{color:var(--red)}
 .note{font-size:11px;color:var(--dim);letter-spacing:1px;margin:4px 0 14px}
-.btn{font-family:inherit;font-weight:700;font-size:14px;letter-spacing:2px;background:var(--gold);color:#3a1c04;border:3px solid var(--goldD);padding:12px 26px;cursor:pointer;box-shadow:0 5px 0 var(--goldD),inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(0,0,0,.18)}
+.btn{font-family:inherit;font-weight:700;font-size:14px;letter-spacing:2px;background:var(--gold);color:#04382c;border:3px solid var(--goldD);padding:12px 26px;cursor:pointer;box-shadow:0 5px 0 var(--goldD),inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(0,0,0,.18)}
 .btn:hover{filter:brightness(1.1)}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--goldD),inset 0 3px 0 rgba(255,255,255,.4)}
-.btn.magic{background:#ffb45e;color:#2a1503;border-color:#8a5a10;box-shadow:0 5px 0 #8a5a10,inset 0 3px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(0,0,0,.25);font-size:16px;padding:14px 32px}
+.btn.magic{background:#35d9a8;color:#04382c;border-color:#17795f;box-shadow:0 5px 0 #17795f,inset 0 3px 0 rgba(255,255,255,.45),inset 0 -4px 0 rgba(0,0,0,.25);font-size:16px;padding:14px 32px}
 .btn.magic:hover{filter:brightness(1.12)}
-.btn.magic:active{box-shadow:0 1px 0 #8a5a10,inset 0 3px 0 rgba(255,255,255,.35)}
-.btn.stone{background:#3a2a10;color:var(--dim);border-color:#2c1f0b;box-shadow:0 5px 0 #1c1305,inset 0 2px 0 rgba(255,255,255,.12);font-size:12px;padding:10px 18px}
-.btn.stone:active{box-shadow:0 1px 0 #1c1305}
-.btn.hint{background:var(--parch);color:#4a3018;border-color:#a8804a;box-shadow:0 5px 0 #6a4a20,inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(0,0,0,.15);font-size:12px;padding:10px 18px}
-.btn.hint:active{box-shadow:0 1px 0 #6a4a20}
+.btn.magic:active{box-shadow:0 1px 0 #17795f,inset 0 3px 0 rgba(255,255,255,.35)}
+.btn.stone{background:#15473a;color:var(--dim);border-color:#0e352b;box-shadow:0 5px 0 #08211b,inset 0 2px 0 rgba(255,255,255,.12);font-size:12px;padding:10px 18px}
+.btn.stone:active{box-shadow:0 1px 0 #08211b}
+.btn.hint{background:var(--parch);color:#123b31;border-color:#3f9c7d;box-shadow:0 5px 0 #2a7a62,inset 0 3px 0 rgba(255,255,255,.5),inset 0 -4px 0 rgba(0,0,0,.15);font-size:12px;padding:10px 18px}
+.btn.hint:active{box-shadow:0 1px 0 #2a7a62}
 #scr-game{justify-content:flex-start;padding:12px 16px 14px;gap:10px}
-.pbox{background:var(--panel);border:3px solid var(--line);box-shadow:0 4px 0 rgba(15,8,2,.8),inset 0 0 0 2px #160e04}
+.pbox{background:var(--panel);border:3px solid var(--line);box-shadow:0 4px 0 rgba(2,16,13,.8),inset 0 0 0 2px #08211b}
 #hud{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px}
 #hearts{display:flex;gap:6px}
 #hearts canvas{width:21px;height:18px;image-rendering:pixelated}
 #hearts canvas:nth-child(1){animation:bob 1.8s steps(2) infinite}
 #mid{display:flex;flex-direction:column;align-items:center;gap:5px}
 #dots{display:flex;gap:5px}
-.dot{width:10px;height:10px;background:#1c1406;border:2px solid var(--line2)}
+.dot{width:10px;height:10px;background:#0c2b23;border:2px solid var(--line2)}
 .dot.done{background:var(--grn);border-color:#2a7a3a}
 .dot.cur{border-color:var(--gold);animation:dblink .9s steps(2) infinite}
 @keyframes dblink{50%{background:var(--gold)}}
@@ -69,12 +69,12 @@ body{background:var(--bg);font-family:'Rubik','Microsoft YaHei','SimSun',sans-se
 .scorebox{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
 .scorebox i{font-style:normal;font-size:8px;letter-spacing:2px;color:var(--dim)}
 .scorebox b{font-size:16px;color:var(--gold)}
-.sbtn{font-family:inherit;font-size:9px;letter-spacing:1px;color:var(--mag);background:#1c1406;border:2px solid #3a6a8a;padding:6px 8px;cursor:pointer;box-shadow:2px 2px 0 rgba(15,8,2,.7)}
+.sbtn{font-family:inherit;font-size:9px;letter-spacing:1px;color:var(--mag);background:#0c2b23;border:2px solid #3a6a8a;padding:6px 8px;cursor:pointer;box-shadow:2px 2px 0 rgba(2,16,13,.7)}
 .sbtn.off{color:var(--red);border-color:#7a2a36}
 #scene{width:100%;display:flex;align-items:center;gap:14px;padding:8px 14px}
-#bubble{flex:1;min-height:64px;display:flex;align-items:center;font-size:13px}
+#bubble{flex:1;min-height:48px;display:flex;align-items:center;font-size:13px}
 #task{width:100%;padding:8px 14px;display:flex;flex-direction:column;gap:5px}
-.chip-type{align-self:flex-start;font-size:10px;letter-spacing:2px;padding:3px 9px;border:2px solid;background:#1c1406}
+.chip-type{align-self:flex-start;font-size:10px;letter-spacing:2px;padding:3px 9px;border:2px solid;background:#0c2b23}
 .chip-type.c-build{color:var(--amb);border-color:var(--amb)}
 .chip-type.c-decoy{color:var(--orng);border-color:var(--orng)}
 .chip-type.c-miss{color:var(--mag);border-color:var(--mag)}
@@ -85,43 +85,43 @@ body{background:var(--bg);font-family:'Rubik','Microsoft YaHei','SimSun',sans-se
 #t-py{font-size:13px;color:var(--gold)}
 #t-inst{font-size:12.5px;color:var(--ink);line-height:1.5}
 #work{position:relative;width:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 14px;min-height:150px}
-#cells{display:flex;gap:16px;justify-content:center;align-items:stretch;flex-wrap:wrap}
+#cells{display:flex;gap:10px;justify-content:center;align-items:stretch;flex-wrap:wrap}
 #cells.shake .cell,#cells.shake .bigrec{animation:tshake .45s}
 @keyframes tshake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-.cell{position:relative;min-width:190px;border:3px dashed #8a6a2a;background:#1c1406;padding:22px 10px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
-.cell.v{min-width:130px}
+.cell{position:relative;min-width:0;border:3px dashed #2f8f78;background:#0c2b23;padding:20px 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.cell.v{min-width:0}
 .cell .cpy{position:absolute;top:6px;left:10px;font-size:11px;letter-spacing:1px;color:var(--mag)}
-.cell .cnt{position:absolute;top:6px;right:10px;font-size:10px;letter-spacing:1px;color:#6a5220}
-.cell .cwm{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:500;color:rgba(255,180,94,.32);line-height:1;pointer-events:none;opacity:0;transition:opacity .3s}
+.cell .cnt{position:absolute;top:6px;right:10px;font-size:10px;letter-spacing:1px;color:#4d8f7c}
+.cell .cwm{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:500;color:rgba(80,240,190,.30);line-height:1;pointer-events:none;opacity:0;transition:opacity .3s}
 .cell .cwm.reveal{opacity:1}
-.cell .slots{display:flex;gap:8px;justify-content:center;align-items:center}
+.cell .slots{display:flex;gap:6px;justify-content:center;align-items:center;min-width:0}
 .cell.v .slots{flex-direction:column}
-.cell.done{border-style:solid;border-color:var(--grn);box-shadow:inset 0 0 0 2px #1a4a2a,0 0 16px rgba(90,255,122,.45)}
-.cellbig{font-size:54px;color:#fff;text-shadow:3px 3px 0 rgba(15,8,2,.6);animation:tpop .3s;line-height:1.1}
-.bigrec{font-size:110px;color:#fff;text-shadow:4px 4px 0 rgba(20,12,4,.6),0 0 40px rgba(255,180,94,.35);line-height:1.15;padding:6px 14px}
-.pslot{position:relative;width:60px;height:60px;border:3px dashed #8a6a2a;background:#160e04;display:flex;align-items:center;justify-content:center}
-.pslot .pn{position:absolute;top:1px;left:5px;font-size:9px;color:#5a4315}
-.pslot.over{border-color:var(--gold);background:#2c1f0b;box-shadow:0 0 12px rgba(255,215,106,.45)}
-.mini{cursor:grab;touch-action:none;background:var(--parch);border:2px solid var(--parchline);color:var(--parchink);padding:6px 8px;box-shadow:2px 2px 0 rgba(15,8,2,.7);display:flex;align-items:center;justify-content:center}
+.cell.done{border-style:solid;border-color:var(--grn);box-shadow:inset 0 0 0 2px #0f4a35,0 0 16px rgba(90,255,122,.45)}
+.cellbig{font-size:40px;color:#fff;text-shadow:3px 3px 0 rgba(2,16,13,.6);animation:tpop .3s;line-height:1.1}
+.bigrec{font-size:110px;color:#fff;text-shadow:4px 4px 0 rgba(20,12,4,.6),0 0 40px rgba(80,240,190,.35);line-height:1.15;padding:6px 14px}
+.pslot{position:relative;width:clamp(30px,9vw,46px);height:auto;aspect-ratio:1;flex:0 1 auto;min-width:0;border:3px dashed #2f8f78;background:#08211b;display:flex;align-items:center;justify-content:center}
+.pslot .pn{position:absolute;top:1px;left:5px;font-size:9px;color:#1e5c4d}
+.pslot.over{border-color:var(--gold);background:#0e352b;box-shadow:0 0 12px rgba(120,255,214,.45)}
+.mini{cursor:grab;touch-action:none;background:var(--parch);border:2px solid var(--parchline);color:var(--parchink);padding:6px 8px;box-shadow:2px 2px 0 rgba(2,16,13,.7);display:flex;align-items:center;justify-content:center}
 .mini:active{cursor:grabbing}
-.mini .zh{font-size:26px;line-height:1.1}
+.mini .zh{font-size:21px;line-height:1.1}
 .mini.pop{animation:tpop .25s}
 @keyframes tpop{0%{transform:scale(.55)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
-.plab{font-size:9px;letter-spacing:2px;color:#6a5220;text-align:center}
-#pool{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;min-height:56px;width:100%;border:3px dashed #6a4f1c;background:rgba(28,20,6,.55);padding:8px}
-#pool.over{border-color:var(--gold);background:#2c1f0b;box-shadow:0 0 14px rgba(255,215,106,.4)}
-.shard{cursor:grab;touch-action:none;width:94px;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);box-shadow:3px 3px 0 rgba(15,8,2,.8);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.plab{font-size:9px;letter-spacing:2px;color:#4d8f7c;text-align:center}
+#pool{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;min-height:56px;width:100%;border:3px dashed #6a4f1c;background:rgba(8,40,32,.55);padding:6px}
+#pool.over{border-color:var(--gold);background:#0e352b;box-shadow:0 0 14px rgba(120,255,214,.4)}
+.shard{cursor:grab;touch-action:none;width:clamp(48px,15vw,76px);background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);box-shadow:3px 3px 0 rgba(2,16,13,.8);padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:3px}
 .shard:active{cursor:grabbing}
-.shard .zh{font-size:26px;line-height:1.1}
+.shard .zh{font-size:21px;line-height:1.1}
 .shard .py{font-size:9px;color:#8a6a3a}
 .shard.used,.opt.used{opacity:.25;border-style:dashed;box-shadow:none;transform:none;cursor:default}
-#opts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.opt{cursor:pointer;touch-action:none;width:88px;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);box-shadow:3px 3px 0 rgba(15,8,2,.8);padding:7px 6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+#opts{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.opt{cursor:pointer;touch-action:none;width:clamp(44px,14vw,74px);background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);box-shadow:3px 3px 0 rgba(2,16,13,.8);padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:3px}
 .opt:hover{transform:translateY(-3px)}
-.opt .zh{font-size:22px;line-height:1.1}
+.opt .zh{font-size:18px;line-height:1.1}
 .opt .py{font-size:9px;color:#8a6a3a}
-.opt .num{font-size:16px;font-weight:700;color:#8a5a10}
-.dghost{position:fixed;z-index:90;pointer-events:none;opacity:.92;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);padding:6px 10px;box-shadow:4px 6px 0 rgba(15,8,2,.5);transform:translate(-50%,-70%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.opt .num{font-size:10px;font-weight:700;color:#17795f;line-height:1.15;word-wrap:break-word;text-align:center;max-width:100%}
+.dghost{position:fixed;z-index:90;pointer-events:none;opacity:.92;background:var(--parch);border:3px solid var(--parchline);color:var(--parchink);padding:6px 10px;box-shadow:4px 6px 0 rgba(2,16,13,.5);transform:translate(-50%,-70%);display:flex;flex-direction:column;align-items:center;gap:2px}
 .dghost .zh{font-size:26px;line-height:1.1}
 .dghost .py{font-size:9px;color:#8a6a3a}
 #flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:6}
@@ -129,16 +129,16 @@ body{background:var(--bg);font-family:'Rubik','Microsoft YaHei','SimSun',sans-se
 #flash.fr{background:rgba(255,77,94,.4);animation:fl .55s}
 @keyframes fl{0%{opacity:1}100%{opacity:0}}
 #actions{display:flex;gap:14px;align-items:center;justify-content:center}
-.ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,8,2,.88);z-index:40}
+.ovl{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,16,13,.88);z-index:40}
 .ovl.on{display:flex}
-.panel{display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px 34px;background:var(--panel2);border:4px solid var(--line);box-shadow:0 6px 0 rgba(15,8,2,.85),inset 0 0 0 3px #160e04;max-width:94%;max-height:94%;overflow:auto;text-align:center}
+.panel{display:flex;flex-direction:column;align-items:center;gap:12px;padding:22px 34px;background:var(--panel2);border:4px solid var(--line);box-shadow:0 6px 0 rgba(2,16,13,.85),inset 0 0 0 3px #08211b;max-width:94%;max-height:94%;overflow:auto;text-align:center}
 .ptitle{font-size:19px;letter-spacing:3px;font-weight:700}
 .ptitle.ok{color:var(--grn);text-shadow:3px 3px 0 rgba(42,122,58,.4)}
 .ptitle.bad{color:var(--red);text-shadow:3px 3px 0 rgba(122,42,54,.4)}
-.rhanzi{font-size:48px;color:#fff;text-shadow:3px 3px 0 rgba(15,8,2,.6);line-height:1.1}
+.rhanzi{font-size:48px;color:#fff;text-shadow:3px 3px 0 rgba(2,16,13,.6);line-height:1.1}
 .r-ru{font-size:13px;color:var(--gold)}
 .rwords{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
-.rw{background:#160e04;border:3px solid #8a6a2a;box-shadow:inset 0 0 0 2px #100a03,2px 2px 0 rgba(15,8,2,.8);padding:7px 9px;min-width:70px}
+.rw{background:#08211b;border:3px solid #2f8f78;box-shadow:inset 0 0 0 2px #061a15,2px 2px 0 rgba(2,16,13,.8);padding:7px 9px;min-width:70px}
 .rw .zh{font-size:21px;color:#fff}
 .rw .py{font-size:9px;color:var(--amb)}
 .rw .ru{font-size:9px;color:var(--dim)}
@@ -174,19 +174,17 @@ html,body{height:100dvh}
 #t-py{font-size:11px}
 #t-inst{font-size:11px;line-height:1.35}
 #work{gap:7px;padding:7px 8px;min-height:140px}
-#cells{gap:10px}
-.cell{min-width:0;padding:24px 8px 8px}
+#cells{gap:8px;flex-wrap:nowrap}
+.cell{min-width:0;padding:18px 5px 5px}
 .cell.v{min-width:0}
 .cell .cwm{font-size:44px}
 .bigrec{font-size:76px}
-.pslot{width:54px;height:54px}
 .mini .zh{font-size:21px}
 .plab{font-size:8px}
 #pool{min-height:48px;gap:8px;padding:6px}
-.shard{width:76px;padding:6px 4px}
+.shard{padding:5px 3px}
 .shard .zh{font-size:20px}
 .shard .py,.opt .py{font-size:8px}
-.opt{width:72px}
 .opt .zh{font-size:19px}
 #actions{gap:8px;flex-wrap:wrap}
 .btn{padding:9px 14px;font-size:11px}
@@ -222,26 +220,25 @@ html,body{height:100dvh}
 #t-inst{font-size:9.5px;line-height:1.25}
 .chip-type{font-size:8.5px;padding:2px 7px}
 #work{min-height:100px;gap:4px;padding:5px 8px}
-#cells{gap:10px}
-.cell{padding:16px 6px 6px;gap:5px}
+#cells{gap:8px}
+.cell{padding:14px 4px 4px;gap:4px}
 .cell .cpy{font-size:9px;top:3px;left:7px}
 .cell .cnt{font-size:8px;top:3px;right:7px}
 .cell .cwm{font-size:36px}
-.cell .slots{gap:5px}
+.cell .slots{gap:4px}
 .bigrec{font-size:58px}
 .cellbig{font-size:42px}
-.pslot{width:42px;height:42px}
 .pslot .pn{font-size:7px}
-.mini{padding:4px 6px}
-.mini .zh{font-size:16px}
+.mini{padding:3px 4px}
+.mini .zh{font-size:14px}
 .plab{font-size:7px}
 #pool{min-height:34px;gap:6px;padding:4px}
-.shard{width:66px;padding:4px 3px;gap:2px}
+.shard{padding:4px 3px;gap:2px}
 .shard .zh{font-size:16px}
 .shard .py{font-size:7px}
-.opt{width:62px;padding:4px 3px;gap:2px}
+.opt{padding:4px 3px;gap:2px}
 .opt .zh{font-size:15px}
-.opt .num{font-size:12px}
+.opt .num{font-size:10px}
 #actions{gap:6px}
 .btn{padding:6px 10px;font-size:10px}
 .btn.magic{font-size:11px;padding:7px 12px}
@@ -264,14 +261,11 @@ html,body{height:100dvh}
 @media (max-height:460px){
 #work{min-height:80px;gap:3px}
 .cell{padding:12px 5px 5px}
-.pslot{width:36px;height:36px}
 .mini .zh{font-size:14px}
 #pool{min-height:28px}
-.shard{width:60px}
 .shard .zh{font-size:14px}
-.opt{width:56px}
 .opt .zh{font-size:13px}
-.opt .num{font-size:11px}
+.opt .num{font-size:9px}
 #actions .btn{padding:5px 8px}
 .bigrec{font-size:46px}
 }
@@ -285,18 +279,18 @@ html,body{height:100dvh}
   <div class="bricks"></div>
 
   <section id="scr-start" class="scr on">
-    <div class="hanzi-logo">数字工坊</div>
-    <h1 class="ttl">МАСТЕРСКАЯ ХИТРОГО ВОЛШЕБНИКА · ЧИСЛА</h1>
+    <div class="hanzi-logo">礼貌工坊</div>
+    <h1 class="ttl">МАСТЕРСКАЯ ХИТРОГО ВОЛШЕБНИКА · ВЕЖЛИВЫЕ СЛОВА</h1>
     <div class="start-scene">
       <canvas id="wiz0" class="wiz bob" width="24" height="28"></canvas>
-      <div class="bubble">Хе-хе-хе… Теперь я разбил на осколки ЧИСЛА — от нуля до десяти тысяч! СПРЯТАЛ их облик и подбросил ФАЛЬШИВЫЕ осколки. Перетаскивай части на позиции и узнай числа в лицо. Собери все тринадцать — получишь тайный код!</div>
+      <div class="bubble">Хе-хе-хе… Теперь я разбил на осколки ВЕЖЛИВЫЕ СЛОВА — от «привет» до «ничего страшного»! СПРЯТАЛ их облик и подбросил ФАЛЬШИВЫЕ осколки. Перетаскивай части на позиции и узнай эти слова в лицо. Собери все тринадцать — получишь тайный код!</div>
     </div>
     <div class="rules">
       <div class="rc r-build"><b>СБОРКА</b><span>перетащи черты на позиции в ячейке — порядок важен: слева направо, сверху вниз</span></div>
       <div class="rc r-decoy"><b>ЛОЖНЫЙ ОСКОЛОК</b><span>среди осколков фальшивка — оставь её на столе</span></div>
       <div class="rc r-miss"><b>УКРАЛ ЧАСТЬ</b><span>осколок украден — верни его, перетащив свиток в ячейку</span></div>
-      <div class="rc r-rec"><b>РАСПОЗНАЙ</b><span>иероглиф уже собран — кликни свиток с верным числом</span></div>
-      <div class="rc r-chaos"><b>ХАОС</b><span>всё вперемешку — освободи позиции и собери число заново</span></div>
+      <div class="rc r-rec"><b>РАСПОЗНАЙ</b><span>слово уже собрано — кликни свиток с его верным переводом</span></div>
+      <div class="rc r-chaos"><b>ХАОС</b><span>всё вперемешку — освободи позиции и собери слово заново</span></div>
     </div>
     <div class="note">3 сердца · 13 раундов · подсказка −25 очков</div>
     <button id="btn-start" class="btn magic">НАЧАТЬ</button>
@@ -330,12 +324,12 @@ html,body{height:100dvh}
     <div id="actions">
       <button id="btn-reset" class="btn stone">СБРОС</button>
       <button id="btn-hint" class="btn hint">ПОДСКАЗКА −25</button>
-      <button id="btn-check" class="btn magic">СОБРАТЬ ЧИСЛО</button>
+      <button id="btn-check" class="btn magic">СОБРАТЬ СЛОВО</button>
     </div>
   </section>
 
   <div id="ovl-round" class="ovl"><div class="panel">
-    <div class="ptitle ok">ЧИСЛО СОБРАНО!</div>
+    <div class="ptitle ok">СЛОВО СОБРАНО!</div>
     <div id="r-hanzi" class="rhanzi"></div>
     <div id="r-sub" class="r-ru"></div>
     <div id="r-parts" class="rwords"></div>
@@ -346,23 +340,23 @@ html,body{height:100dvh}
   <div id="ovl-over" class="ovl"><div class="panel">
     <canvas id="wiz-laugh" class="wiz mini" width="24" height="28"></canvas>
     <div class="ptitle bad">ВОЛШЕБНИК ПОБЕДИЛ!</div>
-    <div class="p-text">«ХА-ХА-ХА! Ты проиграл ЧИСЛАМ, смертный! Ноль очков — это тоже число! Попробуешь ещё раз?»</div>
+    <div class="p-text">«ХА-ХА-ХА! Ты проиграл СЛОВАМ, смертный! Без вежливого слова и шагу не ступить! Попробуешь ещё раз?»</div>
     <button id="btn-retry" class="btn">ПОПРОБОВАТЬ СНОВА</button>
   </div></div>
 
   <div id="ovl-win" class="ovl"><div class="panel">
     <canvas id="wiz-def" class="wiz mini" width="24" height="28"></canvas>
-    <div class="ptitle ok">ТЫ СОБРАЛ ВСЕ ЧИСЛА!</div>
+    <div class="ptitle ok">ТЫ СОБРАЛ ВСЕ СЛОВА!</div>
     <div id="w-score" class="pts"></div>
     <div class="codelab">ПРОХОДНОЙ КОД</div>
-    <div class="code">0015</div>
+    <div class="code">7531</div>
     <button id="btn-again" class="btn">ИГРАТЬ СНОВА</button>
   </div></div>
 </div>
 </div>
 <script>
 var $=function(s){return document.querySelector(s)};
-var PAL={G:'#ffd76a',L:'#8a5fd8',H:'#54348c',D:'#2a1650',S:'#f2c894',s:'#cf9a66',E:'#241448',B:'#ececf4',b:'#b8b8cc',M:'#c03a4a',m:'#6a1830',R:'#3a2060',r:'#54348c'};
+var PAL={G:'#6ff2c8',L:'#8a5fd8',H:'#54348c',D:'#2a1650',S:'#f2c894',s:'#cf9a66',E:'#241448',B:'#ececf4',b:'#b8b8cc',M:'#c03a4a',m:'#6a1830',R:'#3a2060',r:'#54348c'};
 var BASE=[
 '...........GG...........',
 '...........GG...........',
@@ -409,46 +403,35 @@ var HEART=['.MM.MM.','MWMMMMM','MMMMMMM','.MMMMM.','..MMM..','...M...'];
 function drawHeart(cv,on){
   var ctx=cv.getContext('2d');cv.width=7;cv.height=6;ctx.clearRect(0,0,7,6);
   for(var y=0;y<HEART.length;y++)for(var x=0;x<7;x++){
-    var ch=HEART[y][x];if(ch!=='.'){ctx.fillStyle=on?(ch==='W'?'#ffd0d6':'#ff4d5e'):(ch==='W'?'#4a3580':'#5a4315');ctx.fillRect(x,y,1,1)}
+    var ch=HEART[y][x];if(ch!=='.'){ctx.fillStyle=on?(ch==='W'?'#ffd0d6':'#ff4d5e'):(ch==='W'?'#4a3580':'#1e5c4d');ctx.fillRect(x,y,1,1)}
   }
 }
 var CHARS={
-'零':{p:['雨','令'],dir:'h'},
-'一':{p:['一'],dir:'h'},
-'二':{p:['一','一'],dir:'h'},
-'三':{p:['一','一','一'],dir:'h'},
-'四':{p:['囗','儿'],dir:'v'},
-'五':{p:['五'],dir:'h'},
-'六':{p:['亠','八'],dir:'v'},
-'七':{p:['一','乚'],dir:'h'},
-'八':{p:['八'],dir:'h'},
-'九':{p:['丿','乙'],dir:'h'},
-'十':{p:['一','丨'],dir:'h'},
-'百':{p:['一','白'],dir:'v'},
-'千':{p:['一','十'],dir:'v'},
-'万':{p:['一','勹'],dir:'v'}};
-var CHARPY={'零':'líng','一':'yī','二':'èr','三':'sān','四':'sì','五':'wǔ','六':'liù','七':'qī','八':'bā','九':'jiǔ','十':'shí','百':'bǎi','千':'qiān','万':'wàn'};
+'你':{p:['亻','尔'],dir:'h'},
+'好':{p:['女','子'],dir:'h'},
+'谢':{p:['讠','身','寸'],dir:'h'},
+'再':{p:['一','冂','土'],dir:'h'},
+'见':{p:['冂','儿'],dir:'h'},
+'对':{p:['又','寸'],dir:'h'},
+'不':{p:['一','丿','丨','丶'],dir:'h'},
+'起':{p:['土','龰','己'],dir:'h'},
+'没':{p:['氵','几','又'],dir:'h'},
+'关':{p:['丷','一','大'],dir:'h'},
+'系':{p:['丿','幺','小'],dir:'h'}};
+var CHARPY={'你':'nǐ','好':'hǎo','谢':'xiè','再':'zài','见':'jiàn','对':'duì','不':'bù','起':'qǐ','没':'méi','关':'guān','系':'xì'};
 var WORDS={
-'零':{py:'líng',ru:'ноль (0)',chars:['零']},
-'一':{py:'yī',ru:'один (1)',chars:['一']},
-'二':{py:'èr',ru:'два (2)',chars:['二']},
-'三':{py:'sān',ru:'три (3)',chars:['三']},
-'四':{py:'sì',ru:'четыре (4)',chars:['四']},
-'五':{py:'wǔ',ru:'пять (5)',chars:['五']},
-'六':{py:'liù',ru:'шесть (6)',chars:['六']},
-'七':{py:'qī',ru:'семь (7)',chars:['七']},
-'八':{py:'bā',ru:'восемь (8)',chars:['八']},
-'九':{py:'jiǔ',ru:'девять (9)',chars:['九']},
-'十':{py:'shí',ru:'десять (10)',chars:['十']},
-'百':{py:'bǎi',ru:'сто (100)',chars:['百']},
-'千':{py:'qiān',ru:'тысяча (1000)',chars:['千']},
-'万':{py:'wàn',ru:'десять тысяч (10000)',chars:['万']},
-'百万':{py:'bǎiwàn',ru:'миллион (1000000)',chars:['百','万']}};
+'你好':{py:'nǐ hǎo',ru:'привет',chars:['你','好']},
+'谢谢':{py:'xièxie',ru:'спасибо',chars:['谢','谢']},
+'再见':{py:'zài jiàn',ru:'до свидания',chars:['再','见']},
+'对不起':{py:'duì bu qǐ',ru:'извини(-те)',chars:['对','不','起']},
+'没关系':{py:'méi guānxi',ru:'ничего страшного',chars:['没','关','系']}};
 var PARTS={
-'雨':['yǔ','дождь'],'令':['lìng','приказ'],'一':['yī','один'],'丨':['gǔn','вертикальная черта'],
-'囗':['wéi','ограда'],'儿':['ér','ножки'],'亠':['tóu','крышечка'],'八':['bā','раздвоение'],
-'乚':['yǐ','крючок'],'丿':['piě','откидная черта'],'乙':['yǐ','второй'],'白':['bái','белый'],
-'十':['shí','крест (десять)'],'勹':['bāo','обёртка'],'五':['wǔ','пять']};
+'亻':['rén','человек'],'尔':['ěr','ты'],'女':['nǚ','женщина'],'子':['zǐ','ребёнок'],
+'讠':['yán','речь'],'身':['shēn','тело'],'寸':['cùn','дюйм'],'一':['yī','один'],
+'冂':['jiōng','граница'],'土':['tǔ','земля'],'龰':['zhǐ','стопа'],'儿':['ér','ножки'],
+'又':['yòu','снова'],'丿':['piě','откидная черта'],'丨':['gǔn','вертикальная черта'],'丶':['diǎn','точка'],
+'己':['jǐ','сам'],'氵':['shuǐ','вода'],'几':['jī','сколько'],'丷':['bā','две точки'],
+'大':['dà','большой'],'幺':['yāo','крошечный'],'小':['xiǎo','маленький']};
 function wordParts(w){
   var out=[],cs=WORDS[w].chars;
   for(var i=0;i<cs.length;i++){
@@ -458,29 +441,29 @@ function wordParts(w){
   return out;
 }
 var ROUNDS=[
-{t:'decoy',w:'一',fakes:['丨','丿','乙']},
-{t:'decoy',w:'二',fakes:['丨','亠']},
-{t:'decoy',w:'三',fakes:['乚']},
-{t:'build',w:'四',fakes:['亠','八']},
-{t:'rec',w:'五',opts:['五','四','七','九']},
-{t:'missing',w:'六',mi:1,opts:['八','儿','乙']},
-{t:'decoy',w:'七',fakes:['乙','丿']},
-{t:'rec',w:'八',opts:['八','六','四','二']},
-{t:'missing',w:'九',mi:0,opts:['丿','一','乚']},
-{t:'decoy',w:'十',fakes:['丿','乙']},
-{t:'decoy',w:'零',fakes:['一','丿']},
-{t:'build',w:'千',fakes:['丿','乚']},
-{t:'chaos',w:'百万',cells:[['白','勹'],['一','一']]}];
+{t:'decoy',w:'你好',fakes:['丶']},
+{t:'decoy',w:'再见',fakes:['子','尔']},
+{t:'build',w:'谢谢',fakes:['女','氵']},
+{t:'rec',w:'再见',opts:['再见','你好','谢谢','对不起']},
+{t:'missing',w:'对不起',mi:5,opts:['丶','丿','丨']},
+{t:'build',w:'没关系',fakes:['寸','子']},
+{t:'decoy',w:'对不起',fakes:['女','小']},
+{t:'rec',w:'没关系',opts:['没关系','谢谢','再见','你好']},
+{t:'missing',w:'谢谢',mi:1,opts:['身','小','大']},
+{t:'build',w:'对不起',fakes:['亻','女']},
+{t:'missing',w:'你好',mi:3,opts:['子','小','几']},
+{t:'rec',w:'对不起',opts:['对不起','没关系','你好','再见']},
+{t:'chaos',w:'没关系',cells:[['丷','氵','丿'],['幺','一','几'],['大','又','小']]}];
 var TOTAL=ROUNDS.length;
 var TYPE={
-build:{chip:'СБОРКА',cls:'c-build',inst:'ПЕРЕТАСКИВАЙ осколки со стола на позиции в ячейке. ПОРЯДОК ВАЖЕН: слева направо, а вертикальные — сверху вниз. Не помнишь облик числа — жми ПОДСКАЗКУ!',first:'Хе-хе-хе! Я разбил число ВДРЕБЕЗГИ и спрятал его облик! Расставь черты по порядку, смертный!'},
+build:{chip:'СБОРКА',cls:'c-build',inst:'ПЕРЕТАСКИВАЙ осколки со стола на позиции в ячейке. ПОРЯДОК ВАЖЕН: слева направо, а вертикальные — сверху вниз. Не помнишь облик слова — жми ПОДСКАЗКУ!',first:'Хе-хе-хе! Я разбил слово ВДРЕБЕЗГИ и спрятал его облик! Расставь черты по порядку, смертный!'},
 decoy:{chip:'ЛОЖНЫЙ ОСКОЛОК',cls:'c-decoy',inst:'Среди осколков затесалась ФАЛЬШИВКА! Собери настоящий состав в верном порядке — фейк оставь на столе.',first:'Я подбросил тебе ФАЛЬШИВЫЙ осколок! Не перепутай, хе-хе!'},
 missing:{chip:'УКРАЛ ЧАСТЬ',cls:'c-miss',inst:'Один осколок УКРАДЕН — его нет на столе! Перетащи нужный свиток на его позицию в ячейке.',first:'Осколок украден! Его нет нигде… кроме моих свитков! Верни его, если сможешь!'},
-rec:{chip:'РАСПОЗНАЙ ЧИСЛО',cls:'c-rec',inst:'Это число уже собрано! Кликни по свитку с его верным значением.',first:'Хе-хе! Узнаёшь это число, смертный? Покажи, чему ты научился!'},
-chaos:{chip:'ХАОС',cls:'c-chaos',inst:'Я раскидал ВСЕ части по чужим позициям! Освобождай ячейки (лишнее — на стол) и собери число правильно.',first:'ХА! Всё вперемешку! Разберёшь и соберёшь — считай, повезло!'}};
-var REPEAT=['Числа не прощают ошибок!','Хе-хе… не та черта, смертный!','Считай лучше!','Порядок черт решает всё!'];
-var FAIL=['ХА-ХА-ХА! Число рассыпалось!','Неверно! Черты не на тех местах!','Хе-хе! Осколки смеются над тобой!','Ошибка! Мастерская грохочет!'];
-var WIN=['Что?! Число собрано?!','Проклятье! Иероглиф цел!','Т-ты… счетовод?! Гррр!','Нет! Мои осколки покорны тебе!'];
+rec:{chip:'РАСПОЗНАЙ СЛОВО',cls:'c-rec',inst:'Это слово уже собрано! Кликни по свитку с его верным переводом.',first:'Хе-хе! Узнаёшь это слово, смертный? Покажи, чему ты научился!'},
+chaos:{chip:'ХАОС',cls:'c-chaos',inst:'Я раскидал ВСЕ части по чужим позициям! Освобождай ячейки (лишнее — на стол) и собери слово правильно.',first:'ХА! Всё вперемешку! Разберёшь и соберёшь — считай, повезло!'}};
+var REPEAT=['Слова не прощают ошибок!','Хе-хе… не та черта, смертный!','Вежливость решает всё!','Порядок черт решает всё!'];
+var FAIL=['ХА-ХА-ХА! Слово рассыпалось!','Неверно! Черты не на тех местах!','Хе-хе! Осколки смеются над тобой!','Ошибка! Мастерская грохочет!'];
+var WIN=['Что?! Слово собрано?!','Проклятье! Иероглиф цел!','Т-ты… вежливец?! Гррр!','Нет! Мои осколки покорны тебе!'];
 var AU={ctx:null,on:true,
 init:function(){if(!this.ctx){try{this.ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume()},
 tone:function(f,d,type,v,delay,slide){if(!this.on||!this.ctx)return;var t=this.ctx.currentTime+(delay||0);var o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=type||'square';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f+slide),t+d);g.gain.setValueAtTime(v||.12,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(this.ctx.destination);o.start(t);o.stop(t+d+.02)},
@@ -694,7 +677,7 @@ function renderRound(){
     for(var q4=0;q4<pool4.length;q4++)(function(w){
       var o=document.createElement('div');o.className='opt';
       var n=document.createElement('span');n.className='num';
-      var dm=/\((\d+)\)/.exec(WORDS[w].ru);n.textContent=dm?dm[1]:'';
+      var dm=/\((\d+)\)/.exec(WORDS[w].ru);n.textContent=dm?dm[1]:WORDS[w].ru;
       o.appendChild(n);
       o.onclick=function(){G.chosen=w;AU.pick();check()};
       $('#opts').appendChild(o);
@@ -737,7 +720,7 @@ function check(){
   if(G.locked||G.busy)return;
   var r=ROUNDS[G.round],d=WORDS[r.w],ok=false;
   if(r.t==='rec'){
-    if(!G.chosen){say('Сначала выбери свиток с числом!');AU.click();return}
+    if(!G.chosen){say('Сначала выбери свиток со словом!');AU.click();return}
     ok=G.chosen===r.w;
   }else{
     for(var ci=0;ci<G.cells.length;ci++){
