@@ -13,9 +13,9 @@
   --red:#ff5a5f;--green:#67d474;--cream:#f3e9c8;--dark:#141031;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:#0b0920;display:flex;align-items:center;justify-content:center;padding:6px;font-family:"Courier New",monospace;color:var(--ink);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-#app{width:100%;max-width:500px;position:relative;background:var(--dark);border:2px solid var(--line);box-shadow:0 0 0 4px #060414,0 0 30px rgba(90,74,158,.25),0 14px 30px rgba(0,0,0,.8);padding:8px}
+html{height:100%}
+body{min-height:100%;background:#0b0920;display:flex;flex-direction:column;align-items:center;padding:6px;font-family:"Courier New",monospace;color:var(--ink);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#app{width:100%;max-width:800px;flex:none;margin:auto 0;position:relative;background:var(--dark);border:2px solid var(--line);box-shadow:0 0 0 4px #060414,0 0 30px rgba(90,74,158,.25),0 14px 30px rgba(0,0,0,.8);padding:8px}
 #app.shake{animation:shk .45s}
 @keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
 /* ---------- HUD ---------- */
@@ -651,7 +651,7 @@ function drawClock(t){
 }
 function drawParchment(){
   if(!q||q.st<3)return;
-  var x=200*U,y=44*U,w=36*U,h=30*U;
+  var x=174*U,y=52*U,w=62*U,h=28*U;
   R(x-3,y-5,w+6,5,"#8a6a3a");
   R(x-3,y+h,w+6,5,"#8a6a3a");
   R(x-3,y-5,w+6,2,"#a5824a");
@@ -659,14 +659,18 @@ function drawParchment(){
   R(x,y,w,2,"#d9c9a0");R(x,y+h-2,w,2,"#d9c9a0");
   R(x,y,2,h,"#d9c9a0");R(x+w-2,y,2,h,"#d9c9a0");
   VX.fillStyle="#4a3b22";
-  VX.font='bold 12px "Courier New",monospace';
+  VX.font='bold 14px "Courier New",monospace';
   VX.textAlign="center";VX.textBaseline="middle";
-  var l1=q.d+" "+MORU[q.mo-1]+(q.st>=4?" "+q.y:"");
-  VX.fillText(l1,x+w/2,y+9);
-  VX.font='bold 10px "Courier New",monospace';
-  VX.fillStyle="#7a5a2a";
-  var l2=q.st>=4?WDRU[q.wd]:"месяц · день";
-  VX.fillText(l2,x+w/2,y+21);
+  VX.fillText(q.d+" "+MORU[q.mo-1],x+w/2,y+11);
+  if(q.st>=4){
+    VX.font='bold 18px "Courier New",monospace';
+    VX.fillText(String(q.y),x+w/2,y+29);
+    VX.font='bold 12px "Courier New",monospace';
+    VX.fillText(WDRU[q.wd],x+w/2,y+45);
+  }else{
+    VX.font='bold 12px "Courier New",monospace';
+    VX.fillText("месяц · день",x+w/2,y+35);
+  }
 }
 function drawKeeper(t){
   var S=3,bx=44,by=206;
