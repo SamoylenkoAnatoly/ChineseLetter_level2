@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Наливай и плач — карточная игра по китайскому</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <section id="screen-menu" class="screen active">
+    <div class="candles"><span></span><span></span><span></span></div>
+    <div class="tavern-sign">
+      <div class="sign-board">
+        <div class="sign-plate">
+          <h1>Наливай<br>и плач</h1>
+        </div>
+        <div class="sign-sub">таверна китайских иероглифов</div>
+      </div>
+    </div>
+    <p class="menu-lead">Сыграй картой — ответь на вопрос по иероглифу — сокруши хозяина таверны!<br>Сними 30 HP противника за 10 минут.</p>
+    <div class="menu-difficulty">
+      <div class="difficulty-title">Выбери противника:</div>
+      <div class="difficulty-buttons">
+        <button class="btn btn-wood" id="btn-easy">♟ Пьяный крестьянин<br><small>легко</small></button>
+        <button class="btn btn-wood btn-gold" id="btn-normal">♜ Хозяин таверны<br><small>нормально</small></button>
+        <button class="btn btn-wood" id="btn-hard">♛ Дракон-шинобист<br><small>сложно</small></button>
+      </div>
+    </div>
+    <div class="menu-row">
+      <button class="btn btn-small" id="btn-stats">✦ Статистика</button>
+      <button class="btn btn-small" id="btn-sound-menu">♪ Звук: вкл</button>
+      <button class="btn btn-small" id="btn-help">? Правила</button>
+    </div>
+  </section>
+
+  <section id="screen-game" class="screen">
+    <div class="table-vignette"></div>
+
+    <div id="top-bar">
+      <button class="btn btn-small" id="btn-concede" title="Сдаться">⚑ Сдаться</button>
+      <div id="match-timer-wrap">
+        <div id="match-timer">10:00</div>
+        <div id="turn-timer-track"><div id="turn-timer-bar"></div></div>
+      </div>
+      <div class="top-bar-right">
+        <button class="btn btn-small" id="btn-sound-game">♪</button>
+        <button class="btn btn-small" id="btn-help-game">?</button>
+      </div>
+    </div>
+
+    <div id="table-zone">
+      <div class="hero-row hero-row-enemy">
+        <div class="hero" id="enemy-hero">
+          <div class="hero-portrait" id="enemy-portrait">♜</div>
+          <div class="hero-name">Хозяин таверны</div>
+          <div class="hero-hp" id="enemy-hp">30</div>
+        </div>
+        <div id="enemy-hand" class="enemy-hand"></div>
+        <div class="enemy-deck" id="enemy-deck">🂠 <span id="enemy-deck-count">30</span></div>
+      </div>
+
+      <div id="enemy-board" class="board-row"></div>
+
+      <div id="table-center">
+        <div id="turn-banner"></div>
+      </div>
+
+      <div id="player-board" class="board-row"></div>
+
+      <div class="hero-row hero-row-player">
+        <div class="hero" id="player-hero">
+          <div class="hero-portrait" id="player-portrait">♞</div>
+          <div class="hero-name">Странник</div>
+          <div class="hero-hp" id="player-hp">30</div>
+        </div>
+        <div class="player-side">
+          <div id="mana-crystals"></div>
+          <div id="mana-text">0/1</div>
+          <button class="btn btn-end" id="btn-end-turn">Закончить ход</button>
+        </div>
+        <div id="hand-wrap">
+          <div id="hand"></div>
+        </div>
+      </div>
+    </div>
+
+    <svg id="arrow-svg"></svg>
+    <div id="targeting-hint" class="hidden">Выберите цель <button id="btn-cancel-target" class="btn btn-small">Отмена</button></div>
+  </section>
+
+  <section id="screen-results" class="screen">
+    <div class="panel">
+      <h2 id="result-title">Победа!</h2>
+      <p id="result-sub"></p>
+      <div id="result-summary"></div>
+      <div id="victory-code" class="victory-code hidden" aria-live="polite">Код победы: <strong>7382</strong></div>
+      <h3>Твои иероглифы за матч</h3>
+      <div class="table-scroll">
+        <table id="result-table"></table>
+      </div>
+      <div class="menu-row">
+        <button class="btn btn-gold" id="btn-again">✦ Ещё партию</button>
+        <button class="btn" id="btn-menu">В меню</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-stats" class="screen">
+    <div class="panel">
+      <h2>Статистика обучения</h2>
+      <div id="stats-summary"></div>
+      <h3>Иероглифы</h3>
+      <div class="table-scroll">
+        <table id="stats-table"></table>
+      </div>
+      <div class="menu-row">
+        <button class="btn btn-small" id="btn-stats-reset">↺ Сбросить</button>
+        <button class="btn btn-gold" id="btn-stats-back">Назад</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="question-modal" class="modal hidden">
+  <div class="q-box">
+    <div id="q-mode-label"></div>
+    <div id="q-prompt-card"><span id="q-prompt-text"></span></div>
+    <div id="q-options"></div>
+    <div class="q-timer"><div id="q-timer-bar"></div></div>
+  </div>
+</div>
+
+<div id="help-modal" class="modal hidden">
+  <div class="q-box help-box">
+    <h2>Правила таверны</h2>
+    <ul class="help-list">
+      <li>Сними <b>30 HP</b> у хозяина таверны раньше, чем он снимет твои. Матч — <b>10 минут</b>.</li>
+      <li><b>Карта-боец</b> (пергамент): перетащи на пустую ячейку своего стола или коснись карты, затем ячейки. <b>Заклинание</b> (синее) — брось на стол или коснись карты и выбери цель.</li>
+      <li>Чтобы сыграть карту — <b>ответь на вопрос</b> по её иероглифу. Ошибёшься — карта вернётся в руку и до конца хода будет под замком.</li>
+        <li>Обычно боец атакует со <b>следующего</b> хода. Перетащи своего бойца на цель или выбери бойца, затем цель.</li>
+        <li><b>Натиск</b> позволяет атаковать сразу. <b>Щит ◆</b> поглощает один удар или заклинание. <b>Размах</b> наносит по 1 урону соседям атакованного бойца.</li>
+        <li><b>Защитник ✥</b> заслоняет героя и остальных бойцов, пока стоит на поле.</li>
+        <li>На картах показаны иероглиф и боевые свойства. Перевод и пиньинь появляются в вопросах и статистике.</li>
+      <li>Каждый ход даёт <b>кристалл маны</b> (макс. 10) и карту. На телефоне рука прокручивается вбок.</li>
+    </ul>
+    <div class="menu-row"><button class="btn btn-gold" id="btn-help-close">Понятно!</button></div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="js/data.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

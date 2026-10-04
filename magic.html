@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171b34">
+  <title>Рыжий оракул — магия имени</title>
+  <style>
+    :root { color-scheme: dark; font-family: Consolas, "Courier New", monospace; color: #fff0ce; background: #111527; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    .stage { min-height: 100vh; min-height: 100svh; display: grid; place-items: center; padding: 10px; background: #111527; background-image: linear-gradient(90deg, #ffffff04 1px, transparent 1px), linear-gradient(#ffffff04 1px, transparent 1px); background-size: 20px 20px; }
+    .card { position: relative; width: min(100%, 500px); min-height: min(calc(100svh - 20px), 610px); padding: clamp(14px, 4vw, 26px); border: 4px solid #b893bf; background: #252844; background-image: linear-gradient(90deg, #a482bd1a 2px, transparent 2px), linear-gradient(#a482bd1a 2px, transparent 2px), linear-gradient(#302646, #212740 65%, #272239); background-size: 24px 24px, 24px 24px, auto; box-shadow: 0 0 0 4px #111527, 0 0 0 7px #806493, 9px 11px 0 #080d1b, 0 0 26px #a66dc258, inset 0 0 0 4px #4a3b62; text-align: center; }
+    .card::before, .card::after { position: absolute; top: 8px; color: #e5b66d; font-size: 16px; content: "✦"; }
+    .card::before { left: 12px; }
+    .card::after { right: 12px; }
+    .eyebrow { display: inline-block; margin: 2px 0 0; padding: 4px 10px; background: #423556; color: #f7cb7f; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    h1 { margin: 9px 0 2px; color: #ffe3a1; font: 900 clamp(23px, 7vw, 36px)/1.1 Consolas, "Courier New", monospace; letter-spacing: -.055em; text-shadow: 3px 3px #8f4b60, 5px 5px #111527; }
+    .subtitle { margin: 8px 0 0; color: #dfd5e7; font-size: 11px; line-height: 1.4; }
+    .scene { position: relative; height: clamp(145px, 30svh, 220px); margin: 8px 0; overflow: hidden; border: 3px solid #a680b8; background: #252b4b; box-shadow: inset 0 0 0 3px #171b34, 0 0 0 2px #39304e; }
+    .scene::before { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, #262447 0 50%, #303654 50% 73%, #3d3a53 73% 79%, #292a43 79%); }
+    .scene::after { position: absolute; top: 18px; left: 24px; width: 4px; height: 4px; content: ""; background: #ffe3a1; box-shadow: 38px 22px #f4c3d3, 104px -5px #ffe3a1, 192px 20px #ffe3a1, 248px 4px #f4c3d3, 305px 30px #ffe3a1, 353px -2px #ffe3a1, 407px 26px #f4c3d3; }
+    .scene svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+    .ambient-runes, .orb, .orb-sparks, .spell-ring, .spell-rays { transform-box: fill-box; transform-origin: center; }
+    .ambient-runes { animation: rune-float 3.2s steps(4, end) infinite alternate; }
+    .orb-sparks { animation: idle-sparks 2.4s steps(3, end) infinite alternate; }
+    .spell-ring, .spell-rays { opacity: 0; }
+    .casting .orb { animation: spell 1.3s steps(4, end) both; }
+    .casting .orb-sparks { animation: sparks 1.3s steps(5, end) both; }
+    .casting .spell-ring { animation: ring-burst 1.3s steps(6, end) both; }
+    .casting .spell-rays { animation: rays-burst 1.3s steps(4, end) both; }
+    .casting .scene { animation: flash 1.3s steps(4, end) both; }
+    .panel { position: relative; margin: 0 auto; max-width: 390px; padding: 13px; border: 3px solid #c4a880; background: #1b2036; box-shadow: inset 0 0 0 3px #504064, 5px 5px 0 #111527, 0 0 15px #a873bb40; text-align: left; }
+    .panel::before, .panel::after { position: absolute; top: -3px; width: 8px; height: 8px; content: ""; border: 2px solid #f6d68f; background: #49375e; }
+    .panel::before { left: -3px; }
+    .panel::after { right: -3px; }
+    .panel-title { margin: 0 0 10px; color: #f7d28a; font-size: 12px; font-weight: 700; }
+    .intro { margin: 0 0 13px; color: #eee3d7; font-size: 12px; line-height: 1.5; }
+    form { display: grid; gap: 7px; }
+    label { color: #f0c988; font-size: 11px; font-weight: 700; }
+    input { width: 100%; min-height: 42px; padding: 8px 10px; border: 3px solid #8b83a0; border-radius: 0; outline: none; background: #12182b; color: #fff0ce; font: 13px Consolas, "Courier New", monospace; }
+    input::placeholder { color: #b5b1c3; }
+    input:focus-visible, button:focus-visible { outline: 3px solid #fff0a7; outline-offset: 3px; }
+    button { min-height: 42px; padding: 7px 11px; border: 3px solid #f8d58f; border-radius: 0; cursor: pointer; font: 700 12px Consolas, "Courier New", monospace; }
+    button:hover { filter: brightness(1.15); }
+    button:active { transform: translate(2px, 2px); box-shadow: none; }
+    button:disabled { cursor: wait; }
+    .primary { color: #30213b; background: #efb968; box-shadow: 4px 4px 0 #8f5265, 0 0 13px #f7c77780; }
+    .secondary { color: #ffe2a3; background: #38324f; box-shadow: 4px 4px 0 #141629; }
+    .error { min-height: 15px; margin: 0; color: #ffc5ae; font-size: 11px; line-height: 1.4; }
+    .casting-message { margin: 0; color: #f9dfa9; font-size: 13px; line-height: 1.6; text-align: center; }
+    .casting-message::after { content: ""; animation: dots 1s steps(4, end) infinite; }
+    [hidden], .result[hidden], form[hidden], .intro[hidden], .casting-message[hidden] { display: none !important; }
+    .result { display: grid; gap: 9px; }
+    .result-caption { margin: 0; color: #f4cb83; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+    .hero-card { display: grid; grid-template-columns: 90px minmax(0, 1fr); align-items: center; gap: 12px; padding: 7px; border: 2px solid #a27eb1; background: #262a44; box-shadow: inset 0 0 0 2px #554166; }
+    .hero-picture { height: 94px; border: 2px solid #d2a478; background: #404264; box-shadow: 0 0 10px #bb83d777; }
+    .hero-picture svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+    .name-block { min-width: 0; }
+    .hero-label { margin: 0 0 3px; color: #ceabc9; font-size: 10px; }
+    .chinese { margin: 0; color: #ffe8ad; font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif; font-size: clamp(25px, 8vw, 35px); font-weight: 700; letter-spacing: .08em; line-height: 1.2; }
+    .pinyin { margin: 3px 0 0; color: #e8d3e8; font-size: 13px; line-height: 1.3; }
+    .reading { margin: 5px 0 0; color: #eac699; font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+    .destiny { margin: 0; color: #f5e8d5; font-size: 12px; line-height: 1.5; }
+    .destiny strong { color: #f7cf89; }
+    .actions { margin-top: 2px; }
+    .actions button { width: 100%; }
+    .foot { margin: 13px 0 0; color: #c8b6c6; font-size: 10px; line-height: 1.4; }
+    .card.has-result .scene { height: clamp(105px, 22svh, 155px); }
+    @keyframes rune-float { from { opacity: .45; transform: translateY(3px); } to { opacity: 1; transform: translateY(-4px); } }
+    @keyframes idle-sparks { from { opacity: .5; transform: scale(.9); } to { opacity: 1; transform: scale(1.2); } }
+    @keyframes spell { 0%, 100% { filter: none; transform: scale(1); } 30%, 65% { filter: brightness(1.8); transform: scale(1.22); } 50% { filter: brightness(2.5); transform: scale(1.4); } }
+    @keyframes sparks { 0%, 100% { opacity: 1; transform: scale(1); } 45% { opacity: 1; transform: scale(1.7); } 70% { opacity: .4; transform: scale(2); } }
+    @keyframes ring-burst { 0%, 12% { opacity: 0; transform: scale(.4); } 38% { opacity: 1; transform: scale(1); } 75% { opacity: .85; transform: scale(1.7); } 100% { opacity: 0; transform: scale(2); } }
+    @keyframes rays-burst { 0%, 25% { opacity: 0; transform: scale(.5); } 45%, 68% { opacity: 1; transform: scale(1.15); } 100% { opacity: 0; transform: scale(1.5); } }
+    @keyframes flash { 0%, 100% { background: #252b4b; } 60% { background: #806995; } }
+    @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+    @media (max-width: 320px) { .stage { padding: 8px; } .card { padding: 12px; } .panel { padding: 10px; } .hero-card { grid-template-columns: 70px minmax(0, 1fr); gap: 8px; } .hero-picture { height: 77px; } .eyebrow { font-size: 9px; } }
+    @media (max-height: 480px) { .card { padding-top: 10px; padding-bottom: 10px; } .scene { height: 125px; } .card.has-result .scene { height: 96px; } .subtitle { margin-top: 4px; } .foot { margin-top: 8px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <section class="card" id="card" aria-labelledby="title">
+      <p class="eyebrow">✦ Гильдия изучающих китайский ✦</p>
+      <h1 id="title">Рыжий оракул</h1>
+      <p class="subtitle">Задание: узнать своё имя в волшебном свитке</p>
+      <div class="scene" aria-hidden="true">
+        <svg viewBox="0 0 192 128" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <rect x="0" y="103" width="192" height="25" fill="#292b41"/>
+          <rect x="0" y="103" width="192" height="4" fill="#685270"/>
+          <rect x="8" y="111" width="17" height="3" fill="#3b3a52"/><rect x="75" y="119" width="22" height="3" fill="#3b3a52"/><rect x="163" y="112" width="14" height="3" fill="#3b3a52"/>
+          <rect x="14" y="82" width="3" height="3" fill="#f5d391"/><rect x="23" y="67" width="4" height="4" fill="#f5d391"/><rect x="117" y="24" width="3" height="3" fill="#f5d391"/><rect x="174" y="34" width="4" height="4" fill="#f5d391"/>
+          <g class="ambient-runes" fill="#cda4e7">
+            <path d="M115 17H119V22H123V26H119V31H115V26H111V22H115ZM177 16H180V21H184V24H180V29H177V24H173V21H177Z"/>
+            <rect x="103" y="42" width="3" height="6"/><rect x="99" y="45" width="11" height="3"/><rect x="171" y="47" width="3" height="5"/><rect x="168" y="49" width="9" height="3"/>
+            <path d="M17 28H20V31H23V34H20V37H17V34H14V31H17ZM34 14H37V18H41V21H37V25H34V21H30V18H34Z" fill="#f5d391"/>
+          </g>
+          <rect x="23" y="102" width="75" height="5" fill="#12192b"/>
+          <path d="M47 88H34V84H27V76H24V69H28V65H34V69H38V76H34V81H41V77H49Z" fill="#8f4e32"/>
+          <path d="M43 84H34V81H28V72H31V68H34V72H37V77H34V80H43Z" fill="#ed9b4e"/>
+          <path d="M45 64H55V59H79V63H85V69H91V91H86V100H44V95H39V72H45Z" fill="#a95031"/>
+          <path d="M46 68H53V63H79V67H84V72H88V90H84V97H48V92H43V75H46Z" fill="#e58b3d"/>
+          <path d="M57 70H77V76H82V89H77V95H58V91H54V76H57Z" fill="#f9c477"/>
+          <rect x="49" y="78" width="6" height="4" fill="#bb602f"/><rect x="78" y="80" width="6" height="4" fill="#bb602f"/><rect x="52" y="91" width="5" height="4" fill="#bb602f"/>
+          <path d="M48 69H57V75H61V85H66V96H54V99H42V90H39V77H43V72H48ZM77 69H86V73H92V78H96V92H92V99H79V96H69V85H74V75H77Z" fill="#34224f"/>
+          <path d="M45 76H54V82H57V94H51V96H45V91H42V81H45ZM80 76H88V80H92V91H89V96H82V94H77V82H80Z" fill="#7653a9"/>
+          <path d="M58 72H77V76H73V81H62V76H58Z" fill="#ac78c6"/>
+          <rect x="65" y="76" width="5" height="5" fill="#f9d388"/><rect x="67" y="77" width="2" height="3" fill="#fff1bf"/>
+          <rect x="45" y="87" width="4" height="3" fill="#dec084"/><rect x="85" y="87" width="4" height="3" fill="#dec084"/>
+          <path d="M51 32H59V36H75V32H83V39H87V54H91V67H85V72H49V68H43V53H47V39H51Z" fill="#8c4834"/>
+          <path d="M52 36H58V41H75V36H81V41H85V54H89V64H83V69H51V65H47V53H51V41H52Z" fill="#ed9a4c"/>
+          <path d="M53 38H58V45H53ZM77 45V38H81V45Z" fill="#df7890"/>
+          <rect x="52" y="46" width="5" height="4" fill="#ffc774"/><rect x="60" y="43" width="5" height="4" fill="#ffc774"/><rect x="76" y="44" width="5" height="4" fill="#ffc774"/>
+          <rect x="55" y="51" width="7" height="9" fill="#3b2b3b"/><rect x="75" y="51" width="7" height="9" fill="#3b2b3b"/><rect x="57" y="52" width="2" height="3" fill="#fff5db"/><rect x="77" y="52" width="2" height="3" fill="#fff5db"/>
+          <rect x="62" y="61" width="13" height="5" fill="#ffce91"/><rect x="66" y="61" width="5" height="3" fill="#c26d6a"/><rect x="68" y="65" width="2" height="3" fill="#643d48"/>
+          <rect x="46" y="62" width="16" height="2" fill="#ffdc9e"/><rect x="76" y="63" width="17" height="2" fill="#ffdc9e"/>
+          <path d="M62 9H66V5H69V14H73V22H78V30H82V37H88V41H94V46H91V49H47V46H42V42H48V38H55V28H59V18H62Z" fill="#302047"/>
+          <path d="M65 13H68V19H72V25H76V33H81V39H85V43H53V39H58V31H62V22H65Z" fill="#764dac"/>
+          <path d="M67 20H70V28H73V33H69V30H66V25H67Z" fill="#a97bd2"/>
+          <path d="M63 35H67V39H71V43H66V40H62Z" fill="#f8d68b"/>
+          <rect x="46" y="46" width="46" height="5" fill="#38234f"/><rect x="50" y="44" width="38" height="4" fill="#9a6bc2"/><rect x="61" y="45" width="15" height="3" fill="#f3c775"/><rect x="67" y="45" width="4" height="3" fill="#fff0ba"/>
+          <rect x="47" y="97" width="12" height="7" fill="#f9b35e"/><rect x="72" y="97" width="12" height="7" fill="#f9b35e"/><rect x="50" y="101" width="2" height="3" fill="#9e573c"/><rect x="76" y="101" width="2" height="3" fill="#9e573c"/>
+          <path d="M82 78H92V83H97V88H103V93H95V91H86Z" fill="#a95031"/><path d="M84 79H91V84H97V89H92V87H85Z" fill="#ed9b4e"/>
+          <rect x="117" y="104" width="59" height="4" fill="#10172b"/>
+          <rect x="129" y="91" width="36" height="5" fill="#8d6685"/><rect x="125" y="96" width="44" height="7" fill="#b88d87"/><rect x="131" y="103" width="32" height="3" fill="#795573"/>
+          <g class="orb">
+            <path d="M136 52H158V56H166V63H170V83H166V90H158V94H136V90H128V83H124V63H128V56H136Z" fill="#d6adf4"/>
+            <path d="M136 56H158V60H164V65H168V81H164V88H158V91H136V88H130V81H126V65H130V60H136Z" fill="#614991"/>
+            <path d="M136 60H158V64H162V70H165V79H161V86H155V89H137V85H132V79H129V67H133V63H136Z" fill="#916dc2"/>
+            <rect x="135" y="64" width="9" height="5" fill="#e7b9e9"/><rect x="132" y="69" width="6" height="8" fill="#cc9bdc"/><rect x="148" y="72" width="9" height="5" fill="#b790e5"/><rect x="142" y="79" width="12" height="5" fill="#bc8cde"/>
+            <rect x="139" y="70" width="4" height="4" fill="#fff2cf"/><rect x="150" y="81" width="3" height="3" fill="#fff2cf"/>
+          </g>
+          <g class="orb-sparks" fill="#f8dfad"><rect x="143" y="38" width="4" height="9"/><rect x="140" y="41" width="10" height="3"/><rect x="177" y="64" width="8" height="3"/><rect x="180" y="61" width="3" height="9"/><rect x="109" y="62" width="7" height="3"/><rect x="111" y="59" width="3" height="9"/></g>
+          <g class="spell-ring" fill="#cfa3fa">
+            <path d="M128 34H166V38H176V44H183V55H179V47H172V42H164V38H130V42H122V48H117V58H113V46H120V39H128ZM113 87H117V96H123V101H133V105H162V101H172V95H179V86H183V98H176V105H165V109H129V105H119V99H113Z"/>
+            <rect x="106" y="64" width="5" height="17"/><rect x="185" y="64" width="5" height="17"/>
+          </g>
+          <g class="spell-rays" fill="#ffe3a1">
+            <rect x="145" y="15" width="5" height="17"/><rect x="141" y="19" width="13" height="4"/>
+            <rect x="97" y="70" width="13" height="5"/><rect x="100" y="66" width="5" height="13"/>
+            <rect x="180" y="70" width="12" height="5"/><rect x="183" y="66" width="5" height="13"/>
+            <rect x="116" y="38" width="6" height="6"/><rect x="172" y="38" width="6" height="6"/>
+          </g>
+        </svg>
+      </div>
+      <div class="panel">
+        <p class="panel-title">▸ КОТ-НАСТАВНИК ГОВОРИТ:</p>
+        <p class="intro" id="intro">Шар покажет твоё китайское имя, предназначение в учёбе и кота-героя. Как тебя зовут?</p>
+        <form id="form" novalidate>
+          <label for="name">ТВОЁ ИМЯ</label>
+          <input id="name" name="name" type="text" maxlength="40" autocomplete="given-name" placeholder="Например, Саша" aria-describedby="error" required>
+          <p class="error" id="error" role="alert"></p>
+          <button class="primary" type="submit">✦ НАЧАТЬ ПРИЗЫВ ✦</button>
+        </form>
+        <p class="casting-message" id="casting-message" role="status" hidden>Шар листает древние свитки</p>
+        <div class="result" id="result" role="status" aria-live="polite" hidden>
+          <p class="result-caption" id="greeting"></p>
+          <div class="hero-card">
+            <div class="hero-picture" id="hero-picture" role="img" aria-label="Комичная пиксельная мордочка кота-героя">
+              <svg viewBox="0 0 72 80" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">
+                <rect width="72" height="80" fill="#454466"/><rect x="6" y="12" width="3" height="3" fill="#f3d38c"/><rect x="61" y="26" width="3" height="3" fill="#f3d38c"/><rect x="11" y="65" width="50" height="3" fill="#746088"/>
+                <g class="ears ears-pointed">
+                  <path d="M10 24V10H15V7H21V11H27V20ZM45 20V11H51V7H57V10H62V24Z" class="fur-shadow"/>
+                  <path d="M14 19V11H19V14H23V21ZM49 21V14H53V11H58V19Z" class="fur"/>
+                  <rect x="17" y="15" width="4" height="5" fill="#dc8d9f"/><rect x="51" y="15" width="4" height="5" fill="#dc8d9f"/>
+                </g>
+                <g class="ears ears-folded" hidden>
+                  <path d="M8 18H15V15H25V23H31V26H9V23H6V20H8ZM47 23V15H57V18H64V20H67V23H64V26H41V23Z" class="fur-shadow"/>
+                  <rect x="11" y="19" width="12" height="4" class="fur"/><rect x="49" y="19" width="12" height="4" class="fur"/><rect x="13" y="20" width="6" height="2" fill="#dc8d9f"/><rect x="53" y="20" width="6" height="2" fill="#dc8d9f"/>
+                </g>
+                <path d="M18 20H54V23H60V29H64V49H61V55H56V60H48V63H24V60H16V55H11V49H8V29H12V23H18Z" class="fur-shadow"/>
+                <path d="M18 24H54V27H59V32H62V48H59V54H54V58H47V61H25V58H18V54H13V48H10V32H13V27H18Z" class="fur"/>
+                <path d="M26 46H46V49H52V55H46V59H26V55H20V49H26Z" class="muzzle"/>
+                <g class="markings markings-stripes"><rect x="24" y="24" width="4" height="8" class="fur-shadow"/><rect x="34" y="24" width="4" height="10" class="fur-shadow"/><rect x="44" y="24" width="4" height="8" class="fur-shadow"/><rect x="12" y="36" width="5" height="3" class="fur-shadow"/><rect x="55" y="36" width="5" height="3" class="fur-shadow"/></g>
+                <g class="markings markings-mask" hidden><rect x="17" y="33" width="17" height="12" class="fur-shadow"/><rect x="39" y="33" width="17" height="12" class="fur-shadow"/><rect x="29" y="26" width="14" height="6" class="fur-shadow"/></g>
+                <g class="markings markings-spot" hidden><rect x="20" y="24" width="9" height="7" class="fur-shadow"/><rect x="49" y="44" width="9" height="8" class="fur-shadow"/></g>
+                <g class="expression expression-surprised"><rect x="23" y="37" width="7" height="8" fill="#242237"/><rect x="43" y="37" width="7" height="8" fill="#242237"/><rect x="25" y="38" width="2" height="3" fill="#fff6d9"/><rect x="45" y="38" width="2" height="3" fill="#fff6d9"/><rect x="35" y="53" width="4" height="6" fill="#703d50"/></g>
+                <g class="expression expression-wink" hidden><rect x="22" y="41" width="9" height="3" fill="#242237"/><rect x="43" y="37" width="7" height="8" fill="#242237"/><rect x="45" y="38" width="2" height="3" fill="#fff6d9"/><path d="M33 54H36V56H41V54H44V58H41V60H36V58H33Z" fill="#703d50"/></g>
+                <g class="expression expression-smug" hidden><rect x="22" y="39" width="10" height="3" fill="#242237"/><rect x="42" y="39" width="10" height="3" fill="#242237"/><rect x="25" y="42" width="5" height="2" fill="#242237"/><rect x="44" y="42" width="5" height="2" fill="#242237"/><rect x="35" y="55" width="10" height="2" fill="#703d50"/><rect x="42" y="53" width="3" height="2" fill="#703d50"/></g>
+                <path d="M33 47H40V50H38V52H35V50H33Z" fill="#bb687d"/>
+                <rect x="13" y="49" width="12" height="2" fill="#fce4bb"/><rect x="12" y="54" width="11" height="2" fill="#fce4bb"/><rect x="48" y="49" width="12" height="2" fill="#fce4bb"/><rect x="50" y="54" width="11" height="2" fill="#fce4bb"/>
+                <g class="accessory accessory-bow"><rect x="16" y="15" width="7" height="7" fill="#e8a0ac"/><rect x="30" y="15" width="7" height="7" fill="#e8a0ac"/><rect x="23" y="18" width="7" height="5" fill="#f6cf89"/><rect x="18" y="17" width="3" height="3" fill="#ffe3d4"/><rect x="32" y="17" width="3" height="3" fill="#ffe3d4"/></g>
+                <g class="accessory accessory-crown" hidden><path d="M19 18V10H24V14H29V7H34V14H39V10H44V18Z" fill="#eac472"/><rect x="19" y="18" width="25" height="4" fill="#af754c"/><rect x="30" y="16" width="4" height="3" fill="#b778cd"/></g>
+                <g class="accessory accessory-scroll" hidden><rect x="8" y="61" width="56" height="9" fill="#d9ab75"/><rect x="12" y="61" width="48" height="8" fill="#f5dca8"/><rect x="9" y="59" width="5" height="13" fill="#aa765d"/><rect x="58" y="59" width="5" height="13" fill="#aa765d"/><rect x="28" y="63" width="16" height="3" fill="#aa7591"/></g>
+              </svg>
+            </div>
+            <div class="name-block">
+              <p class="hero-label">ТВОЁ ИМЯ</p>
+              <p class="chinese" id="chinese" lang="zh-Hans"></p>
+              <p class="pinyin" id="pinyin" lang="zh-Latn-pinyin"></p>
+              <p class="reading" id="reading" lang="ru"></p>
+            </div>
+          </div>
+          <p class="destiny" id="destiny"></p>
+          <div class="actions"><button class="secondary" id="reset" type="button">↩ ДРУГОЕ ИМЯ</button></div>
+        </div>
+      </div>
+      <p class="foot">✧ Предсказано с мурчанием, не всерьёз ✧</p>
+    </section>
+  </main>
+  <script>
+    const surnames = [["林", "lín", "Линь"], ["苏", "sū", "Су"], ["李", "lǐ", "Ли"], ["陈", "chén", "Чэнь"], ["白", "bái", "Бай"], ["叶", "yè", "Е"], ["江", "jiāng", "Цзян"], ["沈", "shěn", "Шэнь"], ["许", "xǔ", "Сюй"], ["唐", "táng", "Тан"], ["周", "zhōu", "Чжоу"], ["顾", "gù", "Гу"]];
+    const givenNames = [["星河", "xīng hé", "Син Хэ"], ["明月", "míng yuè", "Мин Юэ"], ["安然", "ān rán", "Ань Жань"], ["云舒", "yún shū", "Юнь Шу"], ["春晓", "chūn xiǎo", "Чунь Сяо"], ["清风", "qīng fēng", "Цин Фэн"], ["知夏", "zhī xià", "Чжи Ся"], ["晨曦", "chén xī", "Чэнь Си"], ["若溪", "ruò xī", "Жо Си"], ["雨桐", "yǔ tóng", "Юй Тун"], ["星辰", "xīng chén", "Син Чэнь"], ["书瑶", "shū yáo", "Шу Яо"], ["晴川", "qíng chuān", "Цин Чуань"], ["思远", "sī yuǎn", "Сы Юань"], ["嘉宁", "jiā níng", "Цзя Нин"], ["云舟", "yún zhōu", "Юнь Чжоу"], ["青禾", "qīng hé", "Цин Хэ"], ["月华", "yuè huá", "Юэ Хуа"], ["锦书", "jǐn shū", "Цзинь Шу"], ["玉竹", "yù zhú", "Юй Чжу"], ["映雪", "yìng xuě", "Ин Сюэ"], ["晓岚", "xiǎo lán", "Сяо Лань"], ["可心", "kě xīn", "Кэ Синь"]];
+    const missionChapters = [
+      {
+        goals: [
+          "научиться различать первый и второй тоны",
+          "перестать путать третий и четвёртый тоны",
+          "слышать смену тона в коротких китайских словах",
+          "уверенно повторять тоны за диктором"
+        ],
+        practices: [
+          ", сверяясь с записью носителя языка",
+          ", тренируясь по пять минут перед завтраком",
+          ", записывая себя на диктофон",
+          ", повторяя слоги вслед за котом-наставником",
+          ", отмечая трудные случаи в тетради"
+        ],
+        rewards: [
+          "Кот выдаст медаль за внимательный слух.",
+          "Ухо получит +1 к ритму, как после победы в музыкальной игре.",
+          "Шар сохранит верный тон перед следующим звуковым боссом.",
+          "Кот перестанет исправлять тебя мяуканьем.",
+          "Верный тон раскроет смысл слова, будто ты выбрал красную таблетку из «Матрицы».",
+          "Трудный слог больше не спрячется за кошачьим мурчанием.",
+          "Повтор пройдёт как тренировка джедая: слушай, а потом говори.",
+          "Каждый услышанный тон приблизит тебя к следующему уровню.",
+          "Даже дракон заметит, что звуковой квест уже не страшен.",
+          "Кот отметит победу над финальным боссом произношения."
+        ]
+      },
+      {
+        goals: [
+          "запомнить порядок черт в десяти иероглифах",
+          "узнавать знакомые ключи в новых иероглифах",
+          "различать похожие иероглифы с первого взгляда",
+          "писать изученные иероглифы без подсказки"
+        ],
+        practices: [
+          ", сверяясь с образцом после каждой попытки",
+          ", выделяя важные детали цветом",
+          ", повторяя трудные знаки в тетради",
+          ", разбирая по одному знаку за раз",
+          ", проверяя себя по карточкам"
+        ],
+        rewards: [
+          "Волшебная кисть выдаст +1 к аккуратности.",
+          "Кот больше не перепутает твои записи со следами лап.",
+          "Верный порядок черт откроет иероглиф, словно дверь в Хогвартс.",
+          "Кисть одобрительно постучит по столу.",
+          "Кот вручит значок охотника за тайными ключами.",
+          "Каждая верная черта приблизит тебя к разгадке лабиринта рун.",
+          "Хранитель свитков сочтёт твою тетрадь учебником школы магии.",
+          "Ошибочная черта не скроется от твоего взгляда.",
+          "Лучший знак попадёт в коллекцию, будто редкая находка из сундука.",
+          "За победу над боссом-иероглифом начисляется +1 к мудрости."
+        ]
+      },
+      {
+        goals: [
+          "запомнить десять слов о еде",
+          "освоить слова для разговора о дороге",
+          "научиться называть предметы вокруг себя по-китайски",
+          "собирать короткие фразы из знакомых слов"
+        ],
+        practices: [
+          ", составляя по одному примеру в день",
+          ", возвращаясь к трудным словам перед сном",
+          ", группируя слова по смыслу",
+          ", проверяя память без подсказок",
+          ", проговаривая примеры вслух"
+        ],
+        rewards: [
+          "Кот откроет для тебя новый карман словаря.",
+          "Каждое слово займёт слот в инвентаре, как редкая добыча в Diablo.",
+          "Слова перестанут разбегаться при виде кота.",
+          "Дракон сохранит твой лучший пример, будто важный игровой сейв.",
+          "Кот одобрит даже маленький шаг к большому словарю.",
+          "Забытое слово вернётся после повторения, как герой после контрольной точки.",
+          "Карточки торжественно признают тебя своим другом.",
+          "В словаре освободится место для нового предмета из сундука знаний.",
+          "Кот присвоит тебе звание собирателя слов, как в старой RPG.",
+          "За удачный пример магический шар добавит +1 к опыту."
+        ]
+      },
+      {
+        goals: [
+          "читать короткие диалоги без переводчика",
+          "находить знакомые слова в китайском меню",
+          "понимать смысл простых объявлений на китайском",
+          "читать учебные истории по одному абзацу"
+        ],
+        practices: [
+          ", отмечая незнакомые слова после первого чтения",
+          ", сперва угадывая смысл по контексту",
+          ", проверяя себя по словарю только в конце",
+          ", перечитывая трудные строки вслух",
+          ", обсуждая прочитанное с котом-наставником"
+        ],
+        rewards: [
+          "Кот выдаст закладку за внимательное чтение.",
+          "Понятная строка откроет кусочек карты, как в игре о потерянном храме.",
+          "Шар покажет найденные подсказки, словно детективу в загадочном фильме.",
+          "Незнакомое слово перестанет выглядеть как заклинание.",
+          "Кот перевернёт страницу, будто открыл дверь в тайную библиотеку.",
+          "Твоя догадка о смысле получит кошачью проверку.",
+          "В дневнике появится отметка «Загадка текста разгадана».",
+          "Кот вручит закладку искателя текстов, почти как карту Индианы Джонса.",
+          "Каждая прочитанная строка раскроет следующий фрагмент истории-квеста.",
+          "Кот признает, что словарь нужен всё реже."
+        ]
+      },
+      {
+        goals: [
+          "заказать чай на китайском",
+          "попросить дорогу на китайском",
+          "представиться новому знакомому на китайском",
+          "задать продавцу простой вопрос на китайском"
+        ],
+        practices: [
+          ", заранее проговаривая нужную фразу",
+          ", не забывая про вежливое обращение",
+          ", сначала репетируя с котом-наставником",
+          ", внимательно слушая ответ",
+          ", используя выученные слова вместо жестов"
+        ],
+        rewards: [
+          "Кот начислит +1 к смелости говорить.",
+          "Верная реплика откроет мирный путь, как в диалоге Mass Effect.",
+          "Собеседник поймёт тебя быстрее, чем кот найдёт печенье.",
+          "Кот напомнит: ошибаться в разговоре не страшно.",
+          "Магический шар отметит разговор как удачно выбранный ответ в RPG.",
+          "Даже робкий голос получит пропуск на переговоры с драконом.",
+          "Кот вручит значок мастера диалогов, будто после важного квеста.",
+          "После разговора ты получишь +1 к уверенности.",
+          "Ответ собеседника откроет новую реплику и ещё одно китайское слово.",
+          "Кот признает, что твой первый диалог достоин финальных титров."
+        ]
+      }
+    ];
+    const missionsPerChapter = 4 * 5 * 10;
+    const catColors = [
+      { fur: "#e89a52", shadow: "#a95436", muzzle: "#ffe0a7", description: "рыжего" },
+      { fur: "#b3a8bd", shadow: "#61566d", muzzle: "#e8d9de", description: "серого" },
+      { fur: "#f2d4a2", shadow: "#bd8f69", muzzle: "#fff0d2", description: "кремового" },
+      { fur: "#745c69", shadow: "#3d344c", muzzle: "#dfbdb1", description: "тёмного" },
+      { fur: "#c78368", shadow: "#824e55", muzzle: "#f1c6aa", description: "карамельного" }
+    ];
+    const catExpressions = [["surprised", "с удивлёнными глазами"], ["wink", "с хитрым подмигиванием"], ["smug", "с довольной улыбкой"]];
+    const catEars = [["pointed", "с острыми ушами"], ["folded", "с загнутыми ушами"]];
+    const catAccessories = [["bow", "с бантом"], ["crown", "с короной"], ["scroll", "со свитком"]];
+    const catMarkings = ["stripes", "mask", "spot"];
+    const card = document.getElementById("card");
+    const form = document.getElementById("form");
+    const input = document.getElementById("name");
+    const error = document.getElementById("error");
+    const intro = document.getElementById("intro");
+    const castingMessage = document.getElementById("casting-message");
+    const result = document.getElementById("result");
+    const hero = document.getElementById("hero-picture");
+    let casting = false;
+    let timer;
+
+    function randomIndex(length) {
+      if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+        const limit = Math.floor(4294967296 / length) * length;
+        const value = new Uint32Array(1);
+        do { window.crypto.getRandomValues(value); } while (value[0] >= limit);
+        return value[0] % length;
+      }
+      return Math.floor(Math.random() * length);
+    }
+
+    function reveal(visitor) {
+      const surname = surnames[randomIndex(surnames.length)];
+      const given = givenNames[randomIndex(givenNames.length)];
+      const color = catColors[randomIndex(catColors.length)];
+      const expression = catExpressions[randomIndex(catExpressions.length)];
+      const ears = catEars[randomIndex(catEars.length)];
+      const accessory = catAccessories[randomIndex(catAccessories.length)];
+      const markings = catMarkings[randomIndex(catMarkings.length)];
+      const missionNumber = randomIndex(missionChapters.length * missionsPerChapter);
+      const chapter = missionChapters[Math.floor(missionNumber / missionsPerChapter)];
+      const variant = missionNumber % missionsPerChapter;
+      const goal = chapter.goals[variant % chapter.goals.length];
+      const practice = chapter.practices[Math.floor(variant / chapter.goals.length) % chapter.practices.length];
+      const reward = chapter.rewards[Math.floor(variant / (chapter.goals.length * chapter.practices.length))];
+      const svg = hero.querySelector("svg");
+      svg.querySelectorAll(".fur").forEach(part => part.setAttribute("fill", color.fur));
+      svg.querySelectorAll(".fur-shadow").forEach(part => part.setAttribute("fill", color.shadow));
+      svg.querySelector(".muzzle").setAttribute("fill", color.muzzle);
+      for (const [group, chosen] of [["expression", expression[0]], ["ears", ears[0]], ["accessory", accessory[0]], ["markings", markings]]) {
+        svg.querySelectorAll(`.${group}`).forEach(part => { part.hidden = !part.classList.contains(`${group}-${chosen}`); });
+      }
+      hero.setAttribute("aria-label", `Комичная пиксельная мордочка ${color.description} кота-героя ${ears[1]}, ${expression[1]}, ${accessory[1]}`);
+      document.getElementById("greeting").textContent = `${visitor}, кот нашёл твой свиток!`;
+      document.getElementById("chinese").textContent = surname[0] + given[0];
+      document.getElementById("pinyin").textContent = `${surname[1]} ${given[1]}`;
+      document.getElementById("reading").textContent = `Примерно по-русски: ${surname[2]} ${given[2]}`;
+      document.getElementById("destiny").textContent = `Твоё предназначение — ${goal}${practice}. ${reward}`;
+      card.classList.remove("casting");
+      card.classList.add("has-result");
+      castingMessage.hidden = true;
+      result.hidden = false;
+      casting = false;
+      document.getElementById("reset").focus();
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (casting) return;
+      const visitor = input.value.trim().replace(/\s+/g, " ");
+      if (!visitor) {
+        input.setAttribute("aria-invalid", "true");
+        error.textContent = "Коту нужно знать, как тебя зовут.";
+        input.focus();
+        return;
+      }
+      input.removeAttribute("aria-invalid");
+      error.textContent = "";
+      form.hidden = true;
+      intro.hidden = true;
+      casting = true;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        reveal(visitor);
+      } else {
+        castingMessage.hidden = false;
+        card.classList.add("casting");
+        timer = window.setTimeout(() => reveal(visitor), 1350);
+      }
+    });
+    input.addEventListener("input", () => {
+      input.removeAttribute("aria-invalid");
+      error.textContent = "";
+    });
+    document.getElementById("reset").addEventListener("click", () => {
+      window.clearTimeout(timer);
+      casting = false;
+      result.hidden = true;
+      card.classList.remove("has-result", "casting");
+      form.hidden = false;
+      intro.hidden = false;
+      input.focus();
+    });
+  </script>
+</body>
+</html>
